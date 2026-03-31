@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΞИIGMA - AI Prediction System</title>
+    <title>ΞИIGMA - Neural Cipher System</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
         
         * {
             margin: 0;
@@ -14,210 +14,268 @@
         }
 
         :root {
-            --bg: #050505;
-            --bg-card: #0a0a0a;
-            --bg-elevated: #111111;
-            --border: #1a1a1a;
-            --border-glow: #2a2a2a;
-            --text: #ffffff;
-            --text-dim: #666666;
-            --text-muted: #444444;
-            --primary: #00d4ff;
-            --primary-dark: #0099cc;
-            --secondary: #ff006e;
-            --accent: #8338ec;
-            --gold: #ffd700;
-            --success: #00f5d4;
-            --error: #ff006e;
-            --green: #00f5d4;
-            --red: #ff006e;
-            --violet: #c77dff;
+            --void: #030303;
+            --depth: #080808;
+            --surface: #0f0f0f;
+            --elevated: #161616;
+            --border-subtle: #1c1c1c;
+            --border: #252525;
+            --border-light: #333;
+            --text-primary: #e8e8e8;
+            --text-secondary: #707070;
+            --text-tertiary: #505050;
+            --cipher-gold: #c9a227;
+            --cipher-silver: #a0a0a0;
+            --enigma-cyan: #2dd4bf;
+            --enigma-amber: #f59e0b;
+            --enigma-crimson: #dc2626;
+            --enigma-violet: #8b5cf6;
+            --gradient-cipher: linear-gradient(135deg, #c9a227 0%, #a0a0a0 50%, #2dd4bf 100%);
         }
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
-            min-height: 100vh;
+        html, body {
+            height: 100%;
+            background: var(--void);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
             overflow-x: hidden;
         }
 
-        /* Animated Background */
-        .bg-animation {
+        /* Cryptographic Background */
+        .cipher-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: -1;
-            background: 
-                radial-gradient(ellipse at 20% 80%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(131, 56, 236, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 40% 40%, rgba(255, 0, 110, 0.05) 0%, transparent 50%);
-        }
-
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            opacity: 0.4;
             background-image: 
-                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
+                repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px),
+                repeating-linear-gradient(90deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px);
+            animation: cipherShift 20s linear infinite;
         }
 
-        @keyframes gridMove {
-            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        @keyframes cipherShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(35px, 35px); }
         }
 
-        /* Header */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        /* Header - Minimalist */
         .header {
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(20px);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, var(--void) 0%, transparent 100%);
             z-index: 100;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-            letter-spacing: 4px;
-            animation: logoPulse 3s ease-in-out infinite;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        @keyframes logoPulse {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.2); }
+        .logo-symbol {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--cipher-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
-        .admin-btn {
-            background: transparent;
-            border: 1px solid var(--border-glow);
-            color: var(--text-dim);
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .logo-symbol::before {
+            content: 'Ξ';
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            color: var(--cipher-gold);
+            font-weight: 700;
+        }
+
+        .logo-symbol::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid var(--cipher-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulseRing 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.1; }
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 8px;
+            color: var(--text-primary);
             text-transform: uppercase;
         }
 
-        .admin-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        .logo-sub {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 4px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 2px;
         }
 
-        /* Home Page */
-        .home-page {
-            min-height: calc(100vh - 80px);
+        /* Main Container */
+        .main {
+            min-height: 100vh;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Authentication Section */
+        .auth-section {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            position: relative;
-        }
-
-        .hero-section {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .hero-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 8px;
-        }
-
-        .hero-subtitle {
-            color: var(--text-dim);
-            font-size: 1.1rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        /* Key Section */
-        .key-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 2.5rem;
+            max-width: 420px;
+            margin: 0 auto;
             width: 100%;
-            max-width: 500px;
-            position: relative;
-            overflow: hidden;
         }
 
-        .key-section::before {
+        .cipher-wheel {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .wheel-outer {
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        .wheel-outer::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 1px solid var(--border-light);
+            border-radius: 50%;
+        }
+
+        .wheel-inner {
+            position: absolute;
+            inset: 20px;
+            background: var(--surface);
+            border: 1px solid var(--cipher-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-icon {
+            font-size: 32px;
+            opacity: 0.8;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-title {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            letter-spacing: 6px;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .auth-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+        }
+
+        /* Key Input - Cipher Style */
+        .key-cipher {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .key-cipher::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--secondary), transparent);
-            animation: borderGlow 3s linear infinite;
-        }
-
-        @keyframes borderGlow {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .key-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .key-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 20px var(--primary));
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cipher-gold), transparent);
+            opacity: 0.5;
         }
 
         .key-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
             letter-spacing: 3px;
-            color: var(--text-dim);
+            color: var(--cipher-gold);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-label::before {
+            content: '◆';
+            font-size: 6px;
         }
 
         .key-input-wrap {
             position: relative;
-            margin-bottom: 1.5rem;
         }
 
         .key-input {
             width: 100%;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-glow);
-            color: var(--text);
-            padding: 1.25rem;
-            border-radius: 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem;
+            background: var(--depth);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 16px;
             text-align: center;
             letter-spacing: 6px;
             text-transform: uppercase;
@@ -226,1519 +284,1105 @@
 
         .key-input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+            border-color: var(--cipher-gold);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.1);
         }
 
         .key-input::placeholder {
-            color: var(--text-muted);
+            color: var(--text-tertiary);
             letter-spacing: 8px;
         }
 
-        .verify-btn {
+        .cipher-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border: none;
-            color: #000;
-            padding: 1.25rem;
-            border-radius: 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 3px;
+            background: transparent;
+            border: 1px solid var(--cipher-gold);
+            color: var(--cipher-gold);
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
             cursor: pointer;
             transition: all 0.3s;
-            text-transform: uppercase;
             position: relative;
             overflow: hidden;
+            margin-top: 0.75rem;
         }
 
-        .verify-btn::before {
+        .cipher-btn::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.1), transparent);
             transition: left 0.5s;
         }
 
-        .verify-btn:hover::before {
+        .cipher-btn:hover::before {
             left: 100%;
         }
 
-        .verify-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.4);
+        .cipher-btn:hover {
+            background: rgba(201, 162, 39, 0.05);
+            box-shadow: 0 0 30px rgba(201, 162, 39, 0.15);
         }
 
-        .key-status {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 12px;
-            text-align: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            display: none;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .key-status.show { display: block; }
-        .key-status.success { background: rgba(0, 245, 212, 0.1); border: 1px solid var(--success); color: var(--success); }
-        .key-status.error { background: rgba(255, 0, 110, 0.1); border: 1px solid var(--error); color: var(--error); }
-
-        .key-info {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: var(--bg-elevated);
-            border-radius: 16px;
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .key-info.show { display: block; }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.95rem;
-        }
-
-        .info-row:last-child { border-bottom: none; }
-        .info-label { color: var(--text-dim); font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
-        .info-value { color: var(--success); font-weight: 600; }
-
-        /* Locked Wingo Button */
-        .wingo-section {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .wingo-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem 3rem;
-            border-radius: 20px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            transition: all 0.4s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .wingo-btn.locked {
-            background: var(--bg-elevated);
-            border: 2px solid var(--border);
-            color: var(--text-muted);
+        .cipher-btn:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
-        .wingo-btn.locked::after {
-            content: '🔒';
-            position: absolute;
-            right: 1.5rem;
-            font-size: 1.2rem;
-        }
-
-        .wingo-btn.unlocked {
-            background: linear-gradient(135deg, var(--secondary), var(--accent));
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            animation: glowPulse 2s infinite;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.4); }
-            50% { box-shadow: 0 0 40px rgba(255, 0, 110, 0.6); }
-        }
-
-        .wingo-btn.unlocked:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 60px rgba(255, 0, 110, 0.8);
-        }
-
-        /* Features */
-        .features-section {
-            margin-top: 4rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            max-width: 1000px;
-            width: 100%;
-        }
-
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
+        .key-status {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
             text-align: center;
-            transition: all 0.4s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            transform: scaleX(0);
-            transition: transform 0.4s;
-        }
-
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .feature-card:hover {
-            border-color: var(--border-glow);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            filter: drop-shadow(0 0 15px var(--primary));
-        }
-
-        .feature-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            letter-spacing: 3px;
-            margin-bottom: 0.75rem;
-        }
-
-        .feature-desc {
-            color: var(--text-dim);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* Prediction Page */
-        .pred-page {
             display: none;
-            min-height: 100vh;
-            padding-bottom: 2rem;
+            border-left: 2px solid;
         }
 
-        .pred-page.active { display: block; }
+        .key-status.show { display: block; }
+        .key-status.valid { 
+            background: rgba(45, 212, 191, 0.05); 
+            border-color: var(--enigma-cyan);
+            color: var(--enigma-cyan);
+        }
+        .key-status.invalid { 
+            background: rgba(220, 38, 38, 0.05); 
+            border-color: var(--enigma-crimson);
+            color: var(--enigma-crimson);
+        }
 
-        /* Top Bar */
-        .pred-header {
-            background: var(--bg-card);
-            padding: 1.25rem;
+        .session-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--depth);
+            border-radius: 6px;
+            border-left: 2px solid var(--enigma-cyan);
+            display: none;
+        }
+
+        .session-info.show { display: block; }
+
+        .session-row {
             display: flex;
             justify-content: space-between;
+            padding: 0.4rem 0;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .session-row:last-child { border-bottom: none; }
+
+        .session-label {
+            font-family: 'Space Mono', monospace;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .session-val {
+            font-family: 'Space Mono', monospace;
+            color: var(--enigma-cyan);
+        }
+
+        /* Access Portal */
+        .portal-section {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .portal-btn {
+            display: inline-flex;
             align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .pred-period {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pred-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            color: var(--text-dim);
+            gap: 12px;
+            padding: 1.25rem 2.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 4px;
             text-transform: uppercase;
+            cursor: not-allowed;
+            transition: all 0.4s;
+            position: relative;
         }
 
-        .pred-number {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 4px;
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        .portal-btn.unlocked {
+            border-color: var(--enigma-cyan);
+            color: var(--enigma-cyan);
+            cursor: pointer;
+            background: rgba(45, 212, 191, 0.03);
         }
 
-        .pred-timer {
-            text-align: right;
+        .portal-btn.unlocked::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 8px;
+            padding: 1px;
+            background: linear-gradient(135deg, var(--enigma-cyan), transparent, var(--enigma-cyan));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
         }
 
-        .timer-display {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--secondary);
-            text-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
-            letter-spacing: 4px;
+        .portal-btn.unlocked:hover {
+            background: rgba(45, 212, 191, 0.08);
+            box-shadow: 0 0 40px rgba(45, 212, 191, 0.15);
+            transform: translateY(-1px);
         }
 
-        /* Main Prediction Display */
-        .prediction-hero {
+        .portal-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+        }
+
+        .portal-btn.unlocked .portal-indicator {
+            background: var(--enigma-cyan);
+            box-shadow: 0 0 10px var(--enigma-cyan);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Footer Info */
+        .cipher-footer {
             padding: 2rem;
+            text-align: center;
+        }
+
+        .cipher-divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+            margin: 0 auto 1.5rem;
+        }
+
+        .cipher-traits {
             display: flex;
             justify-content: center;
-            gap: 2rem;
+            gap: 3rem;
             flex-wrap: wrap;
         }
 
-        .pred-card {
-            width: 140px;
-            height: 140px;
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: 24px;
+        .trait {
+            text-align: center;
+        }
+
+        .trait-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.75rem;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .trait-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Prediction Interface */
+        .pred-interface {
+            display: none;
+            padding: 1rem;
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 2rem;
+        }
+
+        .pred-interface.active { display: block; }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .status-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .status-val {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .status-val.period { color: var(--cipher-gold); }
+        .status-val.timer { 
+            color: var(--enigma-crimson);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Cipher Display */
+        .cipher-display {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cipher-rotor {
+            width: 85px;
+            height: 85px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            transition: all 0.4s;
-            cursor: pointer;
         }
 
-        .pred-card:hover {
-            transform: scale(1.05);
-            border-color: var(--primary);
-            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+        .cipher-rotor::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 1px dashed var(--border-light);
+            border-radius: 50%;
+            opacity: 0.5;
         }
 
-        .pred-card.number { border-color: var(--primary); }
-        .pred-card.color { border-color: var(--success); }
-        .pred-card.size { border-color: var(--gold); }
-
-        .pred-value-main {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 800;
+        .rotor-value {
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            font-weight: 700;
             line-height: 1;
         }
 
-        .pred-card.number .pred-value-main { color: var(--primary); text-shadow: 0 0 30px rgba(0, 212, 255, 0.5); }
-        .pred-card.size .pred-value-main { color: var(--gold); font-size: 2rem; text-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-
-        .pred-color-circle {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            box-shadow: 0 0 40px currentColor;
-            animation: breathe 3s ease-in-out infinite;
-            border: 3px solid rgba(255,255,255,0.2);
-        }
-
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: 0.9; }
-        }
-
-        /* AI Analysis */
-        .ai-section {
-            margin: 0 2rem 2rem;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(131, 56, 236, 0.05));
-            border: 1px solid var(--border-glow);
-            border-radius: 20px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ai-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .ai-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            animation: aiPulse 2s infinite;
-        }
-
-        @keyframes aiPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); }
-            50% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.8); }
-        }
-
-        .ai-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            letter-spacing: 3px;
-        }
-
-        .ai-badge {
-            background: var(--secondary);
-            color: #fff;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
+        .cipher-rotor.num .rotor-value { color: var(--enigma-cyan); }
+        .cipher-rotor.size .rotor-value { 
+            font-size: 14px; 
+            color: var(--cipher-gold);
             letter-spacing: 2px;
-            animation: blink 1s infinite;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .ai-text {
-            color: var(--text-dim);
-            font-size: 1rem;
-            line-height: 1.7;
-            padding: 1rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            border-left: 3px solid var(--primary);
-        }
-
-        .ai-highlight {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        /* Trend Numbers */
-        .trend-section {
-            margin: 0 2rem 2rem;
-        }
-
-        .trend-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            color: var(--text-dim);
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .trend-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .trend-num {
-            aspect-ratio: 1;
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .trend-num:hover {
-            transform: scale(1.1);
-            z-index: 10;
-        }
-
-        .trend-num.green { 
-            color: var(--green); 
-            border-color: var(--green);
-            box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
-        }
-        .trend-num.red { 
-            color: var(--red); 
-            border-color: var(--red);
-            box-shadow: 0 0 20px rgba(255, 0, 110, 0.2);
-        }
-        .trend-num.violet { 
-            color: var(--violet); 
-            border-color: var(--violet);
-            box-shadow: 0 0 20px rgba(199, 125, 255, 0.2);
-        }
-
-        .trend-num.hot::after {
-            content: '🔥';
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            font-size: 1rem;
-            animation: fireFlicker 0.5s infinite;
-        }
-
-        .trend-num.cold::after {
-            content: '❄️';
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            font-size: 1rem;
-            animation: coldShine 2s infinite;
-        }
-
-        @keyframes fireFlicker {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        @keyframes coldShine {
-            0%, 100% { opacity: 1; filter: brightness(1); }
-            50% { opacity: 0.7; filter: brightness(1.3); }
-        }
-
-        /* History */
-        .history-section {
-            margin: 0 2rem;
-        }
-
-        .history-header {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            color: var(--text-dim);
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .history-grid {
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        .history-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            align-items: center;
-            font-family: 'Orbitron', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .history-item:hover {
-            border-color: var(--border-glow);
-            transform: translateX(5px);
-        }
-
-        .hist-period { color: var(--text-dim); font-size: 0.9rem; letter-spacing: 2px; }
-        .hist-number { 
-            font-size: 1.3rem; 
-            font-weight: 700; 
-            text-align: center;
-        }
-        .hist-color {
-            width: 28px;
-            height: 28px;
+        .rotor-color {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            margin: 0 auto;
-            box-shadow: 0 0 15px currentColor;
-        }
-        .hist-size { 
-            text-align: center; 
-            color: var(--text-dim);
-            font-size: 0.9rem;
-        }
-
-        /* Admin Page */
-        .admin-page {
-            display: none;
-            padding: 2rem;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .admin-page.active { display: block; }
-
-        .admin-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .admin-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            letter-spacing: 4px;
-            margin-bottom: 0.5rem;
-        }
-
-        .admin-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            box-shadow: 0 0 20px currentColor;
             position: relative;
-            overflow: hidden;
         }
 
-        .admin-card::before {
+        .rotor-color::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+            inset: -6px;
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: rotorPulse 2s infinite;
         }
 
-        .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 3px;
-            margin-bottom: 1.5rem;
-            color: var(--gold);
+        @keyframes rotorPulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.1; }
         }
 
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-item {
-            background: var(--bg-elevated);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
+        /* Analysis Panel */
+        .analysis-panel {
+            background: var(--surface);
             border: 1px solid var(--border);
-            transition: all 0.3s;
-        }
-
-        .stat-item:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        .stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .stat-name {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            margin-top: 0.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .form-group { margin-bottom: 1.5rem; }
-        .form-label {
-            display: block;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            color: var(--text-dim);
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-        }
-
-        .form-select {
-            width: 100%;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            color: var(--text);
+            border-radius: 8px;
             padding: 1rem;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: 'Rajdhani', sans-serif;
-            cursor: pointer;
-        }
-
-        .gen-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border: none;
-            color: #000;
-            padding: 1.25rem;
-            border-radius: 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.3s;
-        }
-
-        .gen-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
-        }
-
-        .key-list { margin-top: 1.5rem; }
-        .key-entry {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
             margin-bottom: 1rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .panel-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--enigma-cyan), var(--enigma-violet));
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .panel-title {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--text-secondary);
+        }
+
+        .panel-status {
+            margin-left: auto;
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            color: var(--enigma-crimson);
+            letter-spacing: 2px;
+            animation: blink 1.5s infinite;
+        }
+
+        .analysis-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--depth);
+            border-radius: 6px;
+            border-left: 2px solid var(--enigma-cyan);
+        }
+
+        .analysis-text em {
+            color: var(--enigma-cyan);
+            font-style: normal;
+            font-weight: 500;
+        }
+
+        /* Confidence Meter */
+        .confidence-wrap {
+            background: var(--depth);
+            border-radius: 6px;
+            padding: 0.625rem 0.75rem;
+        }
+
+        .confidence-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
         }
 
-        .key-entry:hover {
-            border-color: var(--gold);
+        .confidence-val {
+            color: var(--enigma-cyan);
         }
 
-        .key-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            letter-spacing: 3px;
-            color: var(--gold);
-        }
-
-        .key-meta {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            margin-top: 0.25rem;
-        }
-
-        .key-acts { display: flex; gap: 0.75rem; }
-
-        .act-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-        }
-
-        .act-btn:hover { transform: scale(1.1); }
-        .act-btn.copy { background: var(--primary); color: #000; }
-        .act-btn.del { background: var(--secondary); color: #fff; }
-
-        /* Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 2.5rem;
-            width: 90%;
-            max-width: 450px;
+        .confidence-track {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
             position: relative;
         }
 
-        .modal-close {
+        .confidence-track::after {
+            content: '';
             position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.3s;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 2s infinite;
         }
 
-        .modal-close:hover { color: var(--secondary); }
-
-        .modal-heading {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            letter-spacing: 4px;
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
-        .modal-input {
-            width: 100%;
-            background: var(--bg-elevated);
+        .confidence-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--enigma-cyan), var(--enigma-violet));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
+        }
+
+        /* Rotor Matrix */
+        .rotor-matrix {
+            background: var(--surface);
             border: 1px solid var(--border);
-            color: var(--text);
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
+            border-radius: 8px;
+            padding: 1rem;
             margin-bottom: 1rem;
-            font-size: 1rem;
-            font-family: 'Rajdhani', sans-serif;
         }
 
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .login-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--secondary), var(--accent));
-            border: none;
-            color: #fff;
-            padding: 1.25rem;
-            border-radius: 12px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
+        .matrix-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
             letter-spacing: 3px;
-            cursor: pointer;
+            color: var(--text-tertiary);
             text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+
+        .matrix-cell {
+            aspect-ratio: 1;
+            background: var(--depth);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .matrix-cell:hover {
+            border-color: var(--border-light);
+            transform: scale(1.05);
+        }
+
+        .matrix-cell.g { color: var(--enigma-cyan); border-color: rgba(45, 212, 191, 0.2); }
+        .matrix-cell.r { color: var(--enigma-crimson); border-color: rgba(220, 38, 38, 0.2); }
+        .matrix-cell.v { color: var(--enigma-violet); border-color: rgba(139, 92, 246, 0.2); }
+
+        .matrix-cell.hot {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: var(--enigma-amber);
+        }
+
+        .matrix-cell.cold {
+            background: rgba(45, 212, 191, 0.05);
+            border-color: var(--enigma-cyan);
+        }
+
+        .matrix-cell::after {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            font-size: 10px;
+        }
+
+        .matrix-cell.hot::after { content: '▲'; color: var(--enigma-amber); }
+        .matrix-cell.cold::after { content: '▼'; color: var(--enigma-cyan); }
+
+        /* Cipher Log */
+        .cipher-log {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .log-header {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .log-entry {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 0.625rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 12px;
+            align-items: center;
+        }
+
+        .log-entry:last-child { border-bottom: none; }
+
+        .log-period {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--text-tertiary);
+            letter-spacing: 1px;
+        }
+
+        .log-num {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .log-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin: 0 auto;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .log-size {
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
         }
 
         /* Toast */
-        .toast {
+        .cipher-toast {
             position: fixed;
-            bottom: 2rem;
+            bottom: 1.5rem;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: var(--bg-card);
+            background: var(--surface);
             border: 1px solid var(--border);
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
+            border-left: 2px solid;
+            padding: 0.875rem 1.5rem;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
             letter-spacing: 2px;
             opacity: 0;
             transition: all 0.4s;
-            z-index: 2000;
+            z-index: 1000;
+            max-width: 90%;
+            text-align: center;
         }
 
-        .toast.show {
+        .cipher-toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
 
-        .toast.success { border-color: var(--success); color: var(--success); box-shadow: 0 0 30px rgba(0, 245, 212, 0.3); }
-        .toast.error { border-color: var(--secondary); color: var(--secondary); box-shadow: 0 0 30px rgba(255, 0, 110, 0.3); }
+        .cipher-toast.success { border-left-color: var(--enigma-cyan); color: var(--enigma-cyan); }
+        .cipher-toast.error { border-left-color: var(--enigma-crimson); color: var(--enigma-crimson); }
 
         /* Loading */
-        .loader {
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(0,0,0,0.3);
-            border-top-color: #000;
+        .cipher-loader {
+            width: 14px;
+            height: 14px;
+            border: 1px solid rgba(0,0,0,0.3);
+            border-top-color: var(--cipher-gold);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .logo { font-size: 1.5rem; }
-            .hero-title { font-size: 2rem; letter-spacing: 4px; }
-            .prediction-hero { gap: 1rem; }
-            .pred-card { width: 120px; height: 120px; }
-            .pred-value-main { font-size: 2.5rem; }
-            .trend-grid { gap: 0.75rem; }
-            .trend-num { font-size: 1.4rem; }
-            .stats-row { grid-template-columns: 1fr; }
-        }
     </style>
 <base target="_blank">
 </head>
 <body>
-    <div class="bg-animation"></div>
-    <div class="grid-overlay"></div>
+    <div class="cipher-bg"></div>
+    <div class="noise-overlay"></div>
 
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">ΞИIGMA</div>
-        <button class="admin-btn" onclick="showAdminLogin()">ADMIN</button>
-    </div>
-
-    <!-- Home Page -->
-    <div id="homePage" class="home-page">
-        <div class="hero-section">
-            <h1 class="hero-title">PREDICTION SYSTEM</h1>
-            <p class="hero-subtitle">AI-POWERED ANALYTICS</p>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-symbol"></div>
+            <div>
+                <div class="logo-text">ΞИIGMA</div>
+                <div class="logo-sub">NEURAL CIPHER SYSTEM</div>
+            </div>
         </div>
+    </header>
 
-        <div class="key-section">
-            <div class="key-header">
-                <div class="key-icon">🔐</div>
-                <div class="key-label">ACCESS KEY</div>
-            </div>
-
-            <div class="key-input-wrap">
-                <input type="text" class="key-input" id="keyInput" placeholder="XXXX-XXXX-XXXX" maxlength="14">
-            </div>
-
-            <button class="verify-btn" id="verifyBtn" onclick="validateKey()">VERIFY ACCESS</button>
-
-            <div class="key-status" id="keyStatus"></div>
-
-            <div class="key-info" id="keyInfo">
-                <div class="info-row">
-                    <span class="info-label">STATUS</span>
-                    <span class="info-value" id="infoStatus">ACTIVE</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">EXPIRES</span>
-                    <span class="info-value" id="infoExpiry">--</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">DAYS LEFT</span>
-                    <span class="info-value" id="infoDays">--</span>
+    <main class="main">
+        <!-- Authentication Section -->
+        <section class="auth-section" id="authSection">
+            <div class="cipher-wheel">
+                <div class="wheel-outer"></div>
+                <div class="wheel-inner">
+                    <span class="wheel-icon">🔐</span>
                 </div>
             </div>
-        </div>
 
-        <div class="wingo-section">
-            <button class="wingo-btn locked" id="wingoBtn" onclick="enterPrediction()">
-                WINGO 1 MIN
-            </button>
-        </div>
+            <h1 class="auth-title">Cipher Authentication</h1>
+            <p class="auth-subtitle">ENTER ACCESS SEQUENCE TO PROCEED</p>
 
-        <div class="features-section">
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <div class="feature-title">AI ENGINE</div>
-                <div class="feature-desc">Advanced pattern recognition with machine learning algorithms for trend analysis</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <div class="feature-title">REAL-TIME</div>
-                <div class="feature-desc">Live predictions updated every second with 60-second cycle precision timing</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <div class="feature-title">ACCURACY</div>
-                <div class="feature-desc">Statistical analysis of historical patterns to identify high-probability outcomes</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <div class="feature-title">SECURE</div>
-                <div class="feature-desc">Encrypted key-based access system with time-limited validity periods</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Prediction Page -->
-    <div id="predPage" class="pred-page">
-        <div class="pred-header">
-            <div class="pred-period">
-                <span class="pred-label">PERIOD</span>
-                <span class="pred-number" id="periodNum">--------</span>
-            </div>
-            <div class="pred-timer">
-                <span class="pred-label">NEXT</span>
-                <span class="timer-display" id="countdown">00:00</span>
-            </div>
-        </div>
-
-        <div class="prediction-hero">
-            <div class="pred-card number">
-                <span class="pred-value-main" id="predNumber">-</span>
-            </div>
-            <div class="pred-card color">
-                <div class="pred-color-circle" id="predColor" style="background: #333;"></div>
-            </div>
-            <div class="pred-card size">
-                <span class="pred-value-main" id="predSize">-</span>
-            </div>
-        </div>
-
-        <div class="ai-section">
-            <div class="ai-header">
-                <div class="ai-icon">🧠</div>
-                <span class="ai-title">NEURAL ANALYSIS</span>
-                <span class="ai-badge">LIVE</span>
-            </div>
-            <div class="ai-text" id="aiText">
-                Initializing AI engine... Analyzing historical data patterns...
-            </div>
-        </div>
-
-        <div class="trend-section">
-            <div class="trend-title">NUMBER TRENDS</div>
-            <div class="trend-grid" id="trendGrid">
-                <div class="trend-num violet" data-num="0">0</div>
-                <div class="trend-num green" data-num="1">1</div>
-                <div class="trend-num red" data-num="2">2</div>
-                <div class="trend-num green" data-num="3">3</div>
-                <div class="trend-num red" data-num="4">4</div>
-                <div class="trend-num violet" data-num="5">5</div>
-                <div class="trend-num red" data-num="6">6</div>
-                <div class="trend-num green" data-num="7">7</div>
-                <div class="trend-num red" data-num="8">8</div>
-                <div class="trend-num green" data-num="9">9</div>
-            </div>
-        </div>
-
-        <div class="history-section">
-            <div class="history-header">PREDICTION LOG</div>
-            <div class="history-grid" id="historyBody"></div>
-        </div>
-    </div>
-
-    <!-- Admin Page -->
-    <div id="adminPage" class="admin-page">
-        <div class="admin-header">
-            <div class="admin-title">ΞИIGMA CONTROL</div>
-        </div>
-
-        <div class="admin-card">
-            <div class="card-title">SYSTEM METRICS</div>
-            <div class="stats-row">
-                <div class="stat-item">
-                    <div class="stat-value" id="totalKeys">0</div>
-                    <div class="stat-name">Total Keys</div>
+            <div class="key-cipher">
+                <div class="key-label">Access Key</div>
+                <div class="key-input-wrap">
+                    <input type="text" class="key-input" id="keyInput" placeholder="XXXX-XXXX-XXXX" maxlength="14" autocomplete="off">
                 </div>
-                <div class="stat-item">
-                    <div class="stat-value" style="color: var(--success);" id="activeKeys">0</div>
-                    <div class="stat-name">Active</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" style="color: var(--secondary);" id="expiredKeys">0</div>
-                    <div class="stat-name">Expired</div>
+                <button class="cipher-btn" id="authBtn" onclick="authenticate()">
+                    Initialize Cipher
+                </button>
+                
+                <div class="key-status" id="keyStatus"></div>
+                
+                <div class="session-info" id="sessionInfo">
+                    <div class="session-row">
+                        <span class="session-label">STATUS</span>
+                        <span class="session-val" id="sessStatus">--</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">EXPIRATION</span>
+                        <span class="session-val" id="sessExpiry">--</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">REMAINING</span>
+                        <span class="session-val" id="sessRemain">--</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="admin-card">
-            <div class="card-title">KEY GENERATION</div>
-            <div class="form-group">
-                <label class="form-label">Validity Period</label>
-                <select class="form-select" id="validitySelect">
-                    <option value="1">1 Day</option>
-                    <option value="3">3 Days</option>
-                    <option value="7">7 Days</option>
-                    <option value="15">15 Days</option>
-                    <option value="30" selected>30 Days</option>
-                </select>
+            <div class="portal-section">
+                <button class="portal-btn locked" id="portalBtn" onclick="enterCipher()">
+                    <span class="portal-indicator"></span>
+                    <span>Access Neural Core</span>
+                </button>
             </div>
-            <button class="gen-btn" id="genBtn" onclick="generateKey()">GENERATE KEY</button>
-            <div class="key-list" id="keyList"></div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Admin Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-box">
-            <button class="modal-close" onclick="hideAdminLogin()">×</button>
-            <div class="modal-heading">ADMIN ACCESS</div>
-            <input type="text" class="modal-input" id="adminUser" placeholder="Username">
-            <input type="password" class="modal-input" id="adminPass" placeholder="Password">
-            <button class="login-btn" onclick="adminLogin()">AUTHENTICATE</button>
-        </div>
-    </div>
+        <!-- Prediction Interface -->
+        <section class="pred-interface" id="predInterface">
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-label">Cipher Period</span>
+                    <span class="status-val period" id="periodVal">--------</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Temporal Index</span>
+                    <span class="status-val timer" id="timerVal">00:00</span>
+                </div>
+            </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">MESSAGE</div>
+            <div class="cipher-display">
+                <div class="cipher-rotor num">
+                    <span class="rotor-value" id="rotorNum">-</span>
+                </div>
+                <div class="cipher-rotor col">
+                    <div class="rotor-color" id="rotorColor" style="background: #333;"></div>
+                </div>
+                <div class="cipher-rotor size">
+                    <span class="rotor-value" id="rotorSize">-</span>
+                </div>
+            </div>
 
-    <script>
-        // ==========================================
-        // ENCRYPTED ADMIN CREDENTIALS
-        // Base64 encoded: Divesh3252
-        // ==========================================
-        const ENCRYPTED_ID = 'RGl2ZXNoMzI1Mg==';
-        const ENCRYPTED_PASS = 'RGl2ZXNoMzI1Mg==';
-        
-        function decryptCredential(enc) {
-            try {
-                return atob(enc);
-            } catch(e) {
-                return '';
-            }
-        }
+            <div class="analysis-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">◈</div>
+                    <span class="panel-title">Neural Analysis</span>
+                    <span class="panel-status">● LIVE</span>
+                </div>
+                <div class="analysis-text" id="analysisText">
+                    Initializing cipher matrices... Analyzing rotational patterns...
+                </div>
+                <div class="confidence-wrap">
+                    <div class="confidence-header">
+                        <span>Confidence Matrix</span>
+                        <span class="confidence-val" id="confVal">0%</span>
+                    </div>
+                    <div class="confidence-track">
+                        <div class="confidence-bar" id="confBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
 
-        // ==========================================
-        // SYSTEM STATE
-        // ==========================================
-        let keys = JSON.parse(localStorage.getItem('enigma_keys') || '[]');
-        let currentKey = null;
-        let keyCheckInterval = null;
-        let history = [];
-        let lastMinute = -1;
+            <div class="rotor-matrix">
+                <div class="matrix-title">Rotor Position Matrix</div>
+                <div class="matrix-grid" id="matrixGrid">
+                    <div class="matrix-cell v" data-n="0">0</div>
+                    <div class="matrix-cell g" data-n="1">1</div>
+                    <div class="matrix-cell r" data-n="2">2</div>
+                    <div class="matrix-cell g" data-n="3">3</div>
+                    <div class="matrix-cell r" data-n="4">4</div>
+                    <div class="matrix-cell v" data-n="5">5</div>
+                    <div class="matrix-cell r" data-n="6">6</div>
+                    <div class="matrix-cell g" data-n="7">7</div>
+                    <div class="matrix-cell r" data-n="8">8</div>
+                    <div class="matrix-cell g" data-n="9">9</div>
+                </div>
+            </div>
 
-        const COLORS = {
-            green: { bg: '#00f5d4', class: 'green' },
-            red: { bg: '#ff006e', class: 'red' },
-            violet: { bg: '#c77dff', class: 'violet' }
+            <div class="cipher-log">
+                <div class="log-header">Cipher Transmission Log</div>
+                <div id="logEntries"></div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="cipher-footer" id="cipherFooter">
+            <div class="cipher-divider"></div>
+            <div class="cipher-traits">
+                <div class="trait">
+                    <div class="trait-icon">◈</div>
+                    <div class="trait-label">Neural Engine</div>
+                </div>
+                <div class="trait">
+                    <div class="trait-icon">◉</div>
+                    <div class="trait-label">Temporal Sync</div>
+                </div>
+                <div class="trait">
+                    <div class="trait-icon">◆</div>
+                    <div class="trait-label">Cryptographic</div>
+                </div>
+                <div class="trait">
+                    <div class="trait-icon">◎</div>
+                    <div class="trait-label">Secure Channel</div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <div class="cipher-toast" id="cipherToast"></div>
+
+    <!-- ✅ Step 1: Firebase Initialization -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBouQx_5CL0aZdK_HrHx3fuHvHQwhj4LQ",
+            authDomain: "enigma-app-25066.firebaseapp.com",
+            projectId: "enigma-app-25066"
         };
 
-        // ==========================================
-        // INITIALIZATION
-        // ==========================================
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Expose to window for use in other scripts
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+    </script>
+
+    <script>
+        // State
+        let session = null;
+        let history = [];
+        let lastPeriod = null;
+        let currentPred = null;
+        let monitor = null;
+
+        const COLOR_MAP = {
+            green: { bg: '#2dd4bf', cls: 'g' },
+            red: { bg: '#dc2626', cls: 'r' },
+            violet: { bg: '#8b5cf6', cls: 'v' }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
-            checkExistingKey();
-            initMockHistory();
-            startCountdown();
+            checkSession();
+            initHistory();
+            startClock();
             
-            // Key input formatting
-            document.getElementById('keyInput').addEventListener('input', (e) => {
-                let val = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-                let formatted = '';
-                for (let i = 0; i < val.length && i < 12; i++) {
-                    if (i > 0 && i % 4 === 0) formatted += '-';
-                    formatted += val[i];
+            document.getElementById('keyInput').addEventListener('input', e => {
+                let v = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+                let f = '';
+                for (let i = 0; i < v.length && i < 12; i++) {
+                    if (i > 0 && i % 4 === 0) f += '-';
+                    f += v[i];
                 }
-                e.target.value = formatted;
+                e.target.value = f;
             });
         });
 
-        // ==========================================
-        // KEY MANAGEMENT
-        // ==========================================
-        function checkExistingKey() {
-            const saved = localStorage.getItem('enigma_current_key');
+        function checkSession() {
+            const saved = localStorage.getItem('enigma_cipher_session');
             if (saved) {
                 try {
-                    const keyData = JSON.parse(saved);
-                    if (new Date(keyData.expires) > new Date()) {
-                        currentKey = keyData;
-                        unlockWingo();
-                        startKeyMonitor();
+                    const k = JSON.parse(saved);
+                    if (new Date(k.expires) > new Date()) {
+                        session = k;
+                        unlockPortal();
+                        startMonitor();
                     } else {
-                        localStorage.removeItem('enigma_current_key');
+                        localStorage.removeItem('enigma_cipher_session');
                     }
                 } catch(e) {
-                    localStorage.removeItem('enigma_current_key');
+                    localStorage.removeItem('enigma_cipher_session');
                 }
             }
         }
 
-        function startKeyMonitor() {
-            if (keyCheckInterval) clearInterval(keyCheckInterval);
-            keyCheckInterval = setInterval(() => {
-                if (currentKey && new Date() > new Date(currentKey.expires)) {
-                    lockWingo();
-                    localStorage.removeItem('enigma_current_key');
-                    currentKey = null;
-                    showToast('KEY EXPIRED', 'error');
+        function startMonitor() {
+            if (monitor) clearInterval(monitor);
+            monitor = setInterval(() => {
+                if (session && new Date() > new Date(session.expires)) {
+                    lockPortal();
+                    localStorage.removeItem('enigma_cipher_session');
+                    session = null;
+                    showToast('SESSION EXPIRED', 'error');
                 }
-            }, 60000); // Check every minute
+            }, 60000);
         }
 
-        function validateKey() {
+        // ✅ Step 2: Updated authenticate() function with Firestore
+        async function authenticate() {
             const input = document.getElementById('keyInput').value.trim().toUpperCase();
-            const btn = document.getElementById('verifyBtn');
+            const btn = document.getElementById('authBtn');
             
             if (input.length < 14) {
-                showStatus('ENTER COMPLETE KEY', 'error');
+                showStatus('INVALID SEQUENCE', 'error');
                 return;
             }
 
-            btn.innerHTML = '<span class="loader"></span>';
-            
-            setTimeout(() => {
-                const keyData = keys.find(k => k.key === input);
-                btn.innerHTML = 'VERIFY ACCESS';
+            btn.innerHTML = '<span class="cipher-loader"></span>VERIFYING';
+            btn.disabled = true;
+
+            try {
+                // Query Firestore for keys
+                const snapshot = await getDocs(collection(window.db, "keys"));
+                const keys = snapshot.docs.map(doc => doc.data());
                 
-                if (!keyData) {
-                    showStatus('INVALID KEY', 'error');
+                const found = keys.find(k => k.key === input);
+
+                if (!found) {
+                    showStatus('SEQUENCE NOT RECOGNIZED', 'error');
+                    btn.innerHTML = 'Initialize Cipher';
+                    btn.disabled = false;
                     return;
                 }
-                
-                const now = new Date();
-                const expiry = new Date(keyData.expires);
-                
-                if (now > expiry) {
-                    showStatus('KEY EXPIRED', 'error');
+
+                if (new Date() > new Date(found.expires)) {
+                    showStatus('SEQUENCE EXPIRED', 'error');
+                    btn.innerHTML = 'Initialize Cipher';
+                    btn.disabled = false;
                     return;
                 }
+
+                // Valid key - activate session
+                const days = Math.ceil((new Date(found.expires) - new Date()) / 86400000);
                 
-                const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+                localStorage.setItem('enigma_cipher_session', JSON.stringify(found));
+                session = found;
                 
-                // Save to localStorage for persistence
-                localStorage.setItem('enigma_current_key', JSON.stringify(keyData));
-                currentKey = keyData;
+                document.getElementById('sessStatus').textContent = 'ACTIVE';
+                document.getElementById('sessExpiry').textContent = new Date(found.expires).toLocaleDateString();
+                document.getElementById('sessRemain').textContent = days + ' DAYS';
+                document.getElementById('sessionInfo').classList.add('show');
+                showStatus('AUTHENTICATION SUCCESSFUL', 'success');
                 
-                showStatus('ACCESS GRANTED', 'success');
-                document.getElementById('infoStatus').textContent = 'ACTIVE';
-                document.getElementById('infoExpiry').textContent = expiry.toLocaleDateString();
-                document.getElementById('infoDays').textContent = daysLeft + ' DAYS';
-                document.getElementById('keyInfo').classList.add('show');
+                unlockPortal();
+                startMonitor();
                 
-                unlockWingo();
-                startKeyMonitor();
-            }, 800);
+            } catch (error) {
+                console.error("Firebase error:", error);
+                showStatus('CONNECTION ERROR', 'error');
+            } finally {
+                btn.innerHTML = 'Initialize Cipher';
+                btn.disabled = false;
+            }
         }
 
-        function unlockWingo() {
-            const btn = document.getElementById('wingoBtn');
-            btn.classList.remove('locked');
-            btn.classList.add('unlocked');
-            btn.innerHTML = 'ENTER WINGO 1 MIN →';
-        }
-
-        function lockWingo() {
-            const btn = document.getElementById('wingoBtn');
-            btn.classList.remove('unlocked');
-            btn.classList.add('locked');
-            btn.innerHTML = '🔒 WINGO 1 MIN';
-        }
-
-        function showStatus(msg, type) {
+        function showStatus(m, t) {
             const s = document.getElementById('keyStatus');
-            s.textContent = msg;
-            s.className = 'key-status ' + type + ' show';
+            s.textContent = m;
+            s.className = 'key-status show ' + (t === 'success' ? 'valid' : 'invalid');
         }
 
-        function enterPrediction() {
-            if (!currentKey) return;
-            document.getElementById('homePage').style.display = 'none';
-            document.getElementById('predPage').classList.add('active');
+        function unlockPortal() {
+            const b = document.getElementById('portalBtn');
+            b.classList.remove('locked');
+            b.classList.add('unlocked');
+            b.innerHTML = '<span class="portal-indicator"></span><span>Access Neural Core</span>';
         }
 
-        // ==========================================
-        // PREDICTION ENGINE
-        // ==========================================
-        function analyzeTrend() {
+        function lockPortal() {
+            const b = document.getElementById('portalBtn');
+            b.classList.remove('unlocked');
+            b.classList.add('locked');
+            b.innerHTML = '<span class="portal-indicator"></span><span>Access Neural Core</span>';
+        }
+
+        function enterCipher() {
+            if (!session) return;
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('cipherFooter').style.display = 'none';
+            document.getElementById('predInterface').classList.add('active');
+        }
+
+        // Prediction Engine
+        function analyze() {
             if (history.length < 3) return randomPred();
             
-            const recent = history.slice(0, 5);
-            const colors = recent.map(h => h.actual.color);
+            const rec = history.slice(0, 5);
+            const cols = rec.map(h => h.color);
             
-            let pattern = 'random';
-            let confidence = 50;
+            let pat = 'random', conf = 50;
+            let str = 1, alt = true;
             
-            // Streak detection
-            let streak = 1;
-            for (let i = 1; i < colors.length; i++) {
-                if (colors[i] === colors[i-1]) streak++;
-                else break;
+            for (let i = 1; i < cols.length; i++) if (cols[i] === cols[i-1]) str++; else break;
+            for (let i = 2; i < cols.length; i++) if (cols[i] !== cols[i-2]) alt = false;
+            
+            if (str >= 3) { pat = str >= 4 ? 'reversal' : 'streak'; conf = 60 + str * 3; }
+            else if (alt && cols.length >= 4) { pat = 'alternating'; conf = 75; }
+            else {
+                const g = cols.filter(c => c === 'green').length;
+                const r = cols.filter(c => c === 'red').length;
+                if (Math.abs(g - r) >= 3) { pat = 'balance'; conf = 65; }
             }
             
-            // Alternating check
-            let alt = true;
-            for (let i = 2; i < colors.length; i++) {
-                if (colors[i] !== colors[i-2]) alt = false;
+            let col, num;
+            if (pat === 'alternating') col = cols[1];
+            else if (pat === 'streak') col = cols[0];
+            else if (pat === 'reversal') col = cols[0] === 'green' ? 'red' : 'green';
+            else if (pat === 'balance') col = cols.filter(c => c === 'green').length > cols.length/2 ? 'red' : 'green';
+            else col = Math.random() > 0.5 ? 'green' : 'red';
+            
+            if (Math.random() < 0.15) { col = 'violet'; num = Math.random() > 0.5 ? 0 : 5; }
+            else {
+                const pool = col === 'green' ? [1,3,7,9] : col === 'red' ? [2,4,6,8] : [0,5];
+                num = pool[Math.floor(Math.random() * pool.length)];
             }
             
-            if (streak >= 3) {
-                pattern = streak >= 4 ? 'reversal' : 'streak';
-                confidence = 60 + (streak * 3);
-            } else if (alt && colors.length >= 4) {
-                pattern = 'alternating';
-                confidence = 75;
-            } else {
-                const g = colors.filter(c => c === 'green').length;
-                const r = colors.filter(c => c === 'red').length;
-                if (Math.abs(g - r) >= 3) {
-                    pattern = 'balance';
-                    confidence = 65;
-                }
-            }
-            
-            let predColor, predNum;
-            
-            if (pattern === 'alternating') predColor = colors[1];
-            else if (pattern === 'streak') predColor = colors[0];
-            else if (pattern === 'reversal') predColor = colors[0] === 'green' ? 'red' : 'green';
-            else if (pattern === 'balance') {
-                const g = colors.filter(c => c === 'green').length;
-                predColor = g > colors.length/2 ? 'red' : 'green';
-            } else predColor = Math.random() > 0.5 ? 'green' : 'red';
-            
-            if (Math.random() < 0.15) {
-                predColor = 'violet';
-                predNum = Math.random() > 0.5 ? 0 : 5;
-            } else {
-                const pool = predColor === 'green' ? [1,3,7,9] : predColor === 'red' ? [2,4,6,8] : [0,5];
-                predNum = pool[Math.floor(Math.random() * pool.length)];
-            }
-            
-            return {
-                number: predNum,
-                color: predColor,
-                size: predNum >= 5 ? 'BIG' : 'SMALL',
-                pattern,
-                confidence: Math.min(confidence, 92)
-            };
+            return { num, col, size: num >= 5 ? 'BIG' : 'SMALL', pat, conf: Math.min(conf, 92) };
         }
 
         function randomPred() {
-            const num = Math.floor(Math.random() * 10);
-            let color;
-            if (num === 0 || num === 5) color = Math.random() > 0.5 ? 'violet' : (num === 0 ? 'red' : 'green');
-            else if ([1,3,7,9].includes(num)) color = 'green';
-            else color = 'red';
-            
-            return {
-                number: num,
-                color,
-                size: num >= 5 ? 'BIG' : 'SMALL',
-                pattern: 'random',
-                confidence: 50
-            };
+            const n = Math.floor(Math.random() * 10);
+            const c = [1,3,7,9].includes(n) ? 'green' : [2,4,6,8].includes(n) ? 'red' : Math.random() > 0.5 ? 'violet' : (n === 0 ? 'red' : 'green');
+            return { num: n, col: c, size: n >= 5 ? 'BIG' : 'SMALL', pat: 'random', conf: 50 };
         }
 
-        function startCountdown() {
-            updatePrediction();
-            setInterval(updatePrediction, 100);
+        function startClock() {
+            tick();
+            setInterval(tick, 100);
         }
 
-        function updatePrediction() {
+        function tick() {
             const now = new Date();
-            const seconds = 59 - now.getSeconds();
+            const sec = 59 - now.getSeconds();
             const ms = Math.floor((999 - now.getMilliseconds()) / 10);
-            document.getElementById('countdown').textContent = 
-                `${String(seconds).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+            document.getElementById('timerVal').textContent = `${String(sec).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
             
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2,'0');
-            const date = String(now.getDate()).padStart(2,'0');
-            const hour = String(now.getHours()).padStart(2,'0');
-            const minute = now.getMinutes();
-            const period = `${year}${month}${date}${hour}${String(minute).padStart(2,'0')}`;
+            const per = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+            document.getElementById('periodVal').textContent = per;
             
-            document.getElementById('periodNum').textContent = period;
-            
-            if (minute !== lastMinute) {
-                lastMinute = minute;
-                const pred = analyzeTrend();
+            if (per !== lastPeriod) {
+                if (lastPeriod && currentPred) {
+                    const act = Math.random() * 100 < currentPred.conf ? currentPred : randomPred();
+                    addLog(lastPeriod, act);
+                }
                 
-                // Update display
-                document.getElementById('predNumber').textContent = pred.number;
+                lastPeriod = per;
+                currentPred = analyze();
                 
-                const c = COLORS[pred.color];
-                const colorEl = document.getElementById('predColor');
-                colorEl.style.background = c.bg;
-                colorEl.style.color = c.bg;
-                colorEl.style.boxShadow = `0 0 40px ${c.bg}`;
+                document.getElementById('rotorNum').textContent = currentPred.num;
                 
-                document.getElementById('predSize').textContent = pred.size;
+                const c = COLOR_MAP[currentPred.col];
+                const el = document.getElementById('rotorColor');
+                el.style.background = c.bg;
+                el.style.color = c.bg;
                 
-                // AI text
-                const patterns = {
-                    alternating: 'Alternating sequence detected. Neural network predicts continuation pattern.',
-                    streak: `Consecutive ${pred.color.toUpperCase()} pattern identified. Statistical model suggests trend persistence.`,
-                    reversal: `Extended streak analyzed. AI indicates high probability of pattern reversal.`,
-                    balance: `Color distribution imbalance detected. Correction algorithm activated.`,
-                    random: `Multi-variable analysis complete. Probabilistic model generated.`
+                document.getElementById('rotorSize').textContent = currentPred.size;
+                
+                const pats = {
+                    alternating: 'Alternating sequence detected in rotor positions',
+                    streak: 'Consecutive pattern identified in cipher wheel',
+                    reversal: 'Trend reversal anticipated based on entropy',
+                    balance: 'Equilibrium correction algorithm activated',
+                    random: 'Stochastic distribution model engaged'
                 };
+                document.getElementById('analysisText').innerHTML = `${pats[currentPred.pat]}. Neural network predicts <em>${currentPred.col.toUpperCase()}</em> state.`;
                 
-                document.getElementById('aiText').innerHTML = 
-                    `${patterns[pred.pattern]} <span class="ai-highlight">${pred.color.toUpperCase()}</span> selected with ${pred.confidence}% confidence metric.`;
+                document.getElementById('confVal').textContent = currentPred.conf + '%';
+                document.getElementById('confBar').style.width = currentPred.conf + '%';
                 
-                addToHistory(period, pred);
-                updateTrends();
+                updateMatrix();
             }
         }
 
-        function addToHistory(period, pred) {
-            const accurate = Math.random() * 100 < pred.confidence;
-            const actual = accurate ? pred : randomPred();
-            
-            history.unshift({
-                period,
-                predicted: pred,
-                actual: actual
-            });
-            
+        function addLog(per, act) {
+            history.unshift({ period: per, num: act.num, col: act.col, size: act.size });
             if (history.length > 20) history = history.slice(0, 20);
-            renderHistory();
+            renderLog();
         }
 
-        function renderHistory() {
-            const container = document.getElementById('historyBody');
-            container.innerHTML = history.map(h => {
-                const c = COLORS[h.actual.color];
+        function renderLog() {
+            const box = document.getElementById('logEntries');
+            if (history.length === 0) {
+                box.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 2rem; font-size: 11px; letter-spacing: 2px;">NO TRANSMISSIONS RECORDED</div>';
+                return;
+            }
+            
+            box.innerHTML = history.map((h, i) => {
+                if (i === 0) return '';
+                const c = COLOR_MAP[h.col];
                 return `
-                <div class="history-item">
-                    <span class="hist-period">${h.period.slice(-6)}</span>
-                    <span class="hist-number" style="color: ${c.bg}">${h.actual.number}</span>
-                    <span class="hist-color" style="background: ${c.bg}; box-shadow: 0 0 15px ${c.bg}"></span>
-                    <span class="hist-size">${h.actual.size}</span>
+                <div class="log-entry">
+                    <span class="log-period">${h.period.slice(-6)}</span>
+                    <span class="log-num" style="color: ${c.bg}">${h.num}</span>
+                    <span class="log-color" style="background: ${c.bg}; box-shadow: 0 0 8px ${c.bg}"></span>
+                    <span class="log-size">${h.size}</span>
                 </div>
                 `;
             }).join('');
         }
 
-        function updateTrends() {
+        function updateMatrix() {
             const freq = new Array(10).fill(0);
-            history.forEach(h => freq[h.actual.number]++);
+            history.forEach(h => freq[h.num]++);
             const sorted = freq.map((f, i) => ({n: i, f})).sort((a, b) => b.f - a.f);
             
-            document.querySelectorAll('.trend-num').forEach(el => {
-                const num = parseInt(el.dataset.num);
-                const count = freq[num];
-                const rank = sorted.findIndex(x => x.n === num);
-                
+            document.querySelectorAll('.matrix-cell').forEach(el => {
+                const n = parseInt(el.dataset.n);
+                const rank = sorted.findIndex(x => x.n === n);
                 el.classList.remove('hot', 'cold');
-                if (rank < 3 && count > 0) el.classList.add('hot');
+                if (rank < 3 && freq[n] > 0) el.classList.add('hot');
                 else if (rank > 6) el.classList.add('cold');
             });
         }
 
-        function initMockHistory() {
-            const patterns = ['green', 'red', 'green', 'red', 'green', 'green', 'red', 'violet', 'red', 'green'];
+        function initHistory() {
+            const pats = ['green', 'red', 'green', 'red', 'green', 'green', 'red', 'violet'];
             const now = new Date();
-            for (let i = 10; i > 0; i--) {
+            for (let i = 8; i > 0; i--) {
                 const t = new Date(now.getTime() - i * 60000);
-                const p = `${t.getFullYear()}${String(t.getMonth()+1).padStart(2,'0')}${String(t.getDate()).padStart(2,'0')}${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`;
-                const color = patterns[10-i];
-                const nums = color === 'green' ? [1,3,7,9] : color === 'red' ? [2,4,6,8] : [0,5];
+                const per = `${t.getFullYear()}${String(t.getMonth()+1).padStart(2,'0')}${String(t.getDate()).padStart(2,'0')}${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`;
+                const col = pats[8-i];
+                const nums = col === 'green' ? [1,3,7,9] : col === 'red' ? [2,4,6,8] : [0,5];
                 const num = nums[Math.floor(Math.random() * nums.length)];
-                
-                history.push({
-                    period: p,
-                    predicted: { number: num, color },
-                    actual: { number: num, color, size: num >= 5 ? 'BIG' : 'SMALL' }
-                });
+                history.push({ period: per, num, col, size: num >= 5 ? 'BIG' : 'SMALL' });
             }
-            renderHistory();
-            updateTrends();
+            renderLog();
+            updateMatrix();
         }
 
-        // ==========================================
-        // ADMIN SYSTEM
-        // ==========================================
-        function showAdminLogin() {
-            document.getElementById('loginModal').classList.add('active');
+        function showToast(m, t) {
+            const el = document.getElementById('cipherToast');
+            el.textContent = m;
+            el.className = 'cipher-toast show ' + t;
+            setTimeout(() => el.classList.remove('show'), 3000);
         }
-
-        function hideAdminLogin() {
-            document.getElementById('loginModal').classList.remove('active');
-        }
-
-        function adminLogin() {
-            const u = document.getElementById('adminUser').value;
-            const p = document.getElementById('adminPass').value;
-            
-            // Decrypt and verify
-            if (u === decryptCredential(ENCRYPTED_ID) && p === decryptCredential(ENCRYPTED_PASS)) {
-                hideAdminLogin();
-                document.getElementById('homePage').style.display = 'none';
-                document.getElementById('predPage').classList.remove('active');
-                document.getElementById('adminPage').classList.add('active');
-                updateAdminStats();
-                renderKeyList();
-            } else {
-                showToast('ACCESS DENIED', 'error');
-            }
-        }
-
-        function generateKey() {
-            const btn = document.getElementById('genBtn');
-            const days = parseInt(document.getElementById('validitySelect').value);
-            
-            btn.innerHTML = '<span class="loader"></span> PROCESSING';
-            
-            setTimeout(() => {
-                const key = createKey();
-                const expiry = new Date();
-                expiry.setDate(expiry.getDate() + days);
-                
-                keys.push({
-                    key: key,
-                    created: new Date().toISOString(),
-                    expires: expiry.toISOString(),
-                    days: days
-                });
-                
-                localStorage.setItem('enigma_keys', JSON.stringify(keys));
-                
-                btn.innerHTML = 'GENERATE KEY';
-                showToast('KEY GENERATED', 'success');
-                updateAdminStats();
-                renderKeyList();
-            }, 1000);
-        }
-
-        function createKey() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let key = '';
-            for (let i = 0; i < 12; i++) {
-                if (i > 0 && i % 4 === 0) key += '-';
-                key += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return key;
-        }
-
-        function updateAdminStats() {
-            const now = new Date();
-            const active = keys.filter(k => new Date(k.expires) > now).length;
-            document.getElementById('totalKeys').textContent = keys.length;
-            document.getElementById('activeKeys').textContent = active;
-            document.getElementById('expiredKeys').textContent = keys.length - active;
-        }
-
-        function renderKeyList() {
-            const container = document.getElementById('keyList');
-            const now = new Date();
-            
-            if (keys.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 2rem; font-family: Orbitron;">NO KEYS GENERATED</div>';
-                return;
-            }
-            
-            container.innerHTML = keys.slice().reverse().map(k => {
-                const isExp = new Date(k.expires) < now;
-                return `
-                <div class="key-entry">
-                    <div>
-                        <div class="key-text">${k.key}</div>
-                        <div class="key-meta">${isExp ? 'EXPIRED' : 'ACTIVE'} • ${k.days}D • ${new Date(k.expires).toLocaleDateString()}</div>
-                    </div>
-                    <div class="key-acts">
-                        <button class="act-btn copy" onclick="copyKey('${k.key}')">📋</button>
-                        <button class="act-btn del" onclick="deleteKey('${k.key}')">🗑️</button>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function copyKey(k) {
-            navigator.clipboard.writeText(k);
-            showToast('COPIED TO CLIPBOARD', 'success');
-        }
-
-        function deleteKey(k) {
-            keys = keys.filter(x => x.key !== k);
-            localStorage.setItem('enigma_keys', JSON.stringify(keys));
-            updateAdminStats();
-            renderKeyList();
-            showToast('KEY DELETED', 'success');
-        }
-
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast ' + type + ' show';
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
-
-        // Modal close on outside click
-        document.getElementById('loginModal').addEventListener('click', (e) => {
-            if (e.target.id === 'loginModal') hideAdminLogin();
-        });
     </script>
 </body>
 </html>
