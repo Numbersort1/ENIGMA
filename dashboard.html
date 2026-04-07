@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΞИIGMA - Neural Cipher System | Dashboard</title>
+    <title>ΞИIGMA - Neural Cipher System | Command Center</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
         * {
             margin: 0;
@@ -14,24 +14,30 @@
         }
 
         :root {
-            --void: #030303;
-            --depth: #080808;
-            --surface: #0f0f0f;
-            --elevated: #161616;
-            --border-subtle: #1c1c1c;
-            --border: #252525;
-            --border-light: #333;
-            --text-primary: #e8e8e8;
-            --text-secondary: #707070;
-            --text-tertiary: #505050;
-            --cipher-gold: #c9a227;
-            --cipher-silver: #a0a0a0;
-            --enigma-cyan: #2dd4bf;
-            --enigma-amber: #f59e0b;
-            --enigma-crimson: #dc2626;
-            --enigma-violet: #8b5cf6;
-            --win: #22c55e;
-            --loss: #ef4444;
+            --void: #020202;
+            --depth: #050505;
+            --surface: #0a0a0a;
+            --elevated: #111111;
+            --panel: #161616;
+            --border-subtle: #1a1a1a;
+            --border: #2a2a2a;
+            --border-light: #3a3a3a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #888888;
+            --text-tertiary: #555555;
+            --cipher-gold: #d4af37;
+            --cipher-silver: #c0c0c0;
+            --enigma-cyan: #00f0ff;
+            --enigma-amber: #ff9500;
+            --enigma-crimson: #ff0040;
+            --enigma-violet: #bf00ff;
+            --enigma-emerald: #00ff88;
+            --win: #00ff88;
+            --loss: #ff0040;
+            --neutral: #bf00ff;
+            --hot: #ff0040;
+            --warm: #ff9500;
+            --cold: #00f0ff;
         }
 
         html, body {
@@ -44,42 +50,56 @@
             overflow-x: hidden;
         }
 
+        /* Animated Background */
         .cipher-bg {
             position: fixed;
             inset: 0;
-            z-index: -1;
-            opacity: 0.4;
-            background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px),
-                repeating-linear-gradient(90deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px);
-            animation: cipherShift 20s linear infinite;
+            z-index: -2;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(191, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
         }
 
-        @keyframes cipherShift {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(35px, 35px); }
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.3;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
         }
 
         .noise-overlay {
             position: fixed;
             inset: 0;
             z-index: -1;
-            opacity: 0.025;
+            opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
             pointer-events: none;
         }
 
+        /* Header */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 60px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2rem;
-            background: linear-gradient(180deg, var(--void) 0%, transparent 100%);
+            padding: 0 2.5rem;
+            background: linear-gradient(180deg, rgba(2,2,2,0.95) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
             z-index: 100;
             border-bottom: 1px solid var(--border-subtle);
         }
@@ -87,76 +107,140 @@
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
         .logo-symbol {
-            width: 32px;
-            height: 32px;
-            border: 1px solid var(--cipher-gold);
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--cipher-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+            box-shadow: 0 0 20px rgba(212,175,55,0.3);
         }
 
         .logo-symbol::before {
             content: 'Ξ';
             font-family: 'Cinzel', serif;
-            font-size: 16px;
+            font-size: 20px;
             color: var(--cipher-gold);
-            font-weight: 700;
+            font-weight: 800;
         }
 
-        .session-badge {
+        .logo-symbol::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border: 1px solid var(--cipher-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulseRing 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.1; }
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 6px;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--cipher-gold) 0%, var(--enigma-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-sub {
             font-family: 'Space Mono', monospace;
             font-size: 9px;
+            letter-spacing: 4px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .session-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .validity-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
             color: var(--enigma-cyan);
             letter-spacing: 2px;
-            padding: 6px 12px;
-            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border: 1px solid var(--enigma-cyan);
             border-radius: 4px;
-            background: rgba(45, 212, 191, 0.05);
+            background: rgba(0, 240, 255, 0.05);
+            position: relative;
+            overflow: hidden;
         }
 
-        .logout-btn {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            color: var(--text-secondary);
-            background: transparent;
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 2px;
+        .validity-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,240,255,0.2), transparent);
+            animation: shimmer 3s infinite;
         }
 
-        .logout-btn:hover {
-            border-color: var(--enigma-crimson);
-            color: var(--enigma-crimson);
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
+        /* Main Container */
         .main {
             min-height: 100vh;
-            padding-top: 80px;
+            padding-top: 90px;
             padding-bottom: 2rem;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding-left: 2rem;
-            padding-right: 2rem;
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
         }
 
         .dashboard-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .dashboard-header::before {
+            content: '◆';
+            position: absolute;
+            left: 50%;
+            top: -20px;
+            transform: translateX(-50%);
+            color: var(--cipher-gold);
+            font-size: 12px;
+            opacity: 0.5;
         }
 
         .dashboard-title {
-            font-family: 'Cinzel', serif;
-            font-size: 14px;
-            letter-spacing: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 8px;
             color: var(--text-secondary);
             margin-bottom: 0.5rem;
             text-transform: uppercase;
@@ -166,51 +250,84 @@
             font-family: 'Space Mono', monospace;
             font-size: 10px;
             color: var(--text-tertiary);
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
         .connection-status {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin-top: 1rem;
             font-family: 'Space Mono', monospace;
             font-size: 9px;
             letter-spacing: 2px;
             color: var(--text-tertiary);
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
         }
 
         .status-dot {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--text-tertiary);
             transition: all 0.3s;
+            position: relative;
+        }
+
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            opacity: 0;
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
 
         .status-dot.connected {
             background: var(--win);
-            box-shadow: 0 0 8px var(--win);
+            box-shadow: 0 0 10px var(--win);
         }
 
         .status-dot.error {
-            background: var(--enigma-crimson);
-            box-shadow: 0 0 8px var(--enigma-crimson);
+            background: var(--loss);
+            box-shadow: 0 0 10px var(--loss);
         }
 
+        /* Grid Layout */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
             margin-bottom: 2rem;
         }
 
+        @media (max-width: 968px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cipher Cards */
         .cipher-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .cipher-card:hover {
+            border-color: var(--border-light);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
         .cipher-card::before {
@@ -219,291 +336,632 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cipher-gold), var(--enigma-cyan), transparent);
+            opacity: 0.5;
         }
 
         .card-header {
-            padding: 1.25rem;
+            padding: 1.5rem;
             border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.05), transparent);
         }
 
         .card-title {
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
             letter-spacing: 3px;
             color: var(--text-secondary);
             text-transform: uppercase;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .card-icon {
-            width: 24px;
-            height: 24px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 14px;
+            background: var(--elevated);
+        }
+
+        .card-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
         }
 
         .card-body {
-            padding: 1.5rem;
+            padding: 2rem;
         }
 
-        .prediction-display {
+        /* Prediction Display */
+        .prediction-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .prediction-box {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
             text-align: center;
-            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .prediction-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            transition: all 0.3s;
+        }
+
+        .prediction-box.big::before {
+            background: linear-gradient(90deg, var(--win), var(--enigma-emerald));
+            box-shadow: 0 0 20px var(--win);
+        }
+
+        .prediction-box.small::before {
+            background: linear-gradient(90deg, var(--loss), var(--enigma-crimson));
+            box-shadow: 0 0 20px var(--loss);
+        }
+
+        .prediction-box:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-light);
         }
 
         .prediction-label {
             font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 4px;
+            font-size: 10px;
+            letter-spacing: 3px;
             color: var(--text-tertiary);
             margin-bottom: 1rem;
             text-transform: uppercase;
         }
 
         .prediction-value {
-            font-family: 'Cinzel', serif;
-            font-size: 48px;
-            font-weight: 700;
-            letter-spacing: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: 4px;
             transition: all 0.3s;
         }
 
         .prediction-value.big {
             color: var(--win);
-            text-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
         }
 
         .prediction-value.small {
             color: var(--loss);
-            text-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+            text-shadow: 0 0 30px rgba(255, 0, 64, 0.4);
         }
 
-        .prediction-meta {
-            margin-top: 1.5rem;
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
+        .prediction-confidence {
             font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
+            font-size: 10px;
             color: var(--text-secondary);
+            margin-top: 0.5rem;
         }
 
-        .meta-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .meta-label {
-            color: var(--text-tertiary);
-        }
-
-        .meta-value {
-            color: var(--enigma-cyan);
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-        }
-
-        .result-cell {
-            background: var(--depth);
+        /* Period Info */
+        .period-info {
+            background: var(--panel);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 1rem;
             text-align: center;
-            transition: all 0.3s;
+            margin-top: 1rem;
         }
 
-        .result-cell:hover {
-            border-color: var(--border-light);
-            transform: translateY(-2px);
-        }
-
-        .result-number {
-            font-family: 'Space Mono', monospace;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-type {
+        .period-label {
             font-family: 'Space Mono', monospace;
             font-size: 9px;
             letter-spacing: 2px;
-            padding: 4px 8px;
-            border-radius: 4px;
+            color: var(--text-tertiary);
+            margin-bottom: 0.5rem;
+        }
+
+        .period-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--enigma-cyan);
+            letter-spacing: 2px;
+        }
+
+        /* Hot Numbers */
+        .hot-numbers {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .hot-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hot-title::before {
+            content: '🔥';
+            font-size: 12px;
+        }
+
+        .hot-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hot-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hot-number.tier-1 {
+            background: linear-gradient(135deg, rgba(255,0,64,0.2), rgba(255,0,64,0.05));
+            border: 1px solid var(--hot);
+            color: var(--hot);
+            box-shadow: 0 0 15px rgba(255,0,64,0.3);
+        }
+
+        .hot-number.tier-2 {
+            background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05));
+            border: 1px solid var(--warm);
+            color: var(--warm);
+            box-shadow: 0 0 10px rgba(255,149,0,0.2);
+        }
+
+        .hot-number.tier-3 {
+            background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,240,255,0.05));
+            border: 1px solid var(--cold);
+            color: var(--cold);
+        }
+
+        /* Latest Results - Minimal */
+        .results-minimal {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .result-minimal {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            position: relative;
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .result-minimal:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .result-minimal.big {
+            color: var(--win);
+            border-color: var(--win);
+            box-shadow: 0 0 20px rgba(0,255,136,0.2);
+        }
+
+        .result-minimal.small {
+            color: var(--loss);
+            border-color: var(--loss);
+            box-shadow: 0 0 20px rgba(255,0,64,0.2);
+        }
+
+        .result-minimal::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 14px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--cipher-gold), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .result-minimal:hover::after {
+            opacity: 1;
+        }
+
+        /* Gap Section */
+        .gap-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .gap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .gap-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--text-secondary);
             text-transform: uppercase;
         }
 
-        .result-type.big {
-            background: rgba(34, 197, 94, 0.1);
+        .gap-accuracy {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--enigma-cyan);
+        }
+
+        .gap-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .gap-item {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .gap-item:hover {
+            border-color: var(--border-light);
+            transform: translateY(-3px);
+        }
+
+        .gap-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .gap-item.big::before {
+            background: linear-gradient(90deg, var(--win), var(--enigma-emerald));
+        }
+
+        .gap-item.small::before {
+            background: linear-gradient(90deg, var(--loss), var(--enigma-crimson));
+        }
+
+        .gap-period {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--text-tertiary);
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .gap-prediction {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .gap-prediction.big {
             color: var(--win);
         }
 
-        .result-type.small {
-            background: rgba(239, 68, 68, 0.1);
+        .gap-prediction.small {
             color: var(--loss);
+        }
+
+        .gap-confidence {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--text-secondary);
+        }
+
+        /* History Table */
+        .history-card {
+            grid-column: 1 / -1;
+        }
+
+        .history-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .history-filter {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .history-filter:hover, .history-filter.active {
+            border-color: var(--cipher-gold);
+            color: var(--cipher-gold);
+        }
+
+        .history-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
 
         .history-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 12px;
         }
 
         .history-table th {
-            font-family: 'Space Mono', monospace;
-            font-size: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
             letter-spacing: 2px;
-            color: var(--text-tertiary);
+            color: var(--text-secondary);
             text-transform: uppercase;
-            padding: 1rem;
+            padding: 1.25rem 1rem;
             text-align: left;
+            background: var(--elevated);
             border-bottom: 1px solid var(--border);
         }
 
         .history-table td {
             padding: 1rem;
             font-family: 'Space Mono', monospace;
-            font-size: 11px;
             border-bottom: 1px solid var(--border-subtle);
+            transition: all 0.3s;
         }
 
-        .history-table tr:hover {
+        .history-table tr:hover td {
             background: rgba(255, 255, 255, 0.02);
         }
 
-        .issue-number {
-            color: var(--text-secondary);
-            font-size: 10px;
+        .history-table tr.new-prediction td {
+            animation: highlightNew 2s ease-out;
         }
 
-        .predicted-type, .actual-result {
+        @keyframes highlightNew {
+            0% { background: rgba(212, 175, 55, 0.2); }
+            100% { background: transparent; }
+        }
+
+        .issue-cell {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .prediction-cell {
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .predicted-type.big, .actual-result.big {
+        .prediction-cell.big {
             color: var(--win);
         }
 
-        .predicted-type.small, .actual-result.small {
+        .prediction-cell.small {
             color: var(--loss);
         }
 
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 9px;
-            letter-spacing: 2px;
+        .prediction-cell.pending {
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        .actual-cell {
+            font-weight: 700;
             text-transform: uppercase;
         }
 
-        .status-badge.win {
-            background: rgba(34, 197, 94, 0.1);
+        .actual-cell.big {
             color: var(--win);
-            border: 1px solid rgba(34, 197, 94, 0.2);
         }
 
-        .status-badge.loss {
-            background: rgba(239, 68, 68, 0.1);
+        .actual-cell.small {
             color: var(--loss);
-            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        .status-badge::before {
-            content: '';
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
+        .number-cell {
+            color: var(--enigma-cyan);
+            font-weight: 700;
         }
 
-        .status-badge.win::before {
-            background: var(--win);
+        .outcome-cell {
+            text-align: center;
         }
 
-        .status-badge.loss::before {
-            background: var(--loss);
+        .outcome-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            min-width: 70px;
         }
 
-        .gap-section {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
+        .outcome-badge.win {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--win);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .outcome-badge.loss {
+            background: rgba(255, 0, 64, 0.1);
+            color: var(--loss);
+            border: 1px solid rgba(255, 0, 64, 0.3);
+        }
+
+        .outcome-badge.pending {
+            background: rgba(191, 0, 255, 0.05);
+            color: var(--neutral);
+            border: 1px solid rgba(191, 0, 255, 0.2);
+        }
+
+        .outcome-badge.na {
+            background: transparent;
+            color: var(--text-tertiary);
+            border: 1px solid var(--border);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
             border-top: 1px solid var(--border-subtle);
         }
 
-        .gap-title {
+        .stat-box {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+
+        .stat-box.win::before {
+            background: var(--win);
+        }
+
+        .stat-box.loss::before {
+            background: var(--loss);
+        }
+
+        .stat-box.accuracy::before {
+            background: var(--enigma-cyan);
+        }
+
+        .stat-box.total::before {
+            background: var(--cipher-gold);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value.win {
+            color: var(--win);
+        }
+
+        .stat-value.loss {
+            color: var(--loss);
+        }
+
+        .stat-value.accuracy {
+            color: var(--enigma-cyan);
+        }
+
+        .stat-value.total {
+            color: var(--cipher-gold);
+        }
+
+        .stat-label {
             font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
+            font-size: 10px;
             color: var(--text-tertiary);
-            margin-bottom: 1rem;
+            letter-spacing: 2px;
             text-transform: uppercase;
         }
 
-        .gap-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 10px;
-        }
-
-        .gap-item {
-            background: var(--depth);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.75rem;
-            text-align: center;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-        }
-
-        .gap-issue {
-            color: var(--text-tertiary);
-            font-size: 8px;
-            margin-bottom: 4px;
-        }
-
-        .gap-pred {
-            color: var(--enigma-amber);
-            font-weight: 700;
-            font-size: 12px;
-        }
-
-        .gap-pred.big { color: var(--win); }
-        .gap-pred.small { color: var(--loss); }
-
+        /* Loading & Error States */
         .loading-state {
             text-align: center;
-            padding: 3rem;
+            padding: 4rem;
             color: var(--text-tertiary);
         }
 
         .cipher-loader {
-            width: 24px;
-            height: 24px;
-            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
             border-top-color: var(--cipher-gold);
+            border-right-color: var(--enigma-cyan);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+            margin: 0 auto 1.5rem;
         }
 
         @keyframes spin {
@@ -512,66 +970,33 @@
 
         .error-state {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
             color: var(--enigma-crimson);
             font-family: 'Space Mono', monospace;
-            font-size: 10px;
+            font-size: 12px;
             letter-spacing: 2px;
         }
 
-        .retry-btn {
-            margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 1px solid var(--enigma-crimson);
-            color: var(--enigma-crimson);
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .retry-btn:hover {
-            background: rgba(220, 38, 38, 0.1);
-        }
-
-        .cors-warning {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--enigma-amber);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--enigma-amber);
-            text-align: center;
-            display: none;
-        }
-
-        .cors-warning.show {
-            display: block;
-        }
-
+        /* Toast Notifications */
         .cipher-toast {
             position: fixed;
-            bottom: 1.5rem;
+            bottom: 2rem;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: var(--surface);
             border: 1px solid var(--border);
-            border-left: 2px solid;
-            padding: 0.875rem 1.5rem;
-            border-radius: 6px;
+            border-left: 3px solid;
+            padding: 1rem 2rem;
+            border-radius: 8px;
             font-family: 'Space Mono', monospace;
-            font-size: 10px;
+            font-size: 11px;
             letter-spacing: 2px;
             opacity: 0;
-            transition: all 0.4s;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 1000;
             max-width: 90%;
             text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
         .cipher-toast.show {
@@ -579,111 +1004,142 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        .cipher-toast.success { border-left-color: var(--enigma-cyan); color: var(--enigma-cyan); }
-        .cipher-toast.error { border-left-color: var(--enigma-crimson); color: var(--enigma-crimson); }
+        .cipher-toast.success { border-left-color: var(--win); color: var(--win); }
+        .cipher-toast.error { border-left-color: var(--loss); color: var(--loss); }
         .cipher-toast.warning { border-left-color: var(--enigma-amber); color: var(--enigma-amber); }
+        .cipher-toast.info { border-left-color: var(--enigma-cyan); color: var(--enigma-cyan); }
 
-        .stats-row {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-subtle);
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-family: 'Cinzel', serif;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .stat-value.win { color: var(--win); }
-        .stat-value.loss { color: var(--loss); }
-
-        .stat-label {
+        /* Algorithm Indicator */
+        .algo-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 1rem;
+            padding: 4px 12px;
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             font-family: 'Space Mono', monospace;
-            font-size: 8px;
+            font-size: 9px;
             color: var(--text-tertiary);
-            letter-spacing: 2px;
-            margin-top: 4px;
         }
 
+        .algo-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--enigma-cyan);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
+            .main {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
-            .results-grid {
-                grid-template-columns: repeat(3, 1fr);
+
+            .prediction-container {
+                grid-template-columns: 1fr;
             }
-            .history-table {
-                font-size: 10px;
+
+            .gap-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-            .history-table th,
-            .history-table td {
-                padding: 0.75rem 0.5rem;
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .results-minimal {
+                gap: 10px;
+            }
+
+            .result-minimal {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
             }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
     <div class="cipher-bg"></div>
+    <div class="grid-overlay"></div>
     <div class="noise-overlay"></div>
 
     <header class="header">
         <div class="logo-container">
             <div class="logo-symbol"></div>
-            <div>
-                <div style="font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 4px; color: var(--text-primary);">ΞИIGMA</div>
-                <div style="font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px; color: var(--text-secondary);">NEURAL CIPHER SYSTEM</div>
+            <div class="logo-text">
+                <div class="logo-title">ΞИIGMA</div>
+                <div class="logo-sub">NEURAL CIPHER SYSTEM</div>
             </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div class="session-badge" id="sessionBadge">SESSION ACTIVE</div>
-            <button class="logout-btn" onclick="logout()">TERMINATE</button>
+        <div class="session-info">
+            <div class="validity-badge" id="validityBadge">
+                VALIDITY: <span id="daysLeft">--</span> DAYS
+            </div>
         </div>
     </header>
 
     <main class="main">
         <div class="dashboard-header">
-            <h1 class="dashboard-title">Neural Prediction Grid</h1>
-            <p class="dashboard-subtitle">REAL-TIME CIPHER ANALYSIS // 1M TIMEFRAME</p>
+            <h1 class="dashboard-title">Neural Command Center</h1>
+            <p class="dashboard-subtitle">QUANTUM PREDICTION ENGINE // REAL-TIME ANALYTICS</p>
             <div class="connection-status">
                 <span class="status-dot" id="connStatus"></span>
-                <span id="connText">NEURAL LINK DISCONNECTED</span>
+                <span id="connText">INITIALIZING NEURAL LINK...</span>
+                <span class="algo-indicator">
+                    <span class="algo-dot"></span>
+                    <span id="algoName">PATTERN RECOGNITION v2.0</span>
+                </span>
             </div>
         </div>
 
-        <div class="cors-warning" id="corsWarning">
-            ⚠ CORS RESTRICTION DETECTED. Use a local server or disable web security for testing.
-        </div>
-
         <div class="dashboard-grid">
-            <!-- Prediction Card -->
+            <!-- Active Prediction Card -->
             <div class="cipher-card">
                 <div class="card-header">
                     <div class="card-title">
                         <div class="card-icon">◈</div>
                         Active Prediction
                     </div>
-                    <div style="font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-tertiary); letter-spacing: 2px;" id="predTimer">--:--</div>
+                    <div class="card-badge" id="predTimer">--:--:--</div>
                 </div>
                 <div class="card-body">
-                    <div class="prediction-display" id="predictionDisplay">
-                        <div class="cipher-loader"></div>
-                        <div style="color: var(--text-tertiary); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px;">INITIALIZING NEURAL LINK...</div>
-                    </div>
-                    <div class="prediction-meta" id="predictionMeta" style="display: none;">
-                        <div class="meta-item">
-                            <span class="meta-label">CONFIDENCE</span>
-                            <span class="meta-value" id="confidenceVal">--%</span>
+                    <div class="prediction-container">
+                        <div class="prediction-box big" id="bigBox">
+                            <div class="prediction-label">BIG PREDICTION</div>
+                            <div class="prediction-value big" id="bigValue">--</div>
+                            <div class="prediction-confidence" id="bigConf">Confidence: --%</div>
                         </div>
-                        <div class="meta-item">
-                            <span class="meta-label">ALGORITHM</span>
-                            <span class="meta-value">GAP FILL</span>
+                        <div class="prediction-box small" id="smallBox">
+                            <div class="prediction-label">SMALL PREDICTION</div>
+                            <div class="prediction-value small" id="smallValue">--</div>
+                            <div class="prediction-confidence" id="smallConf">Confidence: --%</div>
+                        </div>
+                    </div>
+
+                    <div class="period-info">
+                        <div class="period-label">TARGET PERIOD NUMBER</div>
+                        <div class="period-number" id="targetPeriod">--</div>
+                    </div>
+
+                    <div class="hot-numbers">
+                        <div class="hot-title">Quantum Hot Numbers</div>
+                        <div class="hot-grid" id="hotGrid">
+                            <!-- Hot numbers injected here -->
                         </div>
                     </div>
                 </div>
@@ -694,76 +1150,86 @@
                 <div class="card-header">
                     <div class="card-title">
                         <div class="card-icon">◉</div>
-                        Latest Results
+                        Live Results Stream
                     </div>
-                    <div style="font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-tertiary); letter-spacing: 2px;">LIVE FEED</div>
+                    <div class="card-badge">REAL-TIME</div>
                 </div>
                 <div class="card-body">
-                    <div class="results-grid" id="latestGrid">
-                        <div class="loading-state" style="grid-column: 1/-1;">
+                    <div class="results-minimal" id="latestResults">
+                        <div class="loading-state" style="width: 100%;">
                             <div class="cipher-loader"></div>
+                        </div>
+                    </div>
+
+                    <div class="gap-section">
+                        <div class="gap-header">
+                            <div class="gap-title">Gap Prediction Queue</div>
+                            <div class="gap-accuracy" id="gapAccuracy">Next 4 Periods</div>
+                        </div>
+                        <div class="gap-grid" id="gapGrid">
+                            <!-- Gap predictions injected here -->
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- History with Local Predictions -->
-        <div class="cipher-card" style="margin-bottom: 2rem;">
-            <div class="card-header">
-                <div class="card-title">
-                    <div class="card-icon">◆</div>
-                    Historical Cipher Data
-                </div>
-                <div style="font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-tertiary); letter-spacing: 2px;" id="historyCount">0 RECORDS</div>
-            </div>
-            <div class="card-body">
-                <div style="overflow-x: auto;">
-                    <table class="history-table" id="historyTable">
-                        <thead>
-                            <tr>
-                                <th>Issue Period</th>
-                                <th>ΞИIGMA Predicted</th>
-                                <th>Actual Result</th>
-                                <th>Number</th>
-                                <th>Outcome</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyBody">
-                            <tr>
-                                <td colspan="5" class="loading-state">
-                                    <div class="cipher-loader"></div>
-                                    <div style="margin-top: 1rem; color: var(--text-tertiary);">DECRYPTING HISTORICAL DATA...</div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Stats -->
-                <div class="stats-row" id="statsRow" style="display: none;">
-                    <div class="stat-item">
-                        <div class="stat-value win" id="winCount">0</div>
-                        <div class="stat-label">WINS</div>
+            <!-- Historical Data Card -->
+            <div class="cipher-card history-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">◆</div>
+                        Historical Cipher Data
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value loss" id="lossCount">0</div>
-                        <div class="stat-label">LOSSES</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="accuracyVal" style="color: var(--enigma-cyan);">0%</div>
-                        <div class="stat-label">ACCURACY</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="totalCount" style="color: var(--text-primary);">0</div>
-                        <div class="stat-label">TOTAL</div>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div class="history-controls">
+                            <button class="history-filter active" onclick="filterHistory('all')">ALL</button>
+                            <button class="history-filter" onclick="filterHistory('wins')">WINS</button>
+                            <button class="history-filter" onclick="filterHistory('losses')">LOSSES</button>
+                        </div>
+                        <div class="card-badge" id="historyCount">0 RECORDS</div>
                     </div>
                 </div>
-                
-                <!-- Gap Analysis -->
-                <div class="gap-section" id="gapSection" style="display: none;">
-                    <div class="gap-title">Gap Prediction Queue (Next 4 Periods)</div>
-                    <div class="gap-grid" id="gapGrid"></div>
+                <div class="card-body">
+                    <div class="history-table-container">
+                        <table class="history-table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>Period Number</th>
+                                    <th>ΞИIGMA Prediction</th>
+                                    <th>Actual Result</th>
+                                    <th>Number</th>
+                                    <th style="text-align: center;">Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody">
+                                <tr>
+                                    <td colspan="5" class="loading-state">
+                                        <div class="cipher-loader"></div>
+                                        <div style="margin-top: 1rem;">DECRYPTING HISTORICAL DATA...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="stats-bar">
+                        <div class="stat-box win">
+                            <div class="stat-value win" id="winCount">0</div>
+                            <div class="stat-label">Wins</div>
+                        </div>
+                        <div class="stat-box loss">
+                            <div class="stat-value loss" id="lossCount">0</div>
+                            <div class="stat-label">Losses</div>
+                        </div>
+                        <div class="stat-box accuracy">
+                            <div class="stat-value accuracy" id="accuracyVal">0%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-box total">
+                            <div class="stat-value total" id="totalCount">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -783,7 +1249,8 @@
             USE_PROXY: false,
             REFRESH_INTERVAL: 5000,
             MAX_RETRIES: 3,
-            RETRY_DELAY: 2000
+            RETRY_DELAY: 2000,
+            HISTORY_LIMIT: 50
         };
 
         // ============================================
@@ -795,11 +1262,14 @@
             apiHistory: [],
             localHistory: [],
             pendingPredictions: new Map(),
+            hotNumbers: [],
             gaps: [],
             isConnected: false,
             retryCount: 0,
             session: null,
-            stats: { wins: 0, losses: 0, total: 0 }
+            stats: { wins: 0, losses: 0, total: 0, streak: 0 },
+            algorithmVersion: 'PATTERN RECOGNITION v2.0',
+            historyFilter: 'all'
         };
 
         // ============================================
@@ -811,7 +1281,7 @@
                 window.location.href = 'index.html';
                 return false;
             }
-            
+
             try {
                 state.session = JSON.parse(saved);
                 if (new Date(state.session.expires) < new Date()) {
@@ -819,9 +1289,9 @@
                     window.location.href = 'index.html';
                     return false;
                 }
-                
+
                 const days = Math.ceil((new Date(state.session.expires) - new Date()) / 86400000);
-                document.getElementById('sessionBadge').textContent = `SESSION ACTIVE (${days}D)`;
+                document.getElementById('daysLeft').textContent = days;
                 return true;
             } catch(e) {
                 localStorage.removeItem('enigma_cipher_session');
@@ -830,39 +1300,150 @@
             }
         }
 
-        function logout() {
-            localStorage.removeItem('enigma_cipher_session');
-            showToast('SESSION TERMINATED', 'warning');
-            setTimeout(() => window.location.href = 'index.html', 1000);
-        }
-
         // ============================================
-        // PREDICTION ALGORITHM
+        // ADVANCED PREDICTION ALGORITHM
         // ============================================
-        function generatePrediction(lastResultType) {
-            return lastResultType === 'big' ? 'small' : 'big';
-        }
+        class PredictionEngine {
+            constructor() {
+                this.patternMemory = [];
+                this.trendStrength = 0;
+                this.alternationCount = 0;
+                this.consecutiveSame = 0;
+            }
 
-        function generateGapPredictions(latest) {
-            const lastResult = latest[0];
-            const basePrediction = generatePrediction(lastResult.result_type);
-            
-            state.gaps = [];
-            const currentIssueNum = parseInt(lastResult.issue_number) || 0;
-            
-            for (let i = 1; i <= 4; i++) {
-                const prediction = i % 2 === 1 ? basePrediction : (basePrediction === 'big' ? 'small' : 'big');
-                const issueNum = currentIssueNum + i;
-                
-                state.gaps.push({
-                    issue: issueNum,
-                    prediction: prediction,
-                    confidence: Math.max(50, 85 - (i * 8))
+            analyzeTrends(history) {
+                if (history.length < 3) return { trend: 'neutral', strength: 50 };
+
+                const recent = history.slice(0, 10);
+                const types = recent.map(h => h.result_type || h.actual_result);
+
+                // Count alternations
+                let alternations = 0;
+                let consecutive = 1;
+                let maxConsecutive = 1;
+
+                for (let i = 1; i < types.length; i++) {
+                    if (types[i] !== types[i-1]) {
+                        alternations++;
+                        consecutive = 1;
+                    } else {
+                        consecutive++;
+                        maxConsecutive = Math.max(maxConsecutive, consecutive);
+                    }
+                }
+
+                // Calculate trend strength
+                const altRate = alternations / (types.length - 1);
+                this.trendStrength = Math.round(altRate * 100);
+                this.alternationCount = alternations;
+                this.consecutiveSame = maxConsecutive;
+
+                // Determine trend type
+                let trend = 'neutral';
+                if (altRate > 0.7) trend = 'alternating';
+                else if (altRate < 0.3) trend = 'streaking';
+                else trend = 'mixed';
+
+                return { trend, strength: this.trendStrength, maxStreak: maxConsecutive };
+            }
+
+            generatePrediction(lastResult, history) {
+                const analysis = this.analyzeTrends(history);
+                const lastType = lastResult.result_type;
+
+                let prediction, confidence, reasoning;
+
+                // Advanced logic based on trend analysis
+                if (analysis.trend === 'alternating') {
+                    // High alternation rate - predict opposite
+                    prediction = lastType === 'big' ? 'small' : 'big';
+                    confidence = Math.min(85, 60 + analysis.strength / 2);
+                    reasoning = 'alternating';
+                } else if (analysis.trend === 'streaking') {
+                    // Streak detected - continue streak if < 3, else break
+                    if (analysis.maxStreak >= 3) {
+                        prediction = lastType === 'big' ? 'small' : 'big';
+                        confidence = 75;
+                        reasoning = 'streak_break';
+                    } else {
+                        prediction = lastType;
+                        confidence = 70;
+                        reasoning = 'streak_continue';
+                    }
+                } else {
+                    // Mixed pattern - use weighted random with bias
+                    const bigCount = history.filter(h => (h.result_type || h.actual_result) === 'big').length;
+                    const total = history.length;
+                    const bigRatio = bigCount / total;
+
+                    if (bigRatio > 0.6) {
+                        prediction = 'small';
+                        confidence = Math.round(65 + (bigRatio - 0.5) * 40);
+                    } else if (bigRatio < 0.4) {
+                        prediction = 'big';
+                        confidence = Math.round(65 + (0.5 - bigRatio) * 40);
+                    } else {
+                        prediction = lastType === 'big' ? 'small' : 'big';
+                        confidence = 60;
+                    }
+                    reasoning = 'reversion';
+                }
+
+                return { prediction, confidence, reasoning, analysis };
+            }
+
+            generateGapPredictions(lastResult, history, count = 4) {
+                const gaps = [];
+                const basePred = this.generatePrediction(lastResult, history);
+                const currentIssueNum = parseInt(lastResult.issue_number) || 0;
+
+                for (let i = 1; i <= count; i++) {
+                    // Each gap prediction considers the previous prediction
+                    let pred, conf;
+
+                    if (i === 1) {
+                        pred = basePred.prediction;
+                        conf = basePred.confidence;
+                    } else {
+                        // Alternate with decreasing confidence
+                        pred = gaps[i-2].prediction === 'big' ? 'small' : 'big';
+                        conf = Math.max(50, gaps[i-2].confidence - 8);
+                    }
+
+                    const issueNum = currentIssueNum + i;
+                    gaps.push({
+                        issue: issueNum,
+                        prediction: pred,
+                        confidence: conf,
+                        isPending: true
+                    });
+                }
+
+                return gaps;
+            }
+
+            calculateHotNumbers(history) {
+                const numberFreq = {};
+                history.forEach(h => {
+                    const num = h.actual_number;
+                    if (num !== undefined && num !== null) {
+                        numberFreq[num] = (numberFreq[num] || 0) + 1;
+                    }
                 });
-                
-                state.pendingPredictions.set(issueNum.toString(), prediction);
+
+                const sorted = Object.entries(numberFreq)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 6);
+
+                return sorted.map((entry, index) => ({
+                    number: entry[0],
+                    frequency: entry[1],
+                    tier: index < 2 ? 1 : index < 4 ? 2 : 3
+                }));
             }
         }
+
+        const engine = new PredictionEngine();
 
         // ============================================
         // API FETCHING
@@ -902,25 +1483,19 @@
                     throw new Error('Invalid data format');
                 }
 
-                document.getElementById('corsWarning').classList.remove('show');
                 updateConnectionStatus(true);
 
                 const currentIssue = latest[0]?.issue_number;
-                
+
                 if (currentIssue && currentIssue !== state.lastIssue) {
                     state.lastIssue = currentIssue;
                     state.lastResults = latest;
                     state.apiHistory = apiHistory || [];
-                    
-                    updateLocalHistory();
-                    generateGapPredictions(latest);
-                    
-                    updatePrediction(latest[0]);
-                    updateLatestResults(latest);
-                    updateHistoryDisplay();
-                    updateStats();
-                    
-                    showToast('NEURAL SYNC COMPLETE', 'success');
+
+                    // Process with new algorithm
+                    processData(latest, apiHistory);
+
+                    showToast('QUANTUM SYNC COMPLETE', 'success');
                 }
 
                 state.retryCount = 0;
@@ -933,11 +1508,9 @@
 
         function handleFetchError(error) {
             state.retryCount++;
-            
+
             if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
-                document.getElementById('corsWarning').classList.add('show');
                 if (state.retryCount === 1 && !CONFIG.USE_PROXY) {
-                    showToast('CORS RESTRICTED - SWITCHING TO PROXY', 'warning');
                     CONFIG.USE_PROXY = true;
                     setTimeout(fetchData, 1000);
                     return;
@@ -947,7 +1520,7 @@
             updateConnectionStatus(false, error.message);
 
             if (state.retryCount >= CONFIG.MAX_RETRIES) {
-                showToast('NEURAL LINK CRITICAL', 'error');
+                showToast('NEURAL LINK UNSTABLE', 'error');
                 state.retryCount = 0;
             } else {
                 setTimeout(fetchData, CONFIG.RETRY_DELAY);
@@ -955,178 +1528,255 @@
         }
 
         // ============================================
-        // LOCAL HISTORY MANAGEMENT
+        // DATA PROCESSING
         // ============================================
+        function processData(latest, history) {
+            const lastResult = latest[0];
+
+            // Generate predictions
+            const mainPred = engine.generatePrediction(lastResult, history);
+            state.gaps = engine.generateGapPredictions(lastResult, history, 4);
+            state.hotNumbers = engine.calculateHotNumbers(history);
+
+            // Store pending predictions
+            state.gaps.forEach(gap => {
+                state.pendingPredictions.set(gap.issue.toString(), gap.prediction);
+            });
+
+            // Update local history
+            updateLocalHistory();
+
+            // Update UI
+            updateActivePrediction(mainPred, state.gaps[0]?.issue);
+            updateLatestResults(latest);
+            updateHotNumbers();
+            updateGapPredictions();
+            updateHistoryDisplay();
+            updateStats();
+        }
+
         function updateLocalHistory() {
-            state.localHistory = state.apiHistory.map(item => {
+            // Sort API history by issue number ascending (oldest first)
+            const sortedHistory = [...state.apiHistory].sort((a, b) => {
+                return parseInt(a.issue_number) - parseInt(b.issue_number);
+            });
+
+            state.localHistory = sortedHistory.map((item, index) => {
                 const issueNum = item.issue_number;
                 const actualType = item.result_type || item.actual_result;
                 const actualNum = item.actual_number;
-                
-                let predictedType = state.pendingPredictions.get(issueNum);
+
+                let predictedType = null;
                 let isCorrect = null;
-                
-                if (predictedType) {
+                let status = 'na';
+
+                // Check if we had a pending prediction
+                if (state.pendingPredictions.has(issueNum)) {
+                    predictedType = state.pendingPredictions.get(issueNum);
                     isCorrect = predictedType === actualType;
+                    status = isCorrect ? 'win' : 'loss';
                     state.pendingPredictions.delete(issueNum);
+                } else if (index > 0) {
+                    // Generate retroactive prediction based on previous
+                    const prevItem = sortedHistory[index - 1];
+                    const prevType = prevItem.result_type || prevItem.actual_result;
+
+                    // Simple alternation for retroactive
+                    predictedType = prevType === 'big' ? 'small' : 'big';
+                    isCorrect = predictedType === actualType;
+                    status = isCorrect ? 'win' : 'loss';
                 } else {
-                    const prevItem = state.apiHistory.find(h => {
-                        const prevNum = parseInt(h.issue_number);
-                        const currNum = parseInt(issueNum);
-                        return prevNum === currNum - 1;
-                    });
-                    
-                    if (prevItem) {
-                        predictedType = generatePrediction(prevItem.result_type || prevItem.actual_result);
-                        isCorrect = predictedType === actualType;
-                    } else {
-                        predictedType = 'big';
-                        isCorrect = predictedType === actualType;
-                    }
+                    // First item - no prediction possible
+                    predictedType = null;
+                    isCorrect = null;
+                    status = 'na';
                 }
-                
+
                 return {
                     issue_number: issueNum,
                     predicted_type: predictedType,
                     actual_result: actualType,
                     actual_number: actualNum,
                     is_correct: isCorrect,
+                    status: status,
                     created_at: item.created_at
                 };
             });
-            
+
+            // Reverse for display (newest first)
+            state.localHistory.reverse();
             calculateStats();
         }
 
         function calculateStats() {
-            state.stats.total = state.localHistory.length;
-            state.stats.wins = state.localHistory.filter(h => h.is_correct === true).length;
-            state.stats.losses = state.localHistory.filter(h => h.is_correct === false).length;
+            const validHistory = state.localHistory.filter(h => h.status !== 'na');
+            state.stats.total = validHistory.length;
+            state.stats.wins = validHistory.filter(h => h.status === 'win').length;
+            state.stats.losses = validHistory.filter(h => h.status === 'loss').length;
+
+            // Calculate streak
+            let streak = 0;
+            for (let h of state.localHistory) {
+                if (h.status === 'win') streak++;
+                else if (h.status === 'loss') {
+                    streak = 0;
+                    break;
+                }
+            }
+            state.stats.streak = streak;
         }
 
         // ============================================
         // UI UPDATES
         // ============================================
-        function updatePrediction(lastResult) {
-            const display = document.getElementById('predictionDisplay');
-            const meta = document.getElementById('predictionMeta');
-            
-            if (!lastResult) {
-                display.innerHTML = '<div class="error-state">NO DATA</div>';
-                return;
+        function updateActivePrediction(prediction, targetIssue) {
+            const bigBox = document.getElementById('bigBox');
+            const smallBox = document.getElementById('smallBox');
+
+            // Reset classes
+            bigBox.className = 'prediction-box';
+            smallBox.className = 'prediction-box';
+
+            if (prediction.prediction === 'big') {
+                bigBox.classList.add('big');
+                document.getElementById('bigValue').textContent = 'BIG';
+                document.getElementById('bigConf').textContent = `Confidence: ${prediction.confidence}%`;
+                document.getElementById('smallValue').textContent = '--';
+                document.getElementById('smallConf').textContent = 'Confidence: --%';
+            } else {
+                smallBox.classList.add('small');
+                document.getElementById('smallValue').textContent = 'SMALL';
+                document.getElementById('smallConf').textContent = `Confidence: ${prediction.confidence}%`;
+                document.getElementById('bigValue').textContent = '--';
+                document.getElementById('bigConf').textContent = 'Confidence: --%';
             }
 
-            const nextPrediction = generatePrediction(lastResult.result_type);
-            const confidence = state.gaps[0]?.confidence || 75;
-
-            display.innerHTML = `
-                <div class="prediction-label">NEXT CIPHER PREDICTION</div>
-                <div class="prediction-value ${nextPrediction}">${nextPrediction.toUpperCase()}</div>
-            `;
-            
-            meta.style.display = 'flex';
-            document.getElementById('confidenceVal').textContent = confidence + '%';
+            document.getElementById('targetPeriod').textContent = targetIssue || '--';
+            document.getElementById('algoName').textContent = `${state.algorithmVersion} | ${prediction.reasoning.toUpperCase()}`;
         }
 
         function updateLatestResults(data) {
-            const grid = document.getElementById('latestGrid');
-            
+            const container = document.getElementById('latestResults');
+
             if (!data || data.length === 0) {
-                grid.innerHTML = '<div class="error-state" style="grid-column: 1/-1;">NO DATA</div>';
+                container.innerHTML = '<div class="error-state">NO DATA</div>';
                 return;
             }
 
-            grid.innerHTML = data.slice(0, 5).map((r, index) => `
-                <div class="result-cell" style="${index === 0 ? 'border-color: var(--cipher-gold); background: rgba(201, 162, 39, 0.05);' : ''}">
-                    <div class="result-number" style="color: ${r.result_type === 'big' ? 'var(--win)' : 'var(--loss)'}">
+            container.innerHTML = data.slice(0, 5).map((r, index) => {
+                const type = r.result_type || 'small';
+                return `
+                    <div class="result-minimal ${type}" style="${index === 0 ? 'transform: scale(1.1); z-index: 10;' : ''}">
                         ${r.actual_number ?? '--'}
                     </div>
-                    <div class="result-type ${r.result_type || 'small'}">
-                        ${(r.result_type || 'small').toUpperCase()}
-                    </div>
-                    <div style="font-size: 8px; color: var(--text-tertiary); margin-top: 4px; letter-spacing: 1px;">
-                        ${r.issue_number ? r.issue_number.toString().slice(-6) : '--'}
-                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateHotNumbers() {
+            const grid = document.getElementById('hotGrid');
+
+            if (state.hotNumbers.length === 0) {
+                grid.innerHTML = '<div style="color: var(--text-tertiary); font-size: 11px;">No data available</div>';
+                return;
+            }
+
+            grid.innerHTML = state.hotNumbers.map(n => `
+                <div class="hot-number tier-${n.tier}" title="Frequency: ${n.frequency}">
+                    ${n.number}
                 </div>
             `).join('');
+        }
+
+        function updateGapPredictions() {
+            const grid = document.getElementById('gapGrid');
+
+            if (state.gaps.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-tertiary);">No predictions</div>';
+                return;
+            }
+
+            grid.innerHTML = state.gaps.map((g, index) => `
+                <div class="gap-item ${g.prediction}">
+                    <div class="gap-period">#${g.issue.toString().slice(-6)}</div>
+                    <div class="gap-prediction ${g.prediction}">${g.prediction.toUpperCase()}</div>
+                    <div class="gap-confidence">${g.confidence}% confidence</div>
+                </div>
+            `).join('');
+
+            // Calculate gap accuracy based on pending predictions
+            const pendingCount = state.gaps.filter(g => g.isPending).length;
+            document.getElementById('gapAccuracy').textContent = `${pendingCount} Pending | ${state.gaps.length - pendingCount} Resolved`;
         }
 
         function updateHistoryDisplay() {
             const tbody = document.getElementById('historyBody');
             const count = document.getElementById('historyCount');
-            
-            if (!state.localHistory || state.localHistory.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="error-state">NO HISTORICAL DATA</td></tr>';
-                count.textContent = '0 RECORDS';
+
+            let displayData = state.localHistory;
+
+            // Apply filter
+            if (state.historyFilter === 'wins') {
+                displayData = displayData.filter(h => h.status === 'win');
+            } else if (state.historyFilter === 'losses') {
+                displayData = displayData.filter(h => h.status === 'loss');
+            }
+
+            count.textContent = `${displayData.length} RECORDS`;
+
+            if (displayData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="error-state">NO RECORDS FOUND</td></tr>';
                 return;
             }
 
-            count.textContent = `${state.localHistory.length} RECORDS`;
+            tbody.innerHTML = displayData.slice(0, CONFIG.HISTORY_LIMIT).map((r, index) => {
+                let outcomeBadge;
+                if (r.status === 'win') {
+                    outcomeBadge = '<span class="outcome-badge win">● WIN</span>';
+                } else if (r.status === 'loss') {
+                    outcomeBadge = '<span class="outcome-badge loss">● LOSS</span>';
+                } else if (r.status === 'pending') {
+                    outcomeBadge = '<span class="outcome-badge pending">◐ PENDING</span>';
+                } else {
+                    outcomeBadge = '<span class="outcome-badge na">-</span>';
+                }
 
-            const displayHistory = [...state.localHistory].reverse().slice(0, 20);
+                const predClass = r.predicted_type || 'pending';
+                const predText = r.predicted_type ? r.predicted_type.toUpperCase() : '-';
 
-            tbody.innerHTML = displayHistory.map(r => {
-                const statusClass = r.is_correct ? 'win' : 'loss';
-                const statusText = r.is_correct ? 'WIN' : 'LOSS';
-                
                 return `
-                    <tr>
-                        <td class="issue-number">${r.issue_number ? r.issue_number.toString().slice(-8) : '--'}</td>
-                        <td class="predicted-type ${r.predicted_type || 'small'}">
-                            ${(r.predicted_type || 'small').toUpperCase()}
-                        </td>
-                        <td class="actual-result ${r.actual_result || 'small'}">
-                            ${(r.actual_result || 'small').toUpperCase()}
-                        </td>
-                        <td>${r.actual_number ?? '--'}</td>
-                        <td>
-                            <span class="status-badge ${statusClass}">
-                                ${statusText}
-                            </span>
-                        </td>
+                    <tr class="${index === 0 && state.historyFilter === 'all' ? 'new-prediction' : ''}">
+                        <td class="issue-cell">${r.issue_number || '--'}</td>
+                        <td class="prediction-cell ${predClass}">${predText}</td>
+                        <td class="actual-cell ${r.actual_result || 'small'}">${(r.actual_result || 'small').toUpperCase()}</td>
+                        <td class="number-cell">${r.actual_number ?? '--'}</td>
+                        <td class="outcome-cell">${outcomeBadge}</td>
                     </tr>
                 `;
             }).join('');
-
-            updateGapSection();
         }
 
         function updateStats() {
-            const statsRow = document.getElementById('statsRow');
-            
-            if (state.stats.total === 0) {
-                statsRow.style.display = 'none';
-                return;
-            }
-            
-            statsRow.style.display = 'flex';
             document.getElementById('winCount').textContent = state.stats.wins;
             document.getElementById('lossCount').textContent = state.stats.losses;
             document.getElementById('totalCount').textContent = state.stats.total;
-            
+
             const accuracy = state.stats.total > 0 
                 ? Math.round((state.stats.wins / state.stats.total) * 100) 
                 : 0;
             document.getElementById('accuracyVal').textContent = accuracy + '%';
         }
 
-        function updateGapSection() {
-            const section = document.getElementById('gapSection');
-            const grid = document.getElementById('gapGrid');
-            
-            if (state.gaps.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
+        function filterHistory(type) {
+            state.historyFilter = type;
 
-            section.style.display = 'block';
-            grid.innerHTML = state.gaps.map(g => `
-                <div class="gap-item">
-                    <div class="gap-issue">#${g.issue.toString().slice(-6)}</div>
-                    <div class="gap-pred ${g.prediction}">${g.prediction.toUpperCase()}</div>
-                    <div style="font-size: 8px; color: var(--text-tertiary); margin-top: 4px;">${g.confidence}%</div>
-                </div>
-            `).join('');
+            // Update button states
+            document.querySelectorAll('.history-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            updateHistoryDisplay();
         }
 
         // ============================================
@@ -1135,17 +1785,17 @@
         function updateConnectionStatus(connected, errorMsg = '') {
             const dot = document.getElementById('connStatus');
             const text = document.getElementById('connText');
-            
+
             state.isConnected = connected;
-            
+
             if (connected) {
                 dot.className = 'status-dot connected';
-                text.textContent = 'NEURAL LINK ESTABLISHED';
+                text.textContent = 'QUANTUM LINK ESTABLISHED';
                 text.style.color = 'var(--win)';
             } else {
                 dot.className = 'status-dot error';
-                text.textContent = errorMsg ? `ERROR: ${errorMsg.toUpperCase().slice(0, 20)}` : 'NEURAL LINK DISCONNECTED';
-                text.style.color = 'var(--enigma-crimson)';
+                text.textContent = errorMsg ? `ERROR: ${errorMsg.toUpperCase().slice(0, 20)}` : 'LINK DISCONNECTED';
+                text.style.color = 'var(--loss)';
             }
         }
 
@@ -1172,13 +1822,13 @@
         // ============================================
         function init() {
             if (!checkAuth()) return;
-            
+
             fetchData();
             setInterval(fetchData, CONFIG.REFRESH_INTERVAL);
             setInterval(updateTimer, 1000);
             updateTimer();
-            
-            showToast('DASHBOARD INITIALIZED', 'success');
+
+            showToast('ΞИIGMA SYSTEM ONLINE', 'success');
         }
 
         if (document.readyState === 'loading') {
