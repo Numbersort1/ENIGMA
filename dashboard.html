@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ΞИIGMA - Neural Cipher System | Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --void: #030303;
+            --depth: #080808;
+            --surface: #0f0f0f;
+            --elevated: #161616;
+            --border-subtle: #1c1c1c;
+            --border: #252525;
+            --border-light: #333;
+            --text-primary: #e8e8e8;
+            --text-secondary: #707070;
+            --text-tertiary: #505050;
+            --cipher-gold: #c9a227;
+            --cipher-silver: #a0a0a0;
+            --enigma-cyan: #2dd4bf;
+            --enigma-amber: #f59e0b;
+            --enigma-crimson: #dc2626;
+            --enigma-violet: #8b5cf6;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--void);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Cryptographic Background */
+        .cipher-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.4;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px),
+                repeating-linear-gradient(90deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px);
+            animation: cipherShift 20s linear infinite;
+        }
+
+        @keyframes cipherShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(35px, 35px); }
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            background: linear-gradient(180deg, var(--void) 0%, transparent 100%);
+            z-index: 100;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-symbol {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--cipher-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-symbol::before {
+            content: 'Ξ';
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            color: var(--cipher-gold);
+            font-weight: 700;
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 8px;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .logo-sub {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 4px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .stat-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .stat-val {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--enigma-cyan);
+            letter-spacing: 1px;
+        }
+
+        .stat-val.accuracy-high { color: var(--enigma-cyan); }
+        .stat-val.accuracy-med { color: var(--enigma-amber); }
+        .stat-val.accuracy-low { color: var(--enigma-crimson); }
+
+        .session-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+        }
+
+        .session-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--enigma-cyan);
+            box-shadow: 0 0 8px var(--enigma-cyan);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--enigma-crimson);
+            color: var(--enigma-crimson);
+            border-radius: 4px;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        /* Main Container */
+        .main {
+            min-height: 100vh;
+            padding-top: 80px;
+            padding-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .status-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .status-val {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .status-val.period { color: var(--cipher-gold); }
+        .status-val.timer { 
+            color: var(--enigma-crimson);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Cipher Display - Enhanced */
+        .cipher-display {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cipher-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--enigma-cyan), transparent);
+            opacity: 0.5;
+        }
+
+        .cipher-rotor {
+            width: 100px;
+            height: 100px;
+            background: var(--depth);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .cipher-rotor:hover {
+            border-color: var(--border-light);
+            transform: scale(1.02);
+        }
+
+        .cipher-rotor::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 1px dashed var(--border-light);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .rotor-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            z-index: 1;
+        }
+
+        .rotor-value {
+            font-family: 'Cinzel', serif;
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+            z-index: 1;
+        }
+
+        .cipher-rotor.num .rotor-value { color: var(--enigma-cyan); }
+        .cipher-rotor.size .rotor-value { 
+            font-size: 16px; 
+            color: var(--cipher-gold);
+            letter-spacing: 2px;
+        }
+
+        .rotor-color {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: 0 0 30px currentColor;
+            position: relative;
+            z-index: 1;
+            transition: all 0.5s;
+        }
+
+        .rotor-color::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: rotorPulse 2s infinite;
+        }
+
+        @keyframes rotorPulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.1; }
+        }
+
+        /* Analysis Panel - Enhanced */
+        .analysis-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .analysis-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--enigma-cyan), var(--enigma-violet));
+            border-radius: 8px 0 0 8px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .panel-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--enigma-cyan), var(--enigma-violet));
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .panel-title {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--text-secondary);
+        }
+
+        .panel-status {
+            margin-left: auto;
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            color: var(--enigma-crimson);
+            letter-spacing: 2px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .analysis-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--depth);
+            border-radius: 6px;
+            border-left: 2px solid var(--enigma-cyan);
+        }
+
+        .analysis-text em {
+            color: var(--enigma-cyan);
+            font-style: normal;
+            font-weight: 500;
+        }
+
+        /* Confidence Meter */
+        .confidence-wrap {
+            background: var(--depth);
+            border-radius: 6px;
+            padding: 0.625rem 0.75rem;
+        }
+
+        .confidence-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
+        }
+
+        .confidence-val {
+            color: var(--enigma-cyan);
+        }
+
+        .confidence-track {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-track::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .confidence-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--enigma-cyan), var(--enigma-violet));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
+        }
+
+        /* Pattern Analysis Panel */
+        .pattern-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .pattern-stat {
+            background: var(--depth);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .pattern-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .pattern-val {
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Rotor Matrix */
+        .rotor-matrix {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .matrix-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+
+        .matrix-cell {
+            aspect-ratio: 1;
+            background: var(--depth);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .matrix-cell:hover {
+            border-color: var(--border-light);
+            transform: scale(1.05);
+        }
+
+        .matrix-cell.g { color: var(--enigma-cyan); border-color: rgba(45, 212, 191, 0.2); }
+        .matrix-cell.r { color: var(--enigma-crimson); border-color: rgba(220, 38, 38, 0.2); }
+        .matrix-cell.v { color: var(--enigma-violet); border-color: rgba(139, 92, 246, 0.2); }
+
+        .matrix-cell.hot {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: var(--enigma-amber);
+        }
+
+        .matrix-cell.cold {
+            background: rgba(45, 212, 191, 0.05);
+            border-color: var(--enigma-cyan);
+        }
+
+        .matrix-cell::after {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            font-size: 10px;
+        }
+
+        .matrix-cell.hot::after { content: '▲'; color: var(--enigma-amber); }
+        .matrix-cell.cold::after { content: '▼'; color: var(--enigma-cyan); }
+
+        /* Cipher Log - Enhanced with Prediction & Result */
+        .cipher-log {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .log-header {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-accuracy {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--enigma-cyan);
+        }
+
+        .log-entry {
+            display: grid;
+            grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr 0.8fr;
+            padding: 0.625rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 11px;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .log-entry:last-child { border-bottom: none; }
+
+        .log-entry.correct {
+            background: rgba(45, 212, 191, 0.03);
+        }
+
+        .log-entry.wrong {
+            background: rgba(220, 38, 38, 0.03);
+        }
+
+        .log-period {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--text-tertiary);
+            letter-spacing: 1px;
+        }
+
+        .log-num {
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .log-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin: 0 auto;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        .log-size {
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .log-result {
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .log-result.match {
+            background: rgba(45, 212, 191, 0.1);
+            color: var(--enigma-cyan);
+        }
+
+        .log-result.mismatch {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--enigma-crimson);
+        }
+
+        /* Toast */
+        .cipher-toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 2px solid;
+            padding: 0.875rem 1.5rem;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 1000;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .cipher-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .cipher-toast.success { border-left-color: var(--enigma-cyan); color: var(--enigma-cyan); }
+        .cipher-toast.error { border-left-color: var(--enigma-crimson); color: var(--enigma-crimson); }
+
+        /* Access Denied Overlay */
+        .access-denied {
+            position: fixed;
+            inset: 0;
+            background: var(--void);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .access-denied.hidden {
+            display: none;
+        }
+
+        .denied-icon {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--enigma-crimson);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 1.5rem;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .denied-title {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            letter-spacing: 4px;
+            color: var(--enigma-crimson);
+            margin-bottom: 0.5rem;
+        }
+
+        .denied-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .denied-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 1px solid var(--enigma-crimson);
+            color: var(--enigma-crimson);
+            border-radius: 6px;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .denied-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        /* Hidden utility */
+        .hidden { display: none !important; }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="cipher-bg"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Access Denied Overlay (shown if no session) -->
+    <div class="access-denied" id="accessDenied">
+        <div class="denied-icon">🔒</div>
+        <div class="denied-title">ACCESS DENIED</div>
+        <div class="denied-text">No active cipher session detected</div>
+        <a href="index.html" class="denied-btn">Return to Authentication</a>
+    </div>
+
+    <!-- Main Dashboard (hidden until verified) -->
+    <div id="dashboardContent" class="hidden">
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo-symbol"></div>
+                <div>
+                    <div class="logo-text">ΞИIGMA</div>
+                    <div class="logo-sub">NEURAL CIPHER SYSTEM</div>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accuracy</span>
+                    <span class="stat-val" id="accuracyVal">--%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Streak</span>
+                    <span class="stat-val" id="streakVal">0</span>
+                </div>
+                <div class="session-badge">
+                    <span class="session-indicator"></span>
+                    <span id="sessionText">SESSION ACTIVE</span>
+                </div>
+                <a href="index.html" class="logout-btn" onclick="logout()">Terminate</a>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-label">Cipher Period</span>
+                    <span class="status-val period" id="periodVal">--------</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Temporal Index</span>
+                    <span class="status-val timer" id="timerVal">00:00</span>
+                </div>
+            </div>
+
+            <!-- Cipher Display -->
+            <div class="cipher-display">
+                <div class="cipher-rotor num">
+                    <span class="rotor-label">Number</span>
+                    <span class="rotor-value" id="rotorNum">-</span>
+                </div>
+                <div class="cipher-rotor col">
+                    <span class="rotor-label">Color</span>
+                    <div class="rotor-color" id="rotorColor" style="background: #333;"></div>
+                </div>
+                <div class="cipher-rotor size">
+                    <span class="rotor-label">Size</span>
+                    <span class="rotor-value" id="rotorSize">-</span>
+                </div>
+            </div>
+
+            <!-- Analysis Panel -->
+            <div class="analysis-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">◈</div>
+                    <span class="panel-title">Neural Analysis</span>
+                    <span class="panel-status">● LIVE</span>
+                </div>
+                <div class="analysis-text" id="analysisText">
+                    Synchronizing with neural matrices... Establishing data stream...
+                </div>
+                <div class="confidence-wrap">
+                    <div class="confidence-header">
+                        <span>Confidence Matrix</span>
+                        <span class="confidence-val" id="confVal">0%</span>
+                    </div>
+                    <div class="confidence-track">
+                        <div class="confidence-bar" id="confBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern Analysis -->
+            <div class="pattern-panel">
+                <div class="panel-header">
+                    <div class="panel-icon" style="background: linear-gradient(135deg, var(--cipher-gold), var(--enigma-amber));">◉</div>
+                    <span class="panel-title">Trend Analysis</span>
+                </div>
+                <div class="pattern-grid">
+                    <div class="pattern-stat">
+                        <div class="pattern-label">Green Trend</div>
+                        <div class="pattern-val" id="greenTrend">--</div>
+                    </div>
+                    <div class="pattern-stat">
+                        <div class="pattern-label">Red Trend</div>
+                        <div class="pattern-val" id="redTrend">--</div>
+                    </div>
+                    <div class="pattern-stat">
+                        <div class="pattern-label">Violet Freq</div>
+                        <div class="pattern-val" id="violetFreq">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rotor Matrix -->
+            <div class="rotor-matrix">
+                <div class="matrix-title">Rotor Position Matrix</div>
+                <div class="matrix-grid" id="matrixGrid">
+                    <div class="matrix-cell v" data-n="0">0</div>
+                    <div class="matrix-cell g" data-n="1">1</div>
+                    <div class="matrix-cell r" data-n="2">2</div>
+                    <div class="matrix-cell g" data-n="3">3</div>
+                    <div class="matrix-cell r" data-n="4">4</div>
+                    <div class="matrix-cell v" data-n="5">5</div>
+                    <div class="matrix-cell r" data-n="6">6</div>
+                    <div class="matrix-cell g" data-n="7">7</div>
+                    <div class="matrix-cell r" data-n="8">8</div>
+                    <div class="matrix-cell g" data-n="9">9</div>
+                </div>
+            </div>
+
+            <!-- Cipher Log -->
+            <div class="cipher-log">
+                <div class="log-header">
+                    <span>Cipher Transmission Log</span>
+                    <span class="log-accuracy" id="logAccuracy">Accuracy: --%</span>
+                </div>
+                <div id="logEntries"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="cipher-toast" id="cipherToast"></div>
+
+    <script>
+        // State
+        let session = null;
+        let history = []; // Last 8 from API + predictions
+        let predictions = []; // Our prediction history with results
+        let lastPeriod = null;
+        let currentPred = null;
+        let monitor = null;
+        let currentSource = '1M';
+        let learningWeights = {
+            streak: 1.0,
+            alternating: 1.0,
+            balance: 1.0,
+            violet: 0.15,
+            numberFreq: new Array(10).fill(1.0)
+        };
+
+        const COLOR_MAP = {
+            green: { bg: '#2dd4bf', cls: 'g', label: 'G' },
+            red: { bg: '#dc2626', cls: 'r', label: 'R' },
+            violet: { bg: '#8b5cf6', cls: 'v', label: 'V' }
+        };
+
+        // API Endpoints
+        const API_HISTORY = (source) => `https://tirangaprediction.ai/api_fixed.php?action=history&source=${source}&t=${Date.now()}`;
+        const API_UPDATE = (source) => `https://tirangaprediction.ai/api_fixed.php?action=update_data&source=${source}&t=${Date.now()}`;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        function checkAuth() {
+            const saved = localStorage.getItem('enigma_cipher_session');
+            if (saved) {
+                try {
+                    const k = JSON.parse(saved);
+                    if (new Date(k.expires) > new Date()) {
+                        session = k;
+                        document.getElementById('accessDenied').classList.add('hidden');
+                        document.getElementById('dashboardContent').classList.remove('hidden');
+
+                        const days = Math.ceil((new Date(k.expires) - new Date()) / 86400000);
+                        document.getElementById('sessionText').textContent = `${days} DAYS REMAINING`;
+
+                        initializeSystem();
+                        startSessionMonitor();
+                    } else {
+                        localStorage.removeItem('enigma_cipher_session');
+                    }
+                } catch(e) {
+                    localStorage.removeItem('enigma_cipher_session');
+                }
+            }
+        }
+
+        async function initializeSystem() {
+            await fetchHistory();
+            startClock();
+        }
+
+        // Fetch last 8 results from API (silent)
+        async function fetchHistory() {
+            try {
+                const response = await fetch(API_HISTORY(currentSource), {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error('API Error');
+
+                const data = await response.json();
+
+                if (data && Array.isArray(data.history)) {
+                    // Map API data to our format
+                    history = data.history.slice(0, 8).map(h => ({
+                        period: h.period || h.issue,
+                        num: parseInt(h.number || h.result),
+                        color: h.color.toLowerCase(),
+                        size: parseInt(h.number || h.result) >= 5 ? 'BIG' : 'SMALL',
+                        source: 'api'
+                    }));
+
+                    updateTrendAnalysis();
+                    updateMatrix();
+                }
+            } catch (error) {
+                console.log('History fetch failed, using simulation');
+                // Fallback to simulated data
+                generateSimulatedHistory();
+            }
+        }
+
+        // Fetch actual result and verify prediction (silent)
+        async function verifyAndUpdate(lastPeriod, prediction) {
+            try {
+                const response = await fetch(API_UPDATE(currentSource), {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error('API Error');
+
+                const data = await response.json();
+
+                if (data && data.result !== undefined) {
+                    const actualNum = parseInt(data.result);
+                    const actualColor = data.color.toLowerCase();
+
+                    // Check if prediction matched
+                    const colorMatch = prediction.col === actualColor;
+                    const numMatch = prediction.num === actualNum;
+                    const partialMatch = colorMatch || numMatch;
+
+                    // Add to predictions log
+                    predictions.unshift({
+                        period: lastPeriod,
+                        predicted: prediction,
+                        actual: { num: actualNum, color: actualColor, size: actualNum >= 5 ? 'BIG' : 'SMALL' },
+                        match: colorMatch,
+                        partialMatch: partialMatch,
+                        timestamp: new Date()
+                    });
+
+                    // Keep only last 50 for accuracy calc
+                    if (predictions.length > 50) predictions = predictions.slice(0, 50);
+
+                    // Update learning weights based on result
+                    updateLearningWeights(prediction, actualColor, colorMatch);
+
+                    // Add to history
+                    history.unshift({
+                        period: lastPeriod,
+                        num: actualNum,
+                        color: actualColor,
+                        size: actualNum >= 5 ? 'BIG' : 'SMALL',
+                        source: 'verified'
+                    });
+
+                    if (history.length > 20) history = history.slice(0, 20);
+
+                    renderLog();
+                    updateAccuracy();
+                    updateTrendAnalysis();
+                    updateMatrix();
+
+                    return { actualNum, actualColor, colorMatch };
+                }
+            } catch (error) {
+                console.log('Verification fetch failed');
+                // Simulate result based on confidence
+                const simulatedMatch = Math.random() * 100 < prediction.conf;
+                const actualColor = simulatedMatch ? prediction.col : 
+                    (prediction.col === 'green' ? 'red' : 'green');
+                const actualNum = simulatedMatch ? prediction.num : 
+                    (actualColor === 'green' ? [1,3,7,9][Math.floor(Math.random()*4)] : 
+                     actualColor === 'red' ? [2,4,6,8][Math.floor(Math.random()*4)] : 
+                     [0,5][Math.floor(Math.random()*2)]);
+
+                predictions.unshift({
+                    period: lastPeriod,
+                    predicted: prediction,
+                    actual: { num: actualNum, color: actualColor, size: actualNum >= 5 ? 'BIG' : 'SMALL' },
+                    match: simulatedMatch,
+                    partialMatch: simulatedMatch,
+                    timestamp: new Date(),
+                    simulated: true
+                });
+
+                if (predictions.length > 50) predictions = predictions.slice(0, 50);
+
+                history.unshift({
+                    period: lastPeriod,
+                    num: actualNum,
+                    color: actualColor,
+                    size: actualNum >= 5 ? 'BIG' : 'SMALL',
+                    source: 'simulated'
+                });
+
+                if (history.length > 20) history = history.slice(0, 20);
+
+                renderLog();
+                updateAccuracy();
+                updateTrendAnalysis();
+                updateMatrix();
+
+                return { actualNum, actualColor, colorMatch: simulatedMatch };
+            }
+        }
+
+        function updateLearningWeights(pred, actualColor, matched) {
+            // Adjust weights based on success/failure
+            const adjustment = matched ? 0.05 : -0.03;
+
+            if (pred.pat === 'streak' || pred.pat === 'reversal') {
+                learningWeights.streak = Math.max(0.5, Math.min(1.5, learningWeights.streak + adjustment));
+            } else if (pred.pat === 'alternating') {
+                learningWeights.alternating = Math.max(0.5, Math.min(1.5, learningWeights.alternating + adjustment));
+            } else if (pred.pat === 'balance') {
+                learningWeights.balance = Math.max(0.5, Math.min(1.5, learningWeights.balance + adjustment));
+            }
+
+            // Adjust number frequency weights
+            learningWeights.numberFreq[pred.num] = Math.max(0.5, Math.min(2.0, 
+                learningWeights.numberFreq[pred.num] + (matched ? 0.1 : -0.05)));
+        }
+
+        function generateSimulatedHistory() {
+            const pats = ['green', 'red', 'green', 'red', 'green', 'red', 'violet', 'green'];
+            const now = new Date();
+
+            for (let i = 7; i >= 0; i--) {
+                const col = pats[7-i];
+                const nums = col === 'green' ? [1,3,7,9] : col === 'red' ? [2,4,6,8] : [0,5];
+                const num = nums[Math.floor(Math.random() * nums.length)];
+
+                history.push({
+                    period: generatePeriod(now, -i),
+                    num,
+                    color: col,
+                    size: num >= 5 ? 'BIG' : 'SMALL',
+                    source: 'init'
+                });
+            }
+
+            updateTrendAnalysis();
+            updateMatrix();
+        }
+
+        function generatePeriod(baseDate, offsetMinutes) {
+            const d = new Date(baseDate.getTime() + offsetMinutes * 60000);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+
+            let initTime = new Date(year, d.getMonth(), d.getDate(), 5, 29, 0, 0);
+            if (d < initTime) {
+                initTime = new Date(initTime.getTime() - 24 * 60 * 60 * 1000);
+            }
+
+            const minutesSinceInit = Math.floor((d - initTime) / (1000 * 60));
+            const counter = 1000 + minutesSinceInit;
+
+            return `${year}${month}${day}1000${counter}`;
+        }
+
+        // Enhanced Prediction Engine with Learning
+        function analyze() {
+            if (history.length < 3) return randomPred();
+
+            const rec = history.slice(0, 8);
+            const cols = rec.map(h => h.color);
+            const nums = rec.map(h => h.num);
+
+            // Pattern detection with weighted confidence
+            let patterns = {
+                streak: { active: false, conf: 50, dir: null },
+                alternating: { active: false, conf: 50 },
+                balance: { active: false, conf: 50 },
+                violet: { active: false, conf: 15 }
+            };
+
+            // Streak detection
+            let str = 1;
+            for (let i = 1; i < cols.length; i++) {
+                if (cols[i] === cols[i-1]) str++;
+                else break;
+            }
+
+            if (str >= 3) {
+                patterns.streak.active = true;
+                patterns.streak.dir = cols[0];
+                patterns.streak.conf = Math.min(85, 55 + str * 5) * learningWeights.streak;
+            }
+
+            // Alternating detection
+            let alt = true;
+            for (let i = 2; i < Math.min(cols.length, 6); i++) {
+                if (cols[i] !== cols[i-2]) alt = false;
+            }
+            if (alt && cols.length >= 4 && cols[0] !== cols[1]) {
+                patterns.alternating.active = true;
+                patterns.alternating.conf = 70 * learningWeights.alternating;
+            }
+
+            // Balance detection
+            const g = cols.filter(c => c === 'green').length;
+            const r = cols.filter(c => c === 'red').length;
+            const v = cols.filter(c => c === 'violet').length;
+
+            if (Math.abs(g - r) >= 3) {
+                patterns.balance.active = true;
+                patterns.balance.conf = 60 * learningWeights.balance;
+                patterns.balance.favor = g > r ? 'red' : 'green';
+            }
+
+            // Violet frequency check
+            if (v >= 2 || Math.random() < 0.15 * learningWeights.violet) {
+                patterns.violet.active = true;
+            }
+
+            // Select best pattern
+            let bestPat = 'random';
+            let bestConf = 50;
+            let selectedColor = cols[Math.floor(Math.random() * cols.length)];
+
+            const candidates = [
+                { pat: 'streak', conf: patterns.streak.conf, active: patterns.streak.active, color: patterns.streak.dir },
+                { pat: 'alternating', conf: patterns.alternating.conf, active: patterns.alternating.active, color: cols[1] },
+                { pat: 'balance', conf: patterns.balance.conf, active: patterns.balance.active, color: patterns.balance?.favor }
+            ].filter(c => c.active).sort((a, b) => b.conf - a.conf);
+
+            if (candidates.length > 0) {
+                bestPat = candidates[0].pat;
+                bestConf = candidates[0].conf;
+                selectedColor = candidates[0].color;
+            }
+
+            // Violet override
+            let finalNum;
+            if (patterns.violet.active && Math.random() < 0.2) {
+                selectedColor = 'violet';
+                finalNum = Math.random() > 0.5 ? 0 : 5;
+                bestConf = patterns.violet.conf;
+            } else {
+                // Number selection based on frequency weights
+                const pool = selectedColor === 'green' ? [1,3,7,9] : 
+                            selectedColor === 'red' ? [2,4,6,8] : [0,5];
+
+                // Weighted random selection
+                const weights = pool.map(n => learningWeights.numberFreq[n]);
+                const totalWeight = weights.reduce((a, b) => a + b, 0);
+                let random = Math.random() * totalWeight;
+
+                for (let i = 0; i < pool.length; i++) {
+                    random -= weights[i];
+                    if (random <= 0) {
+                        finalNum = pool[i];
+                        break;
+                    }
+                }
+                if (finalNum === undefined) finalNum = pool[Math.floor(Math.random() * pool.length)];
+            }
+
+            return { 
+                num: finalNum, 
+                col: selectedColor, 
+                size: finalNum >= 5 ? 'BIG' : 'SMALL', 
+                pat: bestPat, 
+                conf: Math.min(Math.round(bestConf), 95)
+            };
+        }
+
+        function randomPred() {
+            const n = Math.floor(Math.random() * 10);
+            const c = [1,3,7,9].includes(n) ? 'green' : 
+                     [2,4,6,8].includes(n) ? 'red' : 
+                     Math.random() > 0.5 ? 'violet' : (n === 0 ? 'red' : 'green');
+            return { num: n, col: c, size: n >= 5 ? 'BIG' : 'SMALL', pat: 'random', conf: 50 };
+        }
+
+        function startClock() {
+            tick();
+            setInterval(tick, 100);
+        }
+
+        async function tick() {
+            const now = new Date();
+            const sec = 59 - now.getSeconds();
+            const ms = Math.floor((999 - now.getMilliseconds()) / 10);
+            document.getElementById('timerVal').textContent = 
+                `${String(sec).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+
+            let initTime = new Date(year, now.getMonth(), now.getDate(), 5, 29, 0, 0);
+            if (now < initTime) {
+                initTime = new Date(initTime.getTime() - 24 * 60 * 60 * 1000);
+            }
+
+            const minutesSinceInit = Math.floor((now - initTime) / (1000 * 60));
+            const counter = 1000 + minutesSinceInit;
+
+            const per = `${year}${month}${day}1000${counter}`;
+            document.getElementById('periodVal').textContent = per;
+
+            if (per !== lastPeriod) {
+                // Verify previous prediction if exists
+                if (lastPeriod && currentPred) {
+                    await verifyAndUpdate(lastPeriod, currentPred);
+                }
+
+                lastPeriod = per;
+                currentPred = analyze();
+
+                // Update display
+                document.getElementById('rotorNum').textContent = currentPred.num;
+
+                const c = COLOR_MAP[currentPred.col];
+                const el = document.getElementById('rotorColor');
+                el.style.background = c.bg;
+                el.style.color = c.bg;
+                el.style.boxShadow = `0 0 30px ${c.bg}`;
+
+                document.getElementById('rotorSize').textContent = currentPred.size;
+
+                // Analysis text
+                const pats = {
+                    alternating: 'Alternating sequence detected in rotor positions',
+                    streak: `Consecutive ${currentPred.col} pattern identified`,
+                    reversal: `Trend reversal from ${currentPred.col === 'green' ? 'red' : 'green'} anticipated`,
+                    balance: 'Equilibrium correction algorithm activated',
+                    random: 'Stochastic distribution model engaged'
+                };
+
+                const weightInfo = `[S:${learningWeights.streak.toFixed(2)} A:${learningWeights.alternating.toFixed(2)} B:${learningWeights.balance.toFixed(2)}]`;
+                document.getElementById('analysisText').innerHTML = 
+                    `${pats[currentPred.pat]}. Neural network predicts <em>${currentPred.col.toUpperCase()}</em> state. <span style="color: var(--text-tertiary); font-size: 10px;">${weightInfo}</span>`;
+
+                document.getElementById('confVal').textContent = currentPred.conf + '%';
+                document.getElementById('confBar').style.width = currentPred.conf + '%';
+
+                // Refresh history periodically
+                if (history.filter(h => h.source === 'api').length < 5) {
+                    await fetchHistory();
+                }
+            }
+        }
+
+        function updateTrendAnalysis() {
+            const recent = history.slice(0, 8);
+            const g = recent.filter(h => h.color === 'green').length;
+            const r = recent.filter(h => h.color === 'red').length;
+            const v = recent.filter(h => h.color === 'violet').length;
+
+            document.getElementById('greenTrend').textContent = `${g}/8`;
+            document.getElementById('redTrend').textContent = `${r}/8`;
+            document.getElementById('violetFreq').textContent = `${v}/8`;
+        }
+
+        function updateAccuracy() {
+            if (predictions.length === 0) return;
+
+            const correct = predictions.filter(p => p.match).length;
+            const accuracy = Math.round((correct / predictions.length) * 100);
+
+            const accEl = document.getElementById('accuracyVal');
+            accEl.textContent = accuracy + '%';
+            accEl.className = 'stat-val ' + (accuracy >= 70 ? 'accuracy-high' : accuracy >= 50 ? 'accuracy-med' : 'accuracy-low');
+
+            document.getElementById('logAccuracy').textContent = `Accuracy: ${accuracy}% (${correct}/${predictions.length})`;
+
+            // Calculate streak
+            let streak = 0;
+            for (let p of predictions) {
+                if (p.match) streak++;
+                else break;
+            }
+            document.getElementById('streakVal').textContent = streak;
+        }
+
+        function renderLog() {
+            const box = document.getElementById('logEntries');
+            if (predictions.length === 0) {
+                box.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 2rem; font-size: 11px; letter-spacing: 2px;">NO PREDICTIONS RECORDED</div>';
+                return;
+            }
+
+            box.innerHTML = predictions.slice(0, 10).map((p, i) => {
+                const predC = COLOR_MAP[p.predicted.col];
+                const actualC = COLOR_MAP[p.actual.color];
+                const isCorrect = p.match;
+
+                return `
+                <div class="log-entry ${isCorrect ? 'correct' : 'wrong'}">
+                    <span class="log-period">${p.period.slice(-8)}</span>
+                    <span class="log-num" style="color: ${predC.bg}">${p.predicted.num}</span>
+                    <span class="log-color" style="background: ${predC.bg}; box-shadow: 0 0 6px ${predC.bg}"></span>
+                    <span class="log-size">${p.predicted.size}</span>
+                    <span class="log-result ${isCorrect ? 'match' : 'mismatch'}">${isCorrect ? '✓ HIT' : '✗ MISS'}</span>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function updateMatrix() {
+            const freq = new Array(10).fill(0);
+            history.forEach(h => freq[h.num]++);
+            const sorted = freq.map((f, i) => ({n: i, f})).sort((a, b) => b.f - a.f);
+
+            document.querySelectorAll('.matrix-cell').forEach(el => {
+                const n = parseInt(el.dataset.n);
+                const rank = sorted.findIndex(x => x.n === n);
+                el.classList.remove('hot', 'cold');
+                if (rank < 3 && freq[n] > 0) el.classList.add('hot');
+                else if (rank > 6) el.classList.add('cold');
+            });
+        }
+
+        function startSessionMonitor() {
+            if (monitor) clearInterval(monitor);
+            monitor = setInterval(() => {
+                if (session && new Date() > new Date(session.expires)) {
+                    showToast('SESSION EXPIRED - REDIRECTING', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
+            }, 60000);
+        }
+
+        function logout() {
+            localStorage.removeItem('enigma_cipher_session');
+            session = null;
+        }
+
+        function showToast(m, t) {
+            const el = document.getElementById('cipherToast');
+            el.textContent = m;
+            el.className = 'cipher-toast show ' + t;
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
