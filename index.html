@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΞИIGMA - Neural Cipher System</title>
+    <title>ΞИIGMA - Neural Cipher System | Authentication</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -30,7 +30,6 @@
             --enigma-amber: #f59e0b;
             --enigma-crimson: #dc2626;
             --enigma-violet: #8b5cf6;
-            --gradient-cipher: linear-gradient(135deg, #c9a227 0%, #a0a0a0 50%, #2dd4bf 100%);
         }
 
         html, body {
@@ -69,7 +68,7 @@
             pointer-events: none;
         }
 
-        /* Header - Minimalist */
+        /* Header */
         .header {
             position: fixed;
             top: 0;
@@ -414,6 +413,7 @@
             cursor: not-allowed;
             transition: all 0.4s;
             position: relative;
+            text-decoration: none;
         }
 
         .portal-btn.unlocked {
@@ -461,6 +461,21 @@
             50% { opacity: 0.4; }
         }
 
+        /* Redirect Message */
+        .redirect-msg {
+            margin-top: 1rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--enigma-cyan);
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .redirect-msg.show {
+            opacity: 1;
+        }
+
         /* Footer Info */
         .cipher-footer {
             padding: 2rem;
@@ -504,363 +519,6 @@
             letter-spacing: 2px;
             color: var(--text-secondary);
             text-transform: uppercase;
-        }
-
-        /* Prediction Interface */
-        .pred-interface {
-            display: none;
-            padding: 1rem;
-            max-width: 480px;
-            margin: 0 auto;
-            padding-bottom: 2rem;
-        }
-
-        .pred-interface.active { display: block; }
-
-        /* Status Bar */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.875rem 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .status-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .status-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 2px;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-        }
-
-        .status-val {
-            font-family: 'Space Mono', monospace;
-            font-size: 13px;
-            letter-spacing: 2px;
-            color: var(--text-primary);
-        }
-
-        .status-val.period { color: var(--cipher-gold); }
-        .status-val.timer { 
-            color: var(--enigma-crimson);
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        /* Cipher Display */
-        .cipher-display {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .cipher-rotor {
-            width: 85px;
-            height: 85px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .cipher-rotor::before {
-            content: '';
-            position: absolute;
-            inset: 4px;
-            border: 1px dashed var(--border-light);
-            border-radius: 50%;
-            opacity: 0.5;
-        }
-
-        .rotor-value {
-            font-family: 'Cinzel', serif;
-            font-size: 28px;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .cipher-rotor.num .rotor-value { color: var(--enigma-cyan); }
-        .cipher-rotor.size .rotor-value { 
-            font-size: 14px; 
-            color: var(--cipher-gold);
-            letter-spacing: 2px;
-        }
-
-        .rotor-color {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            box-shadow: 0 0 20px currentColor;
-            position: relative;
-        }
-
-        .rotor-color::after {
-            content: '';
-            position: absolute;
-            inset: -6px;
-            border: 1px solid currentColor;
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: rotorPulse 2s infinite;
-        }
-
-        @keyframes rotorPulse {
-            0%, 100% { transform: scale(1); opacity: 0.3; }
-            50% { transform: scale(1.1); opacity: 0.1; }
-        }
-
-        /* Analysis Panel */
-        .analysis-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 0.75rem;
-        }
-
-        .panel-icon {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, var(--enigma-cyan), var(--enigma-violet));
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .panel-title {
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: var(--text-secondary);
-        }
-
-        .panel-status {
-            margin-left: auto;
-            font-family: 'Space Mono', monospace;
-            font-size: 8px;
-            color: var(--enigma-crimson);
-            letter-spacing: 2px;
-            animation: blink 1.5s infinite;
-        }
-
-        .analysis-text {
-            font-size: 12px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            padding: 0.75rem;
-            background: var(--depth);
-            border-radius: 6px;
-            border-left: 2px solid var(--enigma-cyan);
-        }
-
-        .analysis-text em {
-            color: var(--enigma-cyan);
-            font-style: normal;
-            font-weight: 500;
-        }
-
-        /* Confidence Meter */
-        .confidence-wrap {
-            background: var(--depth);
-            border-radius: 6px;
-            padding: 0.625rem 0.75rem;
-        }
-
-        .confidence-header {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
-            color: var(--text-tertiary);
-            margin-bottom: 0.375rem;
-            text-transform: uppercase;
-        }
-
-        .confidence-val {
-            color: var(--enigma-cyan);
-        }
-
-        .confidence-track {
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .confidence-track::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .confidence-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--enigma-cyan), var(--enigma-violet));
-            border-radius: 2px;
-            transition: width 0.5s ease;
-            box-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
-        }
-
-        /* Rotor Matrix */
-        .rotor-matrix {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .matrix-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 3px;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-        }
-
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
-        }
-
-        .matrix-cell {
-            aspect-ratio: 1;
-            background: var(--depth);
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Cinzel', serif;
-            font-size: 14px;
-            font-weight: 600;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .matrix-cell:hover {
-            border-color: var(--border-light);
-            transform: scale(1.05);
-        }
-
-        .matrix-cell.g { color: var(--enigma-cyan); border-color: rgba(45, 212, 191, 0.2); }
-        .matrix-cell.r { color: var(--enigma-crimson); border-color: rgba(220, 38, 38, 0.2); }
-        .matrix-cell.v { color: var(--enigma-violet); border-color: rgba(139, 92, 246, 0.2); }
-
-        .matrix-cell.hot {
-            background: rgba(245, 158, 11, 0.05);
-            border-color: var(--enigma-amber);
-        }
-
-        .matrix-cell.cold {
-            background: rgba(45, 212, 191, 0.05);
-            border-color: var(--enigma-cyan);
-        }
-
-        .matrix-cell::after {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            font-size: 10px;
-        }
-
-        .matrix-cell.hot::after { content: '▲'; color: var(--enigma-amber); }
-        .matrix-cell.cold::after { content: '▼'; color: var(--enigma-cyan); }
-
-        /* Cipher Log */
-        .cipher-log {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-        }
-
-        .log-header {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 3px;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .log-entry {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            padding: 0.625rem 0;
-            border-bottom: 1px solid var(--border-subtle);
-            font-size: 12px;
-            align-items: center;
-        }
-
-        .log-entry:last-child { border-bottom: none; }
-
-        .log-period {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--text-tertiary);
-            letter-spacing: 1px;
-        }
-
-        .log-num {
-            font-family: 'Cinzel', serif;
-            font-size: 14px;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .log-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            margin: 0 auto;
-            box-shadow: 0 0 8px currentColor;
-        }
-
-        .log-size {
-            text-align: center;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
         }
 
         /* Toast */
@@ -907,7 +565,6 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -965,110 +622,40 @@
             </div>
 
             <div class="portal-section">
-                <button class="portal-btn locked" id="portalBtn" onclick="enterCipher()">
-                    <span class="portal-indicator"></span>
-                    <span>Access Neural Core</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- Prediction Interface -->
-        <section class="pred-interface" id="predInterface">
-            <div class="status-bar">
-                <div class="status-item">
-                    <span class="status-label">Cipher Period</span>
-                    <span class="status-val period" id="periodVal">--------</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">Temporal Index</span>
-                    <span class="status-val timer" id="timerVal">00:00</span>
-                </div>
+                <div class="redirect-msg" id="redirectMsg">ESTABLISHING NEURAL LINK...</div>
             </div>
 
-            <div class="cipher-display">
-                <div class="cipher-rotor num">
-                    <span class="rotor-value" id="rotorNum">-</span>
-                </div>
-                <div class="cipher-rotor col">
-                    <div class="rotor-color" id="rotorColor" style="background: #333;"></div>
-                </div>
-                <div class="cipher-rotor size">
-                    <span class="rotor-value" id="rotorSize">-</span>
-                </div>
-            </div>
-
-            <div class="analysis-panel">
-                <div class="panel-header">
-                    <div class="panel-icon">◈</div>
-                    <span class="panel-title">Neural Analysis</span>
-                    <span class="panel-status">● LIVE</span>
-                </div>
-                <div class="analysis-text" id="analysisText">
-                    Initializing cipher matrices... Analyzing rotational patterns...
-                </div>
-                <div class="confidence-wrap">
-                    <div class="confidence-header">
-                        <span>Confidence Matrix</span>
-                        <span class="confidence-val" id="confVal">0%</span>
+            <!-- Footer -->
+            <footer class="cipher-footer" id="cipherFooter">
+                <div class="cipher-divider"></div>
+                <div class="cipher-traits">
+                    <div class="trait">
+                        <div class="trait-icon">◈</div>
+                        <div class="trait-label">Neural Engine</div>
                     </div>
-                    <div class="confidence-track">
-                        <div class="confidence-bar" id="confBar" style="width: 0%;"></div>
+                    <div class="trait">
+                        <div class="trait-icon">◉</div>
+                        <div class="trait-label">Temporal Sync</div>
+                    </div>
+                    <div class="trait">
+                        <div class="trait-icon">◆</div>
+                        <div class="trait-label">Cryptographic</div>
+                    </div>
+                    <div class="trait">
+                        <div class="trait-icon">◎</div>
+                        <div class="trait-label">Secure Channel</div>
                     </div>
                 </div>
-            </div>
-
-            <div class="rotor-matrix">
-                <div class="matrix-title">Rotor Position Matrix</div>
-                <div class="matrix-grid" id="matrixGrid">
-                    <div class="matrix-cell v" data-n="0">0</div>
-                    <div class="matrix-cell g" data-n="1">1</div>
-                    <div class="matrix-cell r" data-n="2">2</div>
-                    <div class="matrix-cell g" data-n="3">3</div>
-                    <div class="matrix-cell r" data-n="4">4</div>
-                    <div class="matrix-cell v" data-n="5">5</div>
-                    <div class="matrix-cell r" data-n="6">6</div>
-                    <div class="matrix-cell g" data-n="7">7</div>
-                    <div class="matrix-cell r" data-n="8">8</div>
-                    <div class="matrix-cell g" data-n="9">9</div>
-                </div>
-            </div>
-
-            <div class="cipher-log">
-                <div class="log-header">Cipher Transmission Log</div>
-                <div id="logEntries"></div>
-            </div>
+            </footer>
         </section>
-
-        <!-- Footer -->
-        <footer class="cipher-footer" id="cipherFooter">
-            <div class="cipher-divider"></div>
-            <div class="cipher-traits">
-                <div class="trait">
-                    <div class="trait-icon">◈</div>
-                    <div class="trait-label">Neural Engine</div>
-                </div>
-                <div class="trait">
-                    <div class="trait-icon">◉</div>
-                    <div class="trait-label">Temporal Sync</div>
-                </div>
-                <div class="trait">
-                    <div class="trait-icon">◆</div>
-                    <div class="trait-label">Cryptographic</div>
-                </div>
-                <div class="trait">
-                    <div class="trait-icon">◎</div>
-                    <div class="trait-label">Secure Channel</div>
-                </div>
-            </div>
-        </footer>
     </main>
 
     <div class="cipher-toast" id="cipherToast"></div>
 
-    <!-- ✅ Step 1: Firebase Initialization -->
+    <!-- Firebase Initialization -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCBouQx_5CL0aZdK_HrHx3fuHvHQwhj4LQ",
@@ -1079,31 +666,18 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Expose to window for use in other scripts
         window.db = db;
         window.collection = collection;
-        window.addDoc = addDoc;
         window.getDocs = getDocs;
     </script>
 
     <script>
         // State
         let session = null;
-        let history = [];
-        let lastPeriod = null;
-        let currentPred = null;
         let monitor = null;
-
-        const COLOR_MAP = {
-            green: { bg: '#2dd4bf', cls: 'g' },
-            red: { bg: '#dc2626', cls: 'r' },
-            violet: { bg: '#8b5cf6', cls: 'v' }
-        };
 
         document.addEventListener('DOMContentLoaded', () => {
             checkSession();
-            initHistory();
-            startClock();
 
             document.getElementById('keyInput').addEventListener('input', e => {
                 let v = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
@@ -1122,9 +696,7 @@
                 try {
                     const k = JSON.parse(saved);
                     if (new Date(k.expires) > new Date()) {
-                        session = k;
-                        unlockPortal();
-                        startMonitor();
+                        window.location.href = 'dashboard.html';
                     } else {
                         localStorage.removeItem('enigma_cipher_session');
                     }
@@ -1134,19 +706,6 @@
             }
         }
 
-        function startMonitor() {
-            if (monitor) clearInterval(monitor);
-            monitor = setInterval(() => {
-                if (session && new Date() > new Date(session.expires)) {
-                    lockPortal();
-                    localStorage.removeItem('enigma_cipher_session');
-                    session = null;
-                    showToast('SESSION EXPIRED', 'error');
-                }
-            }, 60000);
-        }
-
-        // ✅ Step 2: Updated authenticate() function with Firestore
         async function authenticate() {
             const input = document.getElementById('keyInput').value.trim().toUpperCase();
             const btn = document.getElementById('authBtn');
@@ -1160,7 +719,6 @@
             btn.disabled = true;
 
             try {
-                // Query Firestore for keys
                 const snapshot = await getDocs(collection(window.db, "keys"));
                 const keys = snapshot.docs.map(doc => doc.data());
 
@@ -1180,7 +738,6 @@
                     return;
                 }
 
-                // Valid key - activate session
                 const days = Math.ceil((new Date(found.expires) - new Date()) / 86400000);
 
                 localStorage.setItem('enigma_cipher_session', JSON.stringify(found));
@@ -1192,13 +749,15 @@
                 document.getElementById('sessionInfo').classList.add('show');
                 showStatus('AUTHENTICATION SUCCESSFUL', 'success');
 
-                unlockPortal();
-                startMonitor();
+                // Show redirect message and redirect
+                document.getElementById('redirectMsg').classList.add('show');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
 
             } catch (error) {
                 console.error("Firebase error:", error);
                 showStatus('CONNECTION ERROR', 'error');
-            } finally {
                 btn.innerHTML = 'Initialize Cipher';
                 btn.disabled = false;
             }
@@ -1208,219 +767,6 @@
             const s = document.getElementById('keyStatus');
             s.textContent = m;
             s.className = 'key-status show ' + (t === 'success' ? 'valid' : 'invalid');
-        }
-
-        function unlockPortal() {
-            const b = document.getElementById('portalBtn');
-            b.classList.remove('locked');
-            b.classList.add('unlocked');
-            b.innerHTML = '<span class="portal-indicator"></span><span>Access Neural Core</span>';
-        }
-
-        function lockPortal() {
-            const b = document.getElementById('portalBtn');
-            b.classList.remove('unlocked');
-            b.classList.add('locked');
-            b.innerHTML = '<span class="portal-indicator"></span><span>Access Neural Core</span>';
-        }
-
-        function enterCipher() {
-            if (!session) return;
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('cipherFooter').style.display = 'none';
-            document.getElementById('predInterface').classList.add('active');
-        }
-
-        // Prediction Engine
-        function analyze() {
-            if (history.length < 3) return randomPred();
-
-            const rec = history.slice(0, 5);
-            const cols = rec.map(h => h.color);
-
-            let pat = 'random', conf = 50;
-            let str = 1, alt = true;
-
-            for (let i = 1; i < cols.length; i++) if (cols[i] === cols[i-1]) str++; else break;
-            for (let i = 2; i < cols.length; i++) if (cols[i] !== cols[i-2]) alt = false;
-
-            if (str >= 3) { pat = str >= 4 ? 'reversal' : 'streak'; conf = 60 + str * 3; }
-            else if (alt && cols.length >= 4) { pat = 'alternating'; conf = 75; }
-            else {
-                const g = cols.filter(c => c === 'green').length;
-                const r = cols.filter(c => c === 'red').length;
-                if (Math.abs(g - r) >= 3) { pat = 'balance'; conf = 65; }
-            }
-
-            let col, num;
-            if (pat === 'alternating') col = cols[1];
-            else if (pat === 'streak') col = cols[0];
-            else if (pat === 'reversal') col = cols[0] === 'green' ? 'red' : 'green';
-            else if (pat === 'balance') col = cols.filter(c => c === 'green').length > cols.length/2 ? 'red' : 'green';
-            else col = Math.random() > 0.5 ? 'green' : 'red';
-
-            if (Math.random() < 0.15) { col = 'violet'; num = Math.random() > 0.5 ? 0 : 5; }
-            else {
-                const pool = col === 'green' ? [1,3,7,9] : col === 'red' ? [2,4,6,8] : [0,5];
-                num = pool[Math.floor(Math.random() * pool.length)];
-            }
-
-            return { num, col, size: num >= 5 ? 'BIG' : 'SMALL', pat, conf: Math.min(conf, 92) };
-        }
-
-        function randomPred() {
-            const n = Math.floor(Math.random() * 10);
-            const c = [1,3,7,9].includes(n) ? 'green' : [2,4,6,8].includes(n) ? 'red' : Math.random() > 0.5 ? 'violet' : (n === 0 ? 'red' : 'green');
-            return { num: n, col: c, size: n >= 5 ? 'BIG' : 'SMALL', pat: 'random', conf: 50 };
-        }
-
-        function startClock() {
-            tick();
-            setInterval(tick, 100);
-        }
-
-        function tick() {
-            const now = new Date();
-            const sec = 59 - now.getSeconds();
-            const ms = Math.floor((999 - now.getMilliseconds()) / 10);
-            document.getElementById('timerVal').textContent = `${String(sec).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
-
-            // New period format: YYYYMMDD1000{counter}
-            // Counter starts at 1000 at 5:29 AM and increments every minute
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-
-            // Initialize at 5:29 AM daily
-            let initTime = new Date(year, now.getMonth(), now.getDate(), 5, 29, 0, 0);
-
-            // If before 5:29 AM, use previous day's initialization
-            if (now < initTime) {
-                initTime = new Date(initTime.getTime() - 24 * 60 * 60 * 1000);
-            }
-
-            // Calculate minutes since 5:29 AM
-            const minutesSinceInit = Math.floor((now - initTime) / (1000 * 60));
-            const counter = 1000 + minutesSinceInit;
-
-            const per = `${year}${month}${day}1000${counter}`;
-            document.getElementById('periodVal').textContent = per;
-
-            if (per !== lastPeriod) {
-                if (lastPeriod && currentPred) {
-                    const act = Math.random() * 100 < currentPred.conf ? currentPred : randomPred();
-                    addLog(lastPeriod, act);
-                }
-
-                lastPeriod = per;
-                currentPred = analyze();
-
-                document.getElementById('rotorNum').textContent = currentPred.num;
-
-                const c = COLOR_MAP[currentPred.col];
-                const el = document.getElementById('rotorColor');
-                el.style.background = c.bg;
-                el.style.color = c.bg;
-
-                document.getElementById('rotorSize').textContent = currentPred.size;
-
-                const pats = {
-                    alternating: 'Alternating sequence detected in rotor positions',
-                    streak: 'Consecutive pattern identified in cipher wheel',
-                    reversal: 'Trend reversal anticipated based on entropy',
-                    balance: 'Equilibrium correction algorithm activated',
-                    random: 'Stochastic distribution model engaged'
-                };
-                document.getElementById('analysisText').innerHTML = `${pats[currentPred.pat]}. Neural network predicts <em>${currentPred.col.toUpperCase()}</em> state.`;
-
-                document.getElementById('confVal').textContent = currentPred.conf + '%';
-                document.getElementById('confBar').style.width = currentPred.conf + '%';
-
-                updateMatrix();
-            }
-        }
-
-        function addLog(per, act) {
-            history.unshift({ period: per, num: act.num, col: act.col, size: act.size });
-            if (history.length > 20) history = history.slice(0, 20);
-            renderLog();
-        }
-
-        function renderLog() {
-            const box = document.getElementById('logEntries');
-            if (history.length === 0) {
-                box.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 2rem; font-size: 11px; letter-spacing: 2px;">NO TRANSMISSIONS RECORDED</div>';
-                return;
-            }
-
-            box.innerHTML = history.map((h, i) => {
-                if (i === 0) return '';
-                const c = COLOR_MAP[h.col];
-                return `
-                <div class="log-entry">
-                    <span class="log-period">${h.period.slice(-6)}</span>
-                    <span class="log-num" style="color: ${c.bg}">${h.num}</span>
-                    <span class="log-color" style="background: ${c.bg}; box-shadow: 0 0 8px ${c.bg}"></span>
-                    <span class="log-size">${h.size}</span>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function updateMatrix() {
-            const freq = new Array(10).fill(0);
-            history.forEach(h => freq[h.num]++);
-            const sorted = freq.map((f, i) => ({n: i, f})).sort((a, b) => b.f - a.f);
-
-            document.querySelectorAll('.matrix-cell').forEach(el => {
-                const n = parseInt(el.dataset.n);
-                const rank = sorted.findIndex(x => x.n === n);
-                el.classList.remove('hot', 'cold');
-                if (rank < 3 && freq[n] > 0) el.classList.add('hot');
-                else if (rank > 6) el.classList.add('cold');
-            });
-        }
-
-        function initHistory() {
-            const pats = ['green', 'red', 'green', 'red', 'green', 'green', 'red', 'violet'];
-            const now = new Date();
-
-            // Calculate the period for current time first
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            let initTime = new Date(year, now.getMonth(), now.getDate(), 5, 29, 0, 0);
-            if (now < initTime) {
-                initTime = new Date(initTime.getTime() - 24 * 60 * 60 * 1000);
-            }
-            const currentMinutesSinceInit = Math.floor((now - initTime) / (1000 * 60));
-
-            for (let i = 8; i > 0; i--) {
-                // Calculate period for each minute in the past
-                const minsAgo = currentMinutesSinceInit - i;
-                const counter = 1000 + minsAgo;
-
-                // Handle day rollover if needed
-                let histYear = year;
-                let histMonth = month;
-                let histDay = day;
-
-                if (minsAgo < 0) {
-                    // Before 5:29 AM, use previous day
-                    const prevDay = new Date(initTime.getTime() - 24 * 60 * 60 * 1000);
-                    histYear = prevDay.getFullYear();
-                    histMonth = String(prevDay.getMonth() + 1).padStart(2, '0');
-                    histDay = String(prevDay.getDate()).padStart(2, '0');
-                }
-
-                const per = `${histYear}${histMonth}${histDay}1000${counter}`;
-                const col = pats[8-i];
-                const nums = col === 'green' ? [1,3,7,9] : col === 'red' ? [2,4,6,8] : [0,5];
-                const num = nums[Math.floor(Math.random() * nums.length)];
-                history.push({ period: per, num, col, size: num >= 5 ? 'BIG' : 'SMALL' });
-            }
-            renderLog();
-            updateMatrix();
         }
 
         function showToast(m, t) {
