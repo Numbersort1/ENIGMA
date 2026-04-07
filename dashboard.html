@@ -44,7 +44,6 @@
             overflow-x: hidden;
         }
 
-        /* Cryptographic Background */
         .cipher-bg {
             position: fixed;
             inset: 0;
@@ -70,7 +69,6 @@
             pointer-events: none;
         }
 
-        /* Header */
         .header {
             position: fixed;
             top: 0;
@@ -140,7 +138,6 @@
             color: var(--enigma-crimson);
         }
 
-        /* Main Container */
         .main {
             min-height: 100vh;
             padding-top: 80px;
@@ -201,7 +198,6 @@
             box-shadow: 0 0 8px var(--enigma-crimson);
         }
 
-        /* Grid Layout */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -209,7 +205,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Cards */
         .cipher-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -262,7 +257,6 @@
             padding: 1.5rem;
         }
 
-        /* Prediction Card */
         .prediction-display {
             text-align: center;
             padding: 2rem;
@@ -321,7 +315,6 @@
             color: var(--enigma-cyan);
         }
 
-        /* Results Grid */
         .results-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -368,7 +361,6 @@
             color: var(--loss);
         }
 
-        /* History Table */
         .history-table {
             width: 100%;
             border-collapse: collapse;
@@ -452,7 +444,6 @@
             background: var(--loss);
         }
 
-        /* Gap Analysis Section */
         .gap-section {
             margin-top: 1.5rem;
             padding-top: 1.5rem;
@@ -470,8 +461,8 @@
 
         .gap-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
         }
 
         .gap-item {
@@ -493,9 +484,12 @@
         .gap-pred {
             color: var(--enigma-amber);
             font-weight: 700;
+            font-size: 12px;
         }
 
-        /* Loading & Error States */
+        .gap-pred.big { color: var(--win); }
+        .gap-pred.small { color: var(--loss); }
+
         .loading-state {
             text-align: center;
             padding: 3rem;
@@ -543,7 +537,23 @@
             background: rgba(220, 38, 38, 0.1);
         }
 
-        /* Toast */
+        .cors-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--enigma-amber);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--enigma-amber);
+            text-align: center;
+            display: none;
+        }
+
+        .cors-warning.show {
+            display: block;
+        }
+
         .cipher-toast {
             position: fixed;
             bottom: 1.5rem;
@@ -573,7 +583,35 @@
         .cipher-toast.error { border-left-color: var(--enigma-crimson); color: var(--enigma-crimson); }
         .cipher-toast.warning { border-left-color: var(--enigma-amber); color: var(--enigma-amber); }
 
-        /* Responsive */
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-value.win { color: var(--win); }
+        .stat-value.loss { color: var(--loss); }
+
+        .stat-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
         @media (max-width: 768px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -617,6 +655,10 @@
                 <span class="status-dot" id="connStatus"></span>
                 <span id="connText">NEURAL LINK DISCONNECTED</span>
             </div>
+        </div>
+
+        <div class="cors-warning" id="corsWarning">
+            ⚠ CORS RESTRICTION DETECTED. Use a local server or disable web security for testing.
         </div>
 
         <div class="dashboard-grid">
@@ -666,7 +708,7 @@
             </div>
         </div>
 
-        <!-- History & Gap Analysis -->
+        <!-- History with Local Predictions -->
         <div class="cipher-card" style="margin-bottom: 2rem;">
             <div class="card-header">
                 <div class="card-title">
@@ -681,8 +723,8 @@
                         <thead>
                             <tr>
                                 <th>Issue Period</th>
-                                <th>Predicted</th>
-                                <th>Actual</th>
+                                <th>ΞИIGMA Predicted</th>
+                                <th>Actual Result</th>
                                 <th>Number</th>
                                 <th>Outcome</th>
                             </tr>
@@ -698,7 +740,27 @@
                     </table>
                 </div>
                 
-                <!-- Gap Analysis Section -->
+                <!-- Stats -->
+                <div class="stats-row" id="statsRow" style="display: none;">
+                    <div class="stat-item">
+                        <div class="stat-value win" id="winCount">0</div>
+                        <div class="stat-label">WINS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value loss" id="lossCount">0</div>
+                        <div class="stat-label">LOSSES</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="accuracyVal" style="color: var(--enigma-cyan);">0%</div>
+                        <div class="stat-label">ACCURACY</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalCount" style="color: var(--text-primary);">0</div>
+                        <div class="stat-label">TOTAL</div>
+                    </div>
+                </div>
+                
+                <!-- Gap Analysis -->
                 <div class="gap-section" id="gapSection" style="display: none;">
                     <div class="gap-title">Gap Prediction Queue (Next 4 Periods)</div>
                     <div class="gap-grid" id="gapGrid"></div>
@@ -711,13 +773,15 @@
 
     <script>
         // ============================================
-        // CONFIGURATION - CORRECTED API ENDPOINTS
+        // CONFIGURATION
         // ============================================
         const CONFIG = {
-            // FIXED: Removed trailing spaces from URLs
             API_LATEST: 'https://tirangaprediction.ai/api_fixed.php?action=latest_results&source=1M',
             API_HISTORY: 'https://tirangaprediction.ai/api_fixed.php?action=history&source=1M',
-            REFRESH_INTERVAL: 5000, // 5 seconds
+            PROXY_LATEST: 'https://api.allorigins.win/raw?url=https://tirangaprediction.ai/api_fixed.php?action=latest_results&source=1M',
+            PROXY_HISTORY: 'https://api.allorigins.win/raw?url=https://tirangaprediction.ai/api_fixed.php?action=history&source=1M',
+            USE_PROXY: false,
+            REFRESH_INTERVAL: 5000,
             MAX_RETRIES: 3,
             RETRY_DELAY: 2000
         };
@@ -728,15 +792,18 @@
         const state = {
             lastIssue: null,
             lastResults: [],
-            history: [],
-            gaps: [], // Gap predictions
+            apiHistory: [],
+            localHistory: [],
+            pendingPredictions: new Map(),
+            gaps: [],
             isConnected: false,
             retryCount: 0,
-            session: null
+            session: null,
+            stats: { wins: 0, losses: 0, total: 0 }
         };
 
         // ============================================
-        // AUTHENTICATION CHECK
+        // AUTHENTICATION
         // ============================================
         function checkAuth() {
             const saved = localStorage.getItem('enigma_cipher_session');
@@ -753,7 +820,6 @@
                     return false;
                 }
                 
-                // Update session badge
                 const days = Math.ceil((new Date(state.session.expires) - new Date()) / 86400000);
                 document.getElementById('sessionBadge').textContent = `SESSION ACTIVE (${days}D)`;
                 return true;
@@ -767,85 +833,92 @@
         function logout() {
             localStorage.removeItem('enigma_cipher_session');
             showToast('SESSION TERMINATED', 'warning');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1000);
+            setTimeout(() => window.location.href = 'index.html', 1000);
         }
 
         // ============================================
-        // API FETCHING WITH ERROR HANDLING
+        // PREDICTION ALGORITHM
         // ============================================
-        async function fetchWithRetry(url, options = {}, retries = CONFIG.MAX_RETRIES) {
-            try {
-                // FIXED: Added proper headers and mode for CORS
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+        function generatePrediction(lastResultType) {
+            return lastResultType === 'big' ? 'small' : 'big';
+        }
+
+        function generateGapPredictions(latest) {
+            const lastResult = latest[0];
+            const basePrediction = generatePrediction(lastResult.result_type);
+            
+            state.gaps = [];
+            const currentIssueNum = parseInt(lastResult.issue_number) || 0;
+            
+            for (let i = 1; i <= 4; i++) {
+                const prediction = i % 2 === 1 ? basePrediction : (basePrediction === 'big' ? 'small' : 'big');
+                const issueNum = currentIssueNum + i;
                 
-                const response = await fetch(url, {
-                    ...options,
-                    signal: controller.signal,
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        ...options.headers
-                    }
+                state.gaps.push({
+                    issue: issueNum,
+                    prediction: prediction,
+                    confidence: Math.max(50, 85 - (i * 8))
                 });
                 
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                return { success: true, data };
-            } catch (error) {
-                if (retries > 0) {
-                    await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY));
-                    return fetchWithRetry(url, options, retries - 1);
-                }
-                return { success: false, error: error.message };
+                state.pendingPredictions.set(issueNum.toString(), prediction);
             }
         }
 
         // ============================================
-        // MAIN DATA FETCHING
+        // API FETCHING
         // ============================================
         async function fetchData() {
             if (!checkAuth()) return;
 
+            const urls = CONFIG.USE_PROXY ? 
+                [CONFIG.PROXY_LATEST, CONFIG.PROXY_HISTORY] : 
+                [CONFIG.API_LATEST, CONFIG.API_HISTORY];
+
             try {
-                // FIXED: Using correct API URLs without trailing spaces
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+
                 const [latestRes, historyRes] = await Promise.all([
-                    fetchWithRetry(CONFIG.API_LATEST),
-                    fetchWithRetry(CONFIG.API_HISTORY)
+                    fetch(urls[0], { 
+                        signal: controller.signal,
+                        headers: { 'Accept': 'application/json' }
+                    }),
+                    fetch(urls[1], { 
+                        signal: controller.signal,
+                        headers: { 'Accept': 'application/json' }
+                    })
                 ]);
 
-                // Handle errors
-                if (!latestRes.success || !historyRes.success) {
-                    throw new Error(latestRes.error || historyRes.error || 'Connection failed');
+                clearTimeout(timeoutId);
+
+                if (!latestRes.ok || !historyRes.ok) {
+                    throw new Error(`HTTP ${latestRes.status}`);
                 }
 
-                const latest = latestRes.data;
-                const history = historyRes.data;
+                const latest = await latestRes.json();
+                const apiHistory = await historyRes.json();
 
-                // Validate data structure
                 if (!Array.isArray(latest) || latest.length === 0) {
-                    throw new Error('Invalid data format from API');
+                    throw new Error('Invalid data format');
                 }
 
-                // Update connection status
+                document.getElementById('corsWarning').classList.remove('show');
                 updateConnectionStatus(true);
 
-                // Check for new data
                 const currentIssue = latest[0]?.issue_number;
+                
                 if (currentIssue && currentIssue !== state.lastIssue) {
                     state.lastIssue = currentIssue;
                     state.lastResults = latest;
-                    state.history = history || [];
+                    state.apiHistory = apiHistory || [];
                     
-                    // Process data
-                    processData(latest, history);
+                    updateLocalHistory();
+                    generateGapPredictions(latest);
+                    
+                    updatePrediction(latest[0]);
+                    updateLatestResults(latest);
+                    updateHistoryDisplay();
+                    updateStats();
                     
                     showToast('NEURAL SYNC COMPLETE', 'success');
                 }
@@ -854,65 +927,101 @@
 
             } catch (error) {
                 console.error('Fetch error:', error);
-                updateConnectionStatus(false, error.message);
-                
-                state.retryCount++;
-                if (state.retryCount >= CONFIG.MAX_RETRIES) {
-                    showToast('NEURAL LINK UNSTABLE - RETRYING...', 'error');
-                    state.retryCount = 0;
+                handleFetchError(error);
+            }
+        }
+
+        function handleFetchError(error) {
+            state.retryCount++;
+            
+            if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+                document.getElementById('corsWarning').classList.add('show');
+                if (state.retryCount === 1 && !CONFIG.USE_PROXY) {
+                    showToast('CORS RESTRICTED - SWITCHING TO PROXY', 'warning');
+                    CONFIG.USE_PROXY = true;
+                    setTimeout(fetchData, 1000);
+                    return;
                 }
             }
-        }
 
-        // ============================================
-        // DATA PROCESSING & PREDICTION LOGIC
-        // ============================================
-        function processData(latest, history) {
-            // Generate predictions based on gap filling
-            generateGapPredictions(latest);
-            
-            // Update UI components
-            updatePrediction(latest[0]);
-            updateLatestResults(latest);
-            updateHistory(history);
-        }
+            updateConnectionStatus(false, error.message);
 
-        function generateGapPredictions(latest) {
-            // ENIGMA LOGIC: Fill gaps between current prediction and next 4 results
-            // Simple alternating pattern based on last result
-            const lastResult = latest[0];
-            const basePrediction = lastResult.result_type === 'big' ? 'SMALL' : 'BIG';
-            
-            state.gaps = [];
-            const currentIssueNum = parseInt(lastResult.issue_number) || 0;
-            
-            for (let i = 1; i <= 4; i++) {
-                // Alternate predictions for gap filling
-                const prediction = i % 2 === 1 ? basePrediction : (basePrediction === 'BIG' ? 'SMALL' : 'BIG');
-                state.gaps.push({
-                    issue: currentIssueNum + i,
-                    prediction: prediction,
-                    confidence: Math.max(50, 85 - (i * 8)) // Decreasing confidence
-                });
+            if (state.retryCount >= CONFIG.MAX_RETRIES) {
+                showToast('NEURAL LINK CRITICAL', 'error');
+                state.retryCount = 0;
+            } else {
+                setTimeout(fetchData, CONFIG.RETRY_DELAY);
             }
         }
 
+        // ============================================
+        // LOCAL HISTORY MANAGEMENT
+        // ============================================
+        function updateLocalHistory() {
+            state.localHistory = state.apiHistory.map(item => {
+                const issueNum = item.issue_number;
+                const actualType = item.result_type || item.actual_result;
+                const actualNum = item.actual_number;
+                
+                let predictedType = state.pendingPredictions.get(issueNum);
+                let isCorrect = null;
+                
+                if (predictedType) {
+                    isCorrect = predictedType === actualType;
+                    state.pendingPredictions.delete(issueNum);
+                } else {
+                    const prevItem = state.apiHistory.find(h => {
+                        const prevNum = parseInt(h.issue_number);
+                        const currNum = parseInt(issueNum);
+                        return prevNum === currNum - 1;
+                    });
+                    
+                    if (prevItem) {
+                        predictedType = generatePrediction(prevItem.result_type || prevItem.actual_result);
+                        isCorrect = predictedType === actualType;
+                    } else {
+                        predictedType = 'big';
+                        isCorrect = predictedType === actualType;
+                    }
+                }
+                
+                return {
+                    issue_number: issueNum,
+                    predicted_type: predictedType,
+                    actual_result: actualType,
+                    actual_number: actualNum,
+                    is_correct: isCorrect,
+                    created_at: item.created_at
+                };
+            });
+            
+            calculateStats();
+        }
+
+        function calculateStats() {
+            state.stats.total = state.localHistory.length;
+            state.stats.wins = state.localHistory.filter(h => h.is_correct === true).length;
+            state.stats.losses = state.localHistory.filter(h => h.is_correct === false).length;
+        }
+
+        // ============================================
+        // UI UPDATES
+        // ============================================
         function updatePrediction(lastResult) {
             const display = document.getElementById('predictionDisplay');
             const meta = document.getElementById('predictionMeta');
             
             if (!lastResult) {
-                display.innerHTML = '<div class="error-state">NO DATA AVAILABLE</div>';
+                display.innerHTML = '<div class="error-state">NO DATA</div>';
                 return;
             }
 
-            // ENIGMA LOGIC: Predict opposite of last result (gap fill strategy)
-            const nextPrediction = lastResult.result_type === 'big' ? 'SMALL' : 'BIG';
+            const nextPrediction = generatePrediction(lastResult.result_type);
             const confidence = state.gaps[0]?.confidence || 75;
 
             display.innerHTML = `
                 <div class="prediction-label">NEXT CIPHER PREDICTION</div>
-                <div class="prediction-value ${nextPrediction.toLowerCase()}">${nextPrediction}</div>
+                <div class="prediction-value ${nextPrediction}">${nextPrediction.toUpperCase()}</div>
             `;
             
             meta.style.display = 'flex';
@@ -928,9 +1037,9 @@
             }
 
             grid.innerHTML = data.slice(0, 5).map((r, index) => `
-                <div class="result-cell" style="${index === 0 ? 'border-color: var(--cipher-gold);' : ''}">
-                    <div class="result-number" style="color: ${r.result_type === 'big' ? 'var(--win)' : 'var(--loss)'};">
-                        ${r.actual_number || '--'}
+                <div class="result-cell" style="${index === 0 ? 'border-color: var(--cipher-gold); background: rgba(201, 162, 39, 0.05);' : ''}">
+                    <div class="result-number" style="color: ${r.result_type === 'big' ? 'var(--win)' : 'var(--loss)'}">
+                        ${r.actual_number ?? '--'}
                     </div>
                     <div class="result-type ${r.result_type || 'small'}">
                         ${(r.result_type || 'small').toUpperCase()}
@@ -942,22 +1051,23 @@
             `).join('');
         }
 
-        function updateHistory(data) {
+        function updateHistoryDisplay() {
             const tbody = document.getElementById('historyBody');
             const count = document.getElementById('historyCount');
             
-            if (!data || data.length === 0) {
+            if (!state.localHistory || state.localHistory.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="error-state">NO HISTORICAL DATA</td></tr>';
                 count.textContent = '0 RECORDS';
                 return;
             }
 
-            count.textContent = `${data.length} RECORDS`;
+            count.textContent = `${state.localHistory.length} RECORDS`;
 
-            tbody.innerHTML = data.slice(0, 20).map(r => {
-                const isWin = r.is_correct === "1" || r.is_correct === 1 || r.is_correct === true;
-                const statusClass = isWin ? 'win' : 'loss';
-                const statusText = isWin ? 'WIN' : 'LOSS';
+            const displayHistory = [...state.localHistory].reverse().slice(0, 20);
+
+            tbody.innerHTML = displayHistory.map(r => {
+                const statusClass = r.is_correct ? 'win' : 'loss';
+                const statusText = r.is_correct ? 'WIN' : 'LOSS';
                 
                 return `
                     <tr>
@@ -965,20 +1075,39 @@
                         <td class="predicted-type ${r.predicted_type || 'small'}">
                             ${(r.predicted_type || 'small').toUpperCase()}
                         </td>
-                        <td class="actual-result ${r.actual_result || r.result_type || 'small'}">
-                            ${(r.actual_result || r.result_type || 'small').toUpperCase()}
+                        <td class="actual-result ${r.actual_result || 'small'}">
+                            ${(r.actual_result || 'small').toUpperCase()}
                         </td>
-                        <td>${r.actual_number || '--'}</td>
+                        <td>${r.actual_number ?? '--'}</td>
                         <td>
                             <span class="status-badge ${statusClass}">
                                 ${statusText}
                             </span>
                         </td>
                     </tr>
-                `).join('');
+                `;
+            }).join('');
 
-            // Update gap section
             updateGapSection();
+        }
+
+        function updateStats() {
+            const statsRow = document.getElementById('statsRow');
+            
+            if (state.stats.total === 0) {
+                statsRow.style.display = 'none';
+                return;
+            }
+            
+            statsRow.style.display = 'flex';
+            document.getElementById('winCount').textContent = state.stats.wins;
+            document.getElementById('lossCount').textContent = state.stats.losses;
+            document.getElementById('totalCount').textContent = state.stats.total;
+            
+            const accuracy = state.stats.total > 0 
+                ? Math.round((state.stats.wins / state.stats.total) * 100) 
+                : 0;
+            document.getElementById('accuracyVal').textContent = accuracy + '%';
         }
 
         function updateGapSection() {
@@ -994,7 +1123,7 @@
             grid.innerHTML = state.gaps.map(g => `
                 <div class="gap-item">
                     <div class="gap-issue">#${g.issue.toString().slice(-6)}</div>
-                    <div class="gap-pred ${g.prediction.toLowerCase()}">${g.prediction}</div>
+                    <div class="gap-pred ${g.prediction}">${g.prediction.toUpperCase()}</div>
                     <div style="font-size: 8px; color: var(--text-tertiary); margin-top: 4px;">${g.confidence}%</div>
                 </div>
             `).join('');
@@ -1015,7 +1144,7 @@
                 text.style.color = 'var(--win)';
             } else {
                 dot.className = 'status-dot error';
-                text.textContent = errorMsg ? `ERROR: ${errorMsg.toUpperCase()}` : 'NEURAL LINK DISCONNECTED';
+                text.textContent = errorMsg ? `ERROR: ${errorMsg.toUpperCase().slice(0, 20)}` : 'NEURAL LINK DISCONNECTED';
                 text.style.color = 'var(--enigma-crimson)';
             }
         }
@@ -1024,10 +1153,7 @@
             const toast = document.getElementById('cipherToast');
             toast.textContent = message;
             toast.className = `cipher-toast show ${type}`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function updateTimer() {
@@ -1047,10 +1173,7 @@
         function init() {
             if (!checkAuth()) return;
             
-            // Initial fetch
             fetchData();
-            
-            // Setup intervals
             setInterval(fetchData, CONFIG.REFRESH_INTERVAL);
             setInterval(updateTimer, 1000);
             updateTimer();
@@ -1058,20 +1181,14 @@
             showToast('DASHBOARD INITIALIZED', 'success');
         }
 
-        // Start when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
             init();
         }
 
-        // Handle visibility change (pause when tab hidden)
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                // Optional: reduce polling when hidden
-            } else {
-                fetchData(); // Immediate refresh when visible
-            }
+            if (!document.hidden) fetchData();
         });
     </script>
 </body>
