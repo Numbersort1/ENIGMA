@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΞИIGMA - Neural Cipher System | Command Center</title>
+    <title>ΞИIGMA — Neural Cipher System</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
         * {
             margin: 0;
@@ -14,30 +14,25 @@
         }
 
         :root {
-            --void: #020202;
-            --depth: #050505;
-            --surface: #0a0a0a;
+            --void: #030303;
+            --depth: #080808;
+            --surface: #0c0c0c;
             --elevated: #111111;
-            --panel: #161616;
+            --panel: #151515;
             --border-subtle: #1a1a1a;
-            --border: #2a2a2a;
-            --border-light: #3a3a3a;
-            --text-primary: #f0f0f0;
-            --text-secondary: #888888;
-            --text-tertiary: #555555;
-            --cipher-gold: #d4af37;
-            --cipher-silver: #c0c0c0;
-            --enigma-cyan: #00f0ff;
-            --enigma-amber: #ff9500;
-            --enigma-crimson: #ff0040;
-            --enigma-violet: #bf00ff;
-            --enigma-emerald: #00ff88;
-            --win: #00ff88;
-            --loss: #ff0040;
-            --neutral: #bf00ff;
-            --hot: #ff0040;
-            --warm: #ff9500;
-            --cold: #00f0ff;
+            --border: #252525;
+            --border-light: #333333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #666666;
+            --text-tertiary: #444444;
+            --cipher-gold: #c9a227;
+            --cipher-silver: #8a8a8a;
+            --enigma-cyan: #2dd4bf;
+            --enigma-amber: #d4a017;
+            --enigma-crimson: #991b1b;
+            --win: #22c55e;
+            --loss: #dc2626;
+            --neutral: #666666;
         }
 
         html, body {
@@ -48,41 +43,35 @@
             font-size: 13px;
             line-height: 1.5;
             overflow-x: hidden;
+            letter-spacing: 0.3px;
         }
 
-        /* Animated Background */
+        /* Cryptographic Background */
         .cipher-bg {
             position: fixed;
             inset: 0;
             z-index: -2;
             background: 
-                radial-gradient(ellipse at 20% 80%, rgba(191, 0, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+                radial-gradient(ellipse at 30% 20%, rgba(201, 162, 39, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(45, 212, 191, 0.02) 0%, transparent 50%);
         }
 
         .grid-overlay {
             position: fixed;
             inset: 0;
             z-index: -1;
-            opacity: 0.3;
+            opacity: 0.15;
             background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+                linear-gradient(rgba(201, 162, 39, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201, 162, 39, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
         }
 
         .noise-overlay {
             position: fixed;
             inset: 0;
             z-index: -1;
-            opacity: 0.03;
+            opacity: 0.02;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
             pointer-events: none;
         }
@@ -93,13 +82,12 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 70px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2.5rem;
-            background: linear-gradient(180deg, rgba(2,2,2,0.95) 0%, transparent 100%);
-            backdrop-filter: blur(10px);
+            padding: 0 3rem;
+            background: linear-gradient(180deg, rgba(3,3,3,0.98) 0%, transparent 100%);
             z-index: 100;
             border-bottom: 1px solid var(--border-subtle);
         }
@@ -107,43 +95,41 @@
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
         }
 
         .logo-symbol {
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--cipher-gold);
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid var(--cipher-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
-            box-shadow: 0 0 20px rgba(212,175,55,0.3);
         }
 
         .logo-symbol::before {
             content: 'Ξ';
             font-family: 'Cinzel', serif;
-            font-size: 20px;
+            font-size: 18px;
             color: var(--cipher-gold);
-            font-weight: 800;
+            font-weight: 700;
         }
 
         .logo-symbol::after {
             content: '';
             position: absolute;
-            inset: -5px;
+            inset: -6px;
             border: 1px solid var(--cipher-gold);
             border-radius: 50%;
-            opacity: 0.3;
-            animation: pulseRing 3s ease-in-out infinite;
+            opacity: 0.2;
+            animation: pulseRing 4s ease-in-out infinite;
         }
 
         @keyframes pulseRing {
-            0%, 100% { transform: scale(1); opacity: 0.3; }
-            50% { transform: scale(1.2); opacity: 0.1; }
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.15); opacity: 0.05; }
         }
 
         .logo-text {
@@ -152,182 +138,105 @@
         }
 
         .logo-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 6px;
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 8px;
             color: var(--text-primary);
             text-transform: uppercase;
-            background: linear-gradient(135deg, var(--cipher-gold) 0%, var(--enigma-cyan) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .logo-sub {
             font-family: 'Space Mono', monospace;
-            font-size: 9px;
+            font-size: 8px;
             letter-spacing: 4px;
             color: var(--text-secondary);
             text-transform: uppercase;
             margin-top: 2px;
         }
 
-        .session-info {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .validity-badge {
+        .session-badge {
             font-family: 'Space Mono', monospace;
             font-size: 10px;
             color: var(--enigma-cyan);
             letter-spacing: 2px;
             padding: 8px 16px;
-            border: 1px solid var(--enigma-cyan);
+            border: 1px solid var(--border);
             border-radius: 4px;
-            background: rgba(0, 240, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .validity-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0,240,255,0.2), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            background: var(--surface);
         }
 
         /* Main Container */
         .main {
             min-height: 100vh;
-            padding-top: 90px;
-            padding-bottom: 2rem;
-            max-width: 1400px;
+            padding-top: 100px;
+            padding-bottom: 3rem;
+            max-width: 1000px;
             margin: 0 auto;
-            padding-left: 2.5rem;
-            padding-right: 2.5rem;
+            padding-left: 3rem;
+            padding-right: 3rem;
         }
 
         .dashboard-header {
             text-align: center;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-
-        .dashboard-header::before {
-            content: '◆';
-            position: absolute;
-            left: 50%;
-            top: -20px;
-            transform: translateX(-50%);
-            color: var(--cipher-gold);
-            font-size: 12px;
-            opacity: 0.5;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         .dashboard-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 6px;
             color: var(--text-secondary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             text-transform: uppercase;
         }
 
         .dashboard-subtitle {
             font-family: 'Space Mono', monospace;
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-tertiary);
             letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
         .connection-status {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             font-family: 'Space Mono', monospace;
             font-size: 9px;
             letter-spacing: 2px;
             color: var(--text-tertiary);
-            padding: 6px 12px;
-            border: 1px solid var(--border);
-            border-radius: 20px;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--text-tertiary);
             transition: all 0.3s;
-            position: relative;
-        }
-
-        .status-dot::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 1px solid currentColor;
-            opacity: 0;
-            animation: pulseDot 2s infinite;
-        }
-
-        @keyframes pulseDot {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
         }
 
         .status-dot.connected {
-            background: var(--win);
-            box-shadow: 0 0 10px var(--win);
+            background: var(--enigma-cyan);
+            box-shadow: 0 0 8px var(--enigma-cyan);
         }
 
         .status-dot.error {
-            background: var(--loss);
-            box-shadow: 0 0 10px var(--loss);
-        }
-
-        /* Grid Layout */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (max-width: 968px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
+            background: var(--enigma-crimson);
         }
 
         /* Cipher Cards */
         .cipher-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 2rem;
             position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .cipher-card:hover {
-            border-color: var(--border-light);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
         .cipher-card::before {
@@ -336,23 +245,21 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--cipher-gold), var(--enigma-cyan), transparent);
-            opacity: 0.5;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
         }
 
         .card-header {
-            padding: 1.5rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.05), transparent);
         }
 
         .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
             font-weight: 600;
             letter-spacing: 3px;
             color: var(--text-secondary);
@@ -363,25 +270,15 @@
         }
 
         .card-icon {
-            width: 28px;
-            height: 28px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            background: var(--elevated);
+            font-size: 12px;
+            color: var(--cipher-gold);
         }
 
-        .card-badge {
+        .card-meta {
             font-family: 'Space Mono', monospace;
             font-size: 9px;
             color: var(--text-tertiary);
             letter-spacing: 2px;
-            padding: 4px 10px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
         }
 
         .card-body {
@@ -390,361 +287,187 @@
 
         /* Prediction Display */
         .prediction-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .prediction-box {
-            background: var(--elevated);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
             text-align: center;
+            padding: 2rem 0;
+        }
+
+        .prediction-main {
+            display: inline-block;
             position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-
-        .prediction-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            transition: all 0.3s;
-        }
-
-        .prediction-box.big::before {
-            background: linear-gradient(90deg, var(--win), var(--enigma-emerald));
-            box-shadow: 0 0 20px var(--win);
-        }
-
-        .prediction-box.small::before {
-            background: linear-gradient(90deg, var(--loss), var(--enigma-crimson));
-            box-shadow: 0 0 20px var(--loss);
-        }
-
-        .prediction-box:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-light);
-        }
-
-        .prediction-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 3px;
-            color: var(--text-tertiary);
-            margin-bottom: 1rem;
-            text-transform: uppercase;
         }
 
         .prediction-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 42px;
-            font-weight: 800;
-            letter-spacing: 4px;
-            transition: all 0.3s;
+            font-family: 'Cinzel', serif;
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 1.5rem;
         }
 
         .prediction-value.big {
-            color: var(--win);
-            text-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+            color: var(--text-primary);
+            text-shadow: 0 0 40px rgba(34, 197, 94, 0.3);
         }
 
         .prediction-value.small {
-            color: var(--loss);
-            text-shadow: 0 0 30px rgba(255, 0, 64, 0.4);
+            color: var(--text-primary);
+            text-shadow: 0 0 40px rgba(220, 38, 38, 0.3);
+        }
+
+        .prediction-value::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+        }
+
+        .prediction-value.big::after {
+            background: var(--win);
+            box-shadow: 0 0 10px var(--win);
+        }
+
+        .prediction-value.small::after {
+            background: var(--loss);
+            box-shadow: 0 0 10px var(--loss);
+        }
+
+        .prediction-period {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .prediction-period span {
+            color: var(--enigma-cyan);
+            font-weight: 700;
         }
 
         .prediction-confidence {
             font-family: 'Space Mono', monospace;
             font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 0.5rem;
-        }
-
-        /* Period Info */
-        .period-info {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .period-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
             color: var(--text-tertiary);
-            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
         }
 
-        .period-number {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--enigma-cyan);
-            letter-spacing: 2px;
+        .prediction-confidence span {
+            color: var(--cipher-gold);
         }
 
         /* Hot Numbers */
-        .hot-numbers {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
+        .hot-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
             border-top: 1px solid var(--border-subtle);
+            text-align: center;
         }
 
         .hot-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 2px;
-            color: var(--text-tertiary);
-            margin-bottom: 1rem;
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
             text-transform: uppercase;
+        }
+
+        .hot-container {
             display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .hot-item {
+            display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 8px;
         }
 
-        .hot-title::before {
-            content: '🔥';
-            font-size: 12px;
-        }
-
-        .hot-grid {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
         .hot-number {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 18px;
             font-weight: 700;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hot-number.tier-1 {
-            background: linear-gradient(135deg, rgba(255,0,64,0.2), rgba(255,0,64,0.05));
-            border: 1px solid var(--hot);
-            color: var(--hot);
-            box-shadow: 0 0 15px rgba(255,0,64,0.3);
-        }
-
-        .hot-number.tier-2 {
-            background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05));
-            border: 1px solid var(--warm);
-            color: var(--warm);
-            box-shadow: 0 0 10px rgba(255,149,0,0.2);
-        }
-
-        .hot-number.tier-3 {
-            background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,240,255,0.05));
-            border: 1px solid var(--cold);
-            color: var(--cold);
-        }
-
-        /* Latest Results - Minimal */
-        .results-minimal {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .result-minimal {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            position: relative;
-            background: var(--elevated);
             border: 1px solid var(--border);
-            transition: all 0.3s;
+            background: var(--elevated);
         }
 
-        .result-minimal:hover {
-            transform: scale(1.1);
-            z-index: 10;
+        .hot-number.hot {
+            border-color: var(--enigma-crimson);
+            color: var(--enigma-crimson);
+            box-shadow: 0 0 15px rgba(153, 27, 27, 0.2);
         }
 
-        .result-minimal.big {
-            color: var(--win);
-            border-color: var(--win);
-            box-shadow: 0 0 20px rgba(0,255,136,0.2);
+        .hot-number.cold {
+            border-color: var(--enigma-cyan);
+            color: var(--enigma-cyan);
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
         }
 
-        .result-minimal.small {
-            color: var(--loss);
-            border-color: var(--loss);
-            box-shadow: 0 0 20px rgba(255,0,64,0.2);
-        }
-
-        .result-minimal::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 14px;
-            padding: 2px;
-            background: linear-gradient(135deg, var(--cipher-gold), transparent);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .result-minimal:hover::after {
-            opacity: 1;
-        }
-
-        /* Gap Section */
-        .gap-section {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-subtle);
-        }
-
-        .gap-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .gap-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: var(--text-secondary);
+        .hot-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
             text-transform: uppercase;
         }
 
-        .gap-accuracy {
+        /* Latest Results */
+        .results-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .result-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--enigma-cyan);
-        }
-
-        .gap-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .gap-item {
+            font-size: 20px;
+            font-weight: 700;
             background: var(--elevated);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
-            text-align: center;
-            position: relative;
             transition: all 0.3s;
         }
 
-        .gap-item:hover {
+        .result-item:hover {
+            transform: translateY(-2px);
             border-color: var(--border-light);
-            transform: translateY(-3px);
         }
 
-        .gap-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            border-radius: 12px 12px 0 0;
-        }
-
-        .gap-item.big::before {
-            background: linear-gradient(90deg, var(--win), var(--enigma-emerald));
-        }
-
-        .gap-item.small::before {
-            background: linear-gradient(90deg, var(--loss), var(--enigma-crimson));
-        }
-
-        .gap-period {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            color: var(--text-tertiary);
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .gap-prediction {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-        }
-
-        .gap-prediction.big {
+        .result-item.big {
             color: var(--win);
         }
 
-        .gap-prediction.small {
+        .result-item.small {
             color: var(--loss);
         }
 
-        .gap-confidence {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            color: var(--text-secondary);
+        .result-item.latest {
+            border-color: var(--cipher-gold);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.1);
         }
 
         /* History Table */
-        .history-card {
-            grid-column: 1 / -1;
-        }
-
-        .history-controls {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .history-filter {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            background: var(--elevated);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .history-filter:hover, .history-filter.active {
-            border-color: var(--cipher-gold);
-            color: var(--cipher-gold);
-        }
-
-        .history-table-container {
+        .history-container {
             overflow-x: auto;
-            border-radius: 12px;
-            border: 1px solid var(--border);
         }
 
         .history-table {
@@ -754,171 +477,131 @@
         }
 
         .history-table th {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 10px;
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
             font-weight: 600;
             letter-spacing: 2px;
             color: var(--text-secondary);
             text-transform: uppercase;
-            padding: 1.25rem 1rem;
+            padding: 1rem;
             text-align: left;
-            background: var(--elevated);
             border-bottom: 1px solid var(--border);
+            background: var(--elevated);
         }
 
         .history-table td {
             padding: 1rem;
             font-family: 'Space Mono', monospace;
             border-bottom: 1px solid var(--border-subtle);
-            transition: all 0.3s;
+            color: var(--text-primary);
         }
 
         .history-table tr:hover td {
             background: rgba(255, 255, 255, 0.02);
         }
 
-        .history-table tr.new-prediction td {
-            animation: highlightNew 2s ease-out;
+        .history-table tr.new-result td {
+            animation: highlightFade 3s ease-out;
         }
 
-        @keyframes highlightNew {
-            0% { background: rgba(212, 175, 55, 0.2); }
+        @keyframes highlightFade {
+            0% { background: rgba(201, 162, 39, 0.1); }
             100% { background: transparent; }
         }
 
-        .issue-cell {
+        .cell-issue {
             color: var(--text-secondary);
             font-size: 11px;
         }
 
-        .prediction-cell {
+        .cell-prediction {
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .prediction-cell.big {
+        .cell-prediction.big {
             color: var(--win);
         }
 
-        .prediction-cell.small {
+        .cell-prediction.small {
             color: var(--loss);
         }
 
-        .prediction-cell.pending {
+        .cell-prediction.pending {
             color: var(--text-tertiary);
             font-style: italic;
         }
 
-        .actual-cell {
+        .cell-actual {
             font-weight: 700;
             text-transform: uppercase;
         }
 
-        .actual-cell.big {
+        .cell-actual.big {
             color: var(--win);
         }
 
-        .actual-cell.small {
+        .cell-actual.small {
             color: var(--loss);
         }
 
-        .number-cell {
-            color: var(--enigma-cyan);
+        .cell-number {
+            color: var(--cipher-gold);
             font-weight: 700;
         }
 
-        .outcome-cell {
+        .cell-outcome {
             text-align: center;
         }
 
-        .outcome-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
+        .outcome-mark {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
             font-size: 10px;
             letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: 700;
-            min-width: 70px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            min-width: 50px;
         }
 
-        .outcome-badge.win {
-            background: rgba(0, 255, 136, 0.1);
+        .outcome-mark.win {
             color: var(--win);
-            border: 1px solid rgba(0, 255, 136, 0.3);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.05);
         }
 
-        .outcome-badge.loss {
-            background: rgba(255, 0, 64, 0.1);
+        .outcome-mark.loss {
             color: var(--loss);
-            border: 1px solid rgba(255, 0, 64, 0.3);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            background: rgba(220, 38, 38, 0.05);
         }
 
-        .outcome-badge.pending {
-            background: rgba(191, 0, 255, 0.05);
-            color: var(--neutral);
-            border: 1px solid rgba(191, 0, 255, 0.2);
-        }
-
-        .outcome-badge.na {
-            background: transparent;
+        .outcome-mark.na {
             color: var(--text-tertiary);
             border: 1px solid var(--border);
         }
 
-        /* Stats Bar */
-        .stats-bar {
+        /* Stats */
+        .stats-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
             margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-subtle);
+            border-top: 1px solid var(--border);
         }
 
-        .stat-box {
-            background: var(--elevated);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+        .stat-item {
+            background: var(--surface);
             padding: 1.5rem;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-        }
-
-        .stat-box.win::before {
-            background: var(--win);
-        }
-
-        .stat-box.loss::before {
-            background: var(--loss);
-        }
-
-        .stat-box.accuracy::before {
-            background: var(--enigma-cyan);
-        }
-
-        .stat-box.total::before {
-            background: var(--cipher-gold);
         }
 
         .stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 32px;
-            font-weight: 800;
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
@@ -931,37 +614,32 @@
         }
 
         .stat-value.accuracy {
-            color: var(--enigma-cyan);
-        }
-
-        .stat-value.total {
             color: var(--cipher-gold);
         }
 
         .stat-label {
             font-family: 'Space Mono', monospace;
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-tertiary);
             letter-spacing: 2px;
             text-transform: uppercase;
         }
 
-        /* Loading & Error States */
+        /* Loading & States */
         .loading-state {
             text-align: center;
-            padding: 4rem;
+            padding: 3rem;
             color: var(--text-tertiary);
         }
 
         .cipher-loader {
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--border);
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--border);
             border-top-color: var(--cipher-gold);
-            border-right-color: var(--enigma-cyan);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 1rem;
         }
 
         @keyframes spin {
@@ -970,14 +648,14 @@
 
         .error-state {
             text-align: center;
-            padding: 3rem;
+            padding: 2rem;
             color: var(--enigma-crimson);
             font-family: 'Space Mono', monospace;
-            font-size: 12px;
+            font-size: 11px;
             letter-spacing: 2px;
         }
 
-        /* Toast Notifications */
+        /* Toast */
         .cipher-toast {
             position: fixed;
             bottom: 2rem;
@@ -985,18 +663,18 @@
             transform: translateX(-50%) translateY(100px);
             background: var(--surface);
             border: 1px solid var(--border);
-            border-left: 3px solid;
+            border-left: 2px solid var(--cipher-gold);
             padding: 1rem 2rem;
-            border-radius: 8px;
+            border-radius: 4px;
             font-family: 'Space Mono', monospace;
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 2px;
             opacity: 0;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: all 0.3s ease;
             z-index: 1000;
             max-width: 90%;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            color: var(--text-primary);
         }
 
         .cipher-toast.show {
@@ -1004,70 +682,100 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        .cipher-toast.success { border-left-color: var(--win); color: var(--win); }
-        .cipher-toast.error { border-left-color: var(--loss); color: var(--loss); }
-        .cipher-toast.warning { border-left-color: var(--enigma-amber); color: var(--enigma-amber); }
-        .cipher-toast.info { border-left-color: var(--enigma-cyan); color: var(--enigma-cyan); }
-
-        /* Algorithm Indicator */
-        .algo-indicator {
-            display: inline-flex;
+        /* Access Denied Overlay */
+        .access-denied {
+            position: fixed;
+            inset: 0;
+            background: var(--void);
+            display: flex;
             align-items: center;
-            gap: 8px;
-            margin-left: 1rem;
-            padding: 4px 12px;
-            background: var(--elevated);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            color: var(--text-tertiary);
+            justify-content: center;
+            z-index: 10000;
+            flex-direction: column;
+            gap: 2rem;
         }
 
-        .algo-dot {
-            width: 6px;
-            height: 6px;
+        .access-denied .symbol {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--enigma-crimson);
             border-radius: 50%;
-            background: var(--enigma-cyan);
-            animation: pulse 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 40px;
+            color: var(--enigma-crimson);
+            animation: pulseDeny 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
+        @keyframes pulseDeny {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+
+        .access-denied .text {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            letter-spacing: 6px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .access-denied .sub {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+        }
+
+        .access-denied .return-btn {
+            margin-top: 1rem;
+            padding: 12px 32px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .access-denied .return-btn:hover {
+            border-color: var(--cipher-gold);
+            color: var(--cipher-gold);
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .main {
-                padding-left: 1rem;
-                padding-right: 1rem;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
             }
 
-            .dashboard-grid {
+            .header {
+                padding: 0 1.5rem;
+            }
+
+            .logo-title {
+                font-size: 16px;
+                letter-spacing: 4px;
+            }
+
+            .prediction-value {
+                font-size: 48px;
+                letter-spacing: 8px;
+            }
+
+            .stats-container {
                 grid-template-columns: 1fr;
-            }
-
-            .prediction-container {
-                grid-template-columns: 1fr;
-            }
-
-            .gap-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .results-minimal {
-                gap: 10px;
-            }
-
-            .result-minimal {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
             }
         }
     </style>
@@ -1078,125 +786,99 @@
     <div class="grid-overlay"></div>
     <div class="noise-overlay"></div>
 
-    <header class="header">
-        <div class="logo-container">
-            <div class="logo-symbol"></div>
-            <div class="logo-text">
-                <div class="logo-title">ΞИIGMA</div>
-                <div class="logo-sub">NEURAL CIPHER SYSTEM</div>
-            </div>
-        </div>
-        <div class="session-info">
-            <div class="validity-badge" id="validityBadge">
-                VALIDITY: <span id="daysLeft">--</span> DAYS
-            </div>
-        </div>
-    </header>
+    <!-- Access Denied Screen -->
+    <div class="access-denied" id="accessDenied">
+        <div class="symbol">✕</div>
+        <div class="text">Access Denied</div>
+        <div class="sub">Authentication Required // Neural Link Offline</div>
+        <button class="return-btn" onclick="window.location.href='index.html'">Return to Authentication</button>
+    </div>
 
-    <main class="main">
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">Neural Command Center</h1>
-            <p class="dashboard-subtitle">QUANTUM PREDICTION ENGINE // REAL-TIME ANALYTICS</p>
-            <div class="connection-status">
-                <span class="status-dot" id="connStatus"></span>
-                <span id="connText">INITIALIZING NEURAL LINK...</span>
-                <span class="algo-indicator">
-                    <span class="algo-dot"></span>
-                    <span id="algoName">PATTERN RECOGNITION v2.0</span>
-                </span>
+    <!-- Main Dashboard (Hidden until auth) -->
+    <div id="dashboardContent" class="hidden">
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo-symbol"></div>
+                <div class="logo-text">
+                    <div class="logo-title">ΞИIGMA</div>
+                    <div class="logo-sub">NEURAL CIPHER SYSTEM</div>
+                </div>
             </div>
-        </div>
+            <div class="session-badge" id="validityBadge">-- DAYS</div>
+        </header>
 
-        <div class="dashboard-grid">
-            <!-- Active Prediction Card -->
+        <main class="main">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Neural Command Center</h1>
+                <p class="dashboard-subtitle">Cryptographic Prediction Engine // Real-Time Analysis</p>
+                <div class="connection-status">
+                    <span class="status-dot" id="connStatus"></span>
+                    <span id="connText">Initializing...</span>
+                </div>
+            </div>
+
+            <!-- Active Prediction -->
             <div class="cipher-card">
                 <div class="card-header">
                     <div class="card-title">
-                        <div class="card-icon">◈</div>
-                        Active Prediction
+                        <span class="card-icon">◈</span>
+                        Active Cipher Prediction
                     </div>
-                    <div class="card-badge" id="predTimer">--:--:--</div>
+                    <div class="card-meta" id="predTimer">--:--:--</div>
                 </div>
                 <div class="card-body">
                     <div class="prediction-container">
-                        <div class="prediction-box big" id="bigBox">
-                            <div class="prediction-label">BIG PREDICTION</div>
-                            <div class="prediction-value big" id="bigValue">--</div>
-                            <div class="prediction-confidence" id="bigConf">Confidence: --%</div>
-                        </div>
-                        <div class="prediction-box small" id="smallBox">
-                            <div class="prediction-label">SMALL PREDICTION</div>
-                            <div class="prediction-value small" id="smallValue">--</div>
-                            <div class="prediction-confidence" id="smallConf">Confidence: --%</div>
+                        <div class="prediction-main">
+                            <div class="prediction-period">TARGET PERIOD <span id="targetPeriod">--</span></div>
+                            <div class="prediction-value" id="predictionValue">--</div>
+                            <div class="prediction-confidence">CONFIDENCE <span id="confidenceVal">--</span>%</div>
                         </div>
                     </div>
 
-                    <div class="period-info">
-                        <div class="period-label">TARGET PERIOD NUMBER</div>
-                        <div class="period-number" id="targetPeriod">--</div>
-                    </div>
-
-                    <div class="hot-numbers">
-                        <div class="hot-title">Quantum Hot Numbers</div>
-                        <div class="hot-grid" id="hotGrid">
+                    <div class="hot-section">
+                        <div class="hot-title">Quantum Signatures</div>
+                        <div class="hot-container" id="hotContainer">
                             <!-- Hot numbers injected here -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Latest Results Card -->
+            <!-- Latest Results -->
             <div class="cipher-card">
                 <div class="card-header">
                     <div class="card-title">
-                        <div class="card-icon">◉</div>
+                        <span class="card-icon">◉</span>
                         Live Results Stream
                     </div>
-                    <div class="card-badge">REAL-TIME</div>
+                    <div class="card-meta">REAL-TIME</div>
                 </div>
                 <div class="card-body">
-                    <div class="results-minimal" id="latestResults">
-                        <div class="loading-state" style="width: 100%;">
+                    <div class="results-container" id="resultsContainer">
+                        <div class="loading-state">
                             <div class="cipher-loader"></div>
-                        </div>
-                    </div>
-
-                    <div class="gap-section">
-                        <div class="gap-header">
-                            <div class="gap-title">Gap Prediction Queue</div>
-                            <div class="gap-accuracy" id="gapAccuracy">Next 4 Periods</div>
-                        </div>
-                        <div class="gap-grid" id="gapGrid">
-                            <!-- Gap predictions injected here -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Historical Data Card -->
-            <div class="cipher-card history-card">
+            <!-- Historical Data -->
+            <div class="cipher-card">
                 <div class="card-header">
                     <div class="card-title">
-                        <div class="card-icon">◆</div>
+                        <span class="card-icon">◆</span>
                         Historical Cipher Data
                     </div>
-                    <div style="display: flex; gap: 1rem; align-items: center;">
-                        <div class="history-controls">
-                            <button class="history-filter active" onclick="filterHistory('all')">ALL</button>
-                            <button class="history-filter" onclick="filterHistory('wins')">WINS</button>
-                            <button class="history-filter" onclick="filterHistory('losses')">LOSSES</button>
-                        </div>
-                        <div class="card-badge" id="historyCount">0 RECORDS</div>
-                    </div>
+                    <div class="card-meta" id="historyMeta">0 RECORDS</div>
                 </div>
                 <div class="card-body">
-                    <div class="history-table-container">
+                    <div class="history-container">
                         <table class="history-table" id="historyTable">
                             <thead>
                                 <tr>
-                                    <th>Period Number</th>
-                                    <th>ΞИIGMA Prediction</th>
-                                    <th>Actual Result</th>
+                                    <th>Period</th>
+                                    <th>ΞИIGMA Pred</th>
+                                    <th>Actual</th>
                                     <th>Number</th>
                                     <th style="text-align: center;">Outcome</th>
                                 </tr>
@@ -1205,35 +887,31 @@
                                 <tr>
                                     <td colspan="5" class="loading-state">
                                         <div class="cipher-loader"></div>
-                                        <div style="margin-top: 1rem;">DECRYPTING HISTORICAL DATA...</div>
+                                        <div style="margin-top: 1rem;">Decrypting...</div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="stats-bar">
-                        <div class="stat-box win">
+                    <div class="stats-container">
+                        <div class="stat-item">
                             <div class="stat-value win" id="winCount">0</div>
-                            <div class="stat-label">Wins</div>
+                            <div class="stat-label">Successful</div>
                         </div>
-                        <div class="stat-box loss">
+                        <div class="stat-item">
                             <div class="stat-value loss" id="lossCount">0</div>
-                            <div class="stat-label">Losses</div>
+                            <div class="stat-label">Unsuccessful</div>
                         </div>
-                        <div class="stat-box accuracy">
+                        <div class="stat-item">
                             <div class="stat-value accuracy" id="accuracyVal">0%</div>
-                            <div class="stat-label">Accuracy</div>
-                        </div>
-                        <div class="stat-box total">
-                            <div class="stat-value total" id="totalCount">0</div>
-                            <div class="stat-label">Total</div>
+                            <div class="stat-label">Precision</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <div class="cipher-toast" id="cipherToast"></div>
 
@@ -1249,12 +927,11 @@
             USE_PROXY: false,
             REFRESH_INTERVAL: 5000,
             MAX_RETRIES: 3,
-            RETRY_DELAY: 2000,
-            HISTORY_LIMIT: 50
+            RETRY_DELAY: 2000
         };
 
         // ============================================
-        // STATE MANAGEMENT
+        // STATE
         // ============================================
         const state = {
             lastIssue: null,
@@ -1263,194 +940,261 @@
             localHistory: [],
             pendingPredictions: new Map(),
             hotNumbers: [],
-            gaps: [],
             isConnected: false,
             retryCount: 0,
             session: null,
-            stats: { wins: 0, losses: 0, total: 0, streak: 0 },
-            algorithmVersion: 'PATTERN RECOGNITION v2.0',
-            historyFilter: 'all'
+            stats: { wins: 0, losses: 0, total: 0 },
+            learningData: {
+                patternAccuracy: { alternating: 0, streak: 0, reversion: 0 },
+                totalPredictions: 0,
+                lastStrategy: 'alternating'
+            }
         };
 
         // ============================================
         // AUTHENTICATION
         // ============================================
-        function checkAuth() {
+        function initAuth() {
             const saved = localStorage.getItem('enigma_cipher_session');
+
             if (!saved) {
-                window.location.href = 'index.html';
+                showAccessDenied();
                 return false;
             }
 
             try {
                 state.session = JSON.parse(saved);
-                if (new Date(state.session.expires) < new Date()) {
+                const expiry = new Date(state.session.expires);
+
+                if (expiry < new Date()) {
                     localStorage.removeItem('enigma_cipher_session');
-                    window.location.href = 'index.html';
+                    showAccessDenied();
                     return false;
                 }
 
-                const days = Math.ceil((new Date(state.session.expires) - new Date()) / 86400000);
-                document.getElementById('daysLeft').textContent = days;
+                // Show dashboard
+                document.getElementById('accessDenied').classList.add('hidden');
+                document.getElementById('dashboardContent').classList.remove('hidden');
+
+                const days = Math.ceil((expiry - new Date()) / 86400000);
+                document.getElementById('validityBadge').textContent = `${days} DAYS`;
+
                 return true;
             } catch(e) {
                 localStorage.removeItem('enigma_cipher_session');
-                window.location.href = 'index.html';
+                showAccessDenied();
                 return false;
             }
         }
 
+        function showAccessDenied() {
+            document.getElementById('accessDenied').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+        }
+
         // ============================================
-        // ADVANCED PREDICTION ALGORITHM
+        // ADVANCED LEARNING PREDICTION ENGINE
         // ============================================
-        class PredictionEngine {
+        class CipherEngine {
             constructor() {
-                this.patternMemory = [];
-                this.trendStrength = 0;
-                this.alternationCount = 0;
-                this.consecutiveSame = 0;
+                this.strategies = ['alternating', 'streak_break', 'reversion', 'momentum'];
+                this.strategyWeights = { alternating: 0.25, streak_break: 0.25, reversion: 0.25, momentum: 0.25 };
+                this.performance = {};
             }
 
-            analyzeTrends(history) {
-                if (history.length < 3) return { trend: 'neutral', strength: 50 };
+            analyzeSequence(history) {
+                if (history.length < 2) return { type: 'neutral', confidence: 50 };
 
-                const recent = history.slice(0, 10);
-                const types = recent.map(h => h.result_type || h.actual_result);
+                const results = history.map(h => h.result_type || h.actual_result);
+                const recent = results.slice(0, 10);
 
-                // Count alternations
+                // Pattern detection
                 let alternations = 0;
-                let consecutive = 1;
-                let maxConsecutive = 1;
+                let streaks = [];
+                let currentStreak = 1;
 
-                for (let i = 1; i < types.length; i++) {
-                    if (types[i] !== types[i-1]) {
+                for (let i = 1; i < recent.length; i++) {
+                    if (recent[i] !== recent[i-1]) {
                         alternations++;
-                        consecutive = 1;
+                        if (currentStreak > 1) streaks.push(currentStreak);
+                        currentStreak = 1;
                     } else {
-                        consecutive++;
-                        maxConsecutive = Math.max(maxConsecutive, consecutive);
+                        currentStreak++;
                     }
                 }
+                if (currentStreak > 1) streaks.push(currentStreak);
 
-                // Calculate trend strength
-                const altRate = alternations / (types.length - 1);
-                this.trendStrength = Math.round(altRate * 100);
-                this.alternationCount = alternations;
-                this.consecutiveSame = maxConsecutive;
+                const altRate = alternations / (recent.length - 1);
+                const avgStreak = streaks.length > 0 ? streaks.reduce((a,b) => a+b, 0) / streaks.length : 1;
 
-                // Determine trend type
-                let trend = 'neutral';
-                if (altRate > 0.7) trend = 'alternating';
-                else if (altRate < 0.3) trend = 'streaking';
-                else trend = 'mixed';
+                // Determine dominant pattern
+                let pattern = 'neutral';
+                let strength = 50;
 
-                return { trend, strength: this.trendStrength, maxStreak: maxConsecutive };
+                if (altRate > 0.7) {
+                    pattern = 'alternating';
+                    strength = 70 + (altRate - 0.7) * 50;
+                } else if (avgStreak > 2.5) {
+                    pattern = 'streaking';
+                    strength = 60 + (avgStreak - 2) * 15;
+                } else if (altRate < 0.3) {
+                    pattern = 'momentum';
+                    strength = 65;
+                } else {
+                    pattern = 'mixed';
+                    strength = 55;
+                }
+
+                return { 
+                    pattern, 
+                    strength: Math.min(85, Math.round(strength)),
+                    altRate,
+                    avgStreak,
+                    lastStreak: currentStreak
+                };
+            }
+
+            selectStrategy(analysis, lastResult) {
+                const lastType = lastResult.result_type;
+
+                // Dynamic strategy selection based on performance
+                if (analysis.pattern === 'alternating' && analysis.strength > 65) {
+                    return { 
+                        name: 'alternating', 
+                        prediction: lastType === 'big' ? 'small' : 'big',
+                        confidence: analysis.strength,
+                        reason: 'High alternation detected'
+                    };
+                }
+
+                if (analysis.pattern === 'streaking' && analysis.lastStreak >= 3) {
+                    return {
+                        name: 'streak_break',
+                        prediction: lastType === 'big' ? 'small' : 'big',
+                        confidence: 75,
+                        reason: 'Streak break imminent'
+                    };
+                }
+
+                if (analysis.pattern === 'momentum') {
+                    return {
+                        name: 'momentum',
+                        prediction: lastType,
+                        confidence: 60,
+                        reason: 'Momentum continuation'
+                    };
+                }
+
+                // Default: weighted random based on historical bias
+                const bigCount = state.localHistory.filter(h => h.actual_result === 'big').length;
+                const total = state.localHistory.length || 1;
+                const bigRatio = bigCount / total;
+
+                if (bigRatio > 0.6) {
+                    return {
+                        name: 'reversion',
+                        prediction: 'small',
+                        confidence: Math.round(60 + (bigRatio - 0.5) * 40),
+                        reason: 'Reversion to mean'
+                    };
+                } else if (bigRatio < 0.4) {
+                    return {
+                        name: 'reversion',
+                        prediction: 'big',
+                        confidence: Math.round(60 + (0.5 - bigRatio) * 40),
+                        reason: 'Reversion to mean'
+                    };
+                }
+
+                // Fallback to alternation
+                return {
+                    name: 'alternating',
+                    prediction: lastType === 'big' ? 'small' : 'big',
+                    confidence: 55,
+                    reason: 'Default alternation'
+                };
             }
 
             generatePrediction(lastResult, history) {
-                const analysis = this.analyzeTrends(history);
-                const lastType = lastResult.result_type;
+                const analysis = this.analyzeSequence(history);
+                const strategy = this.selectStrategy(analysis, lastResult);
 
-                let prediction, confidence, reasoning;
+                // Adjust confidence based on recent performance
+                const recentAccuracy = this.calculateRecentAccuracy();
+                strategy.confidence = Math.round(strategy.confidence * (0.8 + recentAccuracy * 0.2));
 
-                // Advanced logic based on trend analysis
-                if (analysis.trend === 'alternating') {
-                    // High alternation rate - predict opposite
-                    prediction = lastType === 'big' ? 'small' : 'big';
-                    confidence = Math.min(85, 60 + analysis.strength / 2);
-                    reasoning = 'alternating';
-                } else if (analysis.trend === 'streaking') {
-                    // Streak detected - continue streak if < 3, else break
-                    if (analysis.maxStreak >= 3) {
-                        prediction = lastType === 'big' ? 'small' : 'big';
-                        confidence = 75;
-                        reasoning = 'streak_break';
-                    } else {
-                        prediction = lastType;
-                        confidence = 70;
-                        reasoning = 'streak_continue';
-                    }
-                } else {
-                    // Mixed pattern - use weighted random with bias
-                    const bigCount = history.filter(h => (h.result_type || h.actual_result) === 'big').length;
-                    const total = history.length;
-                    const bigRatio = bigCount / total;
-
-                    if (bigRatio > 0.6) {
-                        prediction = 'small';
-                        confidence = Math.round(65 + (bigRatio - 0.5) * 40);
-                    } else if (bigRatio < 0.4) {
-                        prediction = 'big';
-                        confidence = Math.round(65 + (0.5 - bigRatio) * 40);
-                    } else {
-                        prediction = lastType === 'big' ? 'small' : 'big';
-                        confidence = 60;
-                    }
-                    reasoning = 'reversion';
-                }
-
-                return { prediction, confidence, reasoning, analysis };
+                return {
+                    prediction: strategy.prediction,
+                    confidence: Math.min(90, strategy.confidence),
+                    strategy: strategy.name,
+                    reason: strategy.reason,
+                    analysis
+                };
             }
 
-            generateGapPredictions(lastResult, history, count = 4) {
-                const gaps = [];
-                const basePred = this.generatePrediction(lastResult, history);
-                const currentIssueNum = parseInt(lastResult.issue_number) || 0;
-
-                for (let i = 1; i <= count; i++) {
-                    // Each gap prediction considers the previous prediction
-                    let pred, conf;
-
-                    if (i === 1) {
-                        pred = basePred.prediction;
-                        conf = basePred.confidence;
-                    } else {
-                        // Alternate with decreasing confidence
-                        pred = gaps[i-2].prediction === 'big' ? 'small' : 'big';
-                        conf = Math.max(50, gaps[i-2].confidence - 8);
-                    }
-
-                    const issueNum = currentIssueNum + i;
-                    gaps.push({
-                        issue: issueNum,
-                        prediction: pred,
-                        confidence: conf,
-                        isPending: true
-                    });
-                }
-
-                return gaps;
+            calculateRecentAccuracy() {
+                const recent = state.localHistory.slice(0, 10).filter(h => h.status !== 'na');
+                if (recent.length === 0) return 0.5;
+                const wins = recent.filter(h => h.status === 'win').length;
+                return wins / recent.length;
             }
 
             calculateHotNumbers(history) {
-                const numberFreq = {};
-                history.forEach(h => {
+                const freq = {};
+                const recency = {};
+
+                history.forEach((h, idx) => {
                     const num = h.actual_number;
-                    if (num !== undefined && num !== null) {
-                        numberFreq[num] = (numberFreq[num] || 0) + 1;
-                    }
+                    if (num === undefined || num === null) return;
+
+                    freq[num] = (freq[num] || 0) + 1;
+                    // Weight recent numbers higher
+                    recency[num] = (recency[num] || 0) + (history.length - idx);
                 });
 
-                const sorted = Object.entries(numberFreq)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 6);
-
-                return sorted.map((entry, index) => ({
-                    number: entry[0],
-                    frequency: entry[1],
-                    tier: index < 2 ? 1 : index < 4 ? 2 : 3
+                // Combine frequency and recency
+                const scores = Object.keys(freq).map(num => ({
+                    number: parseInt(num),
+                    score: freq[num] * 0.6 + (recency[num] / history.length) * 0.4
                 }));
+
+                scores.sort((a, b) => b.score - a.score);
+
+                // Return top 2 hot and 1 cold
+                return {
+                    hot: scores.slice(0, 2).map(s => s.number),
+                    cold: scores.length > 2 ? [scores[scores.length - 1].number] : [0]
+                };
+            }
+
+            learnFromResult(prediction, actual, strategy) {
+                const correct = prediction === actual;
+
+                if (!this.performance[strategy]) {
+                    this.performance[strategy] = { wins: 0, losses: 0 };
+                }
+
+                if (correct) {
+                    this.performance[strategy].wins++;
+                } else {
+                    this.performance[strategy].losses++;
+                }
+
+                // Adjust weights (simplified)
+                const total = this.performance[strategy].wins + this.performance[strategy].losses;
+                if (total > 5) {
+                    const accuracy = this.performance[strategy].wins / total;
+                    this.strategyWeights[strategy] = Math.max(0.1, accuracy);
+                }
             }
         }
 
-        const engine = new PredictionEngine();
+        const engine = new CipherEngine();
 
         // ============================================
         // API FETCHING
         // ============================================
         async function fetchData() {
-            if (!checkAuth()) return;
-
             const urls = CONFIG.USE_PROXY ? 
                 [CONFIG.PROXY_LATEST, CONFIG.PROXY_HISTORY] : 
                 [CONFIG.API_LATEST, CONFIG.API_HISTORY];
@@ -1480,28 +1224,25 @@
                 const apiHistory = await historyRes.json();
 
                 if (!Array.isArray(latest) || latest.length === 0) {
-                    throw new Error('Invalid data format');
+                    throw new Error('Invalid data');
                 }
 
                 updateConnectionStatus(true);
 
                 const currentIssue = latest[0]?.issue_number;
 
-                if (currentIssue && currentIssue !== state.lastIssue) {
+                if (currentIssue !== state.lastIssue) {
                     state.lastIssue = currentIssue;
                     state.lastResults = latest;
                     state.apiHistory = apiHistory || [];
 
-                    // Process with new algorithm
                     processData(latest, apiHistory);
-
-                    showToast('QUANTUM SYNC COMPLETE', 'success');
+                    showToast('Cipher Sync Complete', 'success');
                 }
 
                 state.retryCount = 0;
 
             } catch (error) {
-                console.error('Fetch error:', error);
                 handleFetchError(error);
             }
         }
@@ -1509,18 +1250,16 @@
         function handleFetchError(error) {
             state.retryCount++;
 
-            if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
-                if (state.retryCount === 1 && !CONFIG.USE_PROXY) {
-                    CONFIG.USE_PROXY = true;
-                    setTimeout(fetchData, 1000);
-                    return;
-                }
+            if (error.message.includes('CORS') && state.retryCount === 1 && !CONFIG.USE_PROXY) {
+                CONFIG.USE_PROXY = true;
+                setTimeout(fetchData, 1000);
+                return;
             }
 
             updateConnectionStatus(false, error.message);
 
             if (state.retryCount >= CONFIG.MAX_RETRIES) {
-                showToast('NEURAL LINK UNSTABLE', 'error');
+                showToast('Connection Unstable', 'error');
                 state.retryCount = 0;
             } else {
                 setTimeout(fetchData, CONFIG.RETRY_DELAY);
@@ -1533,63 +1272,59 @@
         function processData(latest, history) {
             const lastResult = latest[0];
 
-            // Generate predictions
-            const mainPred = engine.generatePrediction(lastResult, history);
-            state.gaps = engine.generateGapPredictions(lastResult, history, 4);
-            state.hotNumbers = engine.calculateHotNumbers(history);
+            // Generate prediction with learning engine
+            const prediction = engine.generatePrediction(lastResult, history);
 
-            // Store pending predictions
-            state.gaps.forEach(gap => {
-                state.pendingPredictions.set(gap.issue.toString(), gap.prediction);
-            });
+            // Calculate hot numbers
+            const numbers = engine.calculateHotNumbers(history);
+            state.hotNumbers = numbers;
+
+            // Store pending for next period
+            const nextIssue = (parseInt(lastResult.issue_number) + 1).toString();
+            state.pendingPredictions.set(nextIssue, prediction.prediction);
 
             // Update local history
             updateLocalHistory();
 
             // Update UI
-            updateActivePrediction(mainPred, state.gaps[0]?.issue);
+            updateActivePrediction(prediction, nextIssue);
             updateLatestResults(latest);
             updateHotNumbers();
-            updateGapPredictions();
             updateHistoryDisplay();
             updateStats();
         }
 
         function updateLocalHistory() {
-            // Sort API history by issue number ascending (oldest first)
-            const sortedHistory = [...state.apiHistory].sort((a, b) => {
-                return parseInt(a.issue_number) - parseInt(b.issue_number);
-            });
+            // Sort ascending (oldest first) for processing
+            const sorted = [...state.apiHistory].sort((a, b) => 
+                parseInt(a.issue_number) - parseInt(b.issue_number)
+            );
 
-            state.localHistory = sortedHistory.map((item, index) => {
+            state.localHistory = sorted.map((item, index) => {
                 const issueNum = item.issue_number;
                 const actualType = item.result_type || item.actual_result;
                 const actualNum = item.actual_number;
 
                 let predictedType = null;
-                let isCorrect = null;
                 let status = 'na';
+                let isCorrect = null;
 
-                // Check if we had a pending prediction
+                // Check if we predicted this
                 if (state.pendingPredictions.has(issueNum)) {
                     predictedType = state.pendingPredictions.get(issueNum);
                     isCorrect = predictedType === actualType;
                     status = isCorrect ? 'win' : 'loss';
                     state.pendingPredictions.delete(issueNum);
-                } else if (index > 0) {
-                    // Generate retroactive prediction based on previous
-                    const prevItem = sortedHistory[index - 1];
-                    const prevType = prevItem.result_type || prevItem.actual_result;
 
-                    // Simple alternation for retroactive
+                    // Learn from result
+                    engine.learnFromResult(predictedType, actualType, 'pending');
+                } else if (index > 0) {
+                    // Retroactive prediction
+                    const prev = sorted[index - 1];
+                    const prevType = prev.result_type || prev.actual_result;
                     predictedType = prevType === 'big' ? 'small' : 'big';
                     isCorrect = predictedType === actualType;
                     status = isCorrect ? 'win' : 'loss';
-                } else {
-                    // First item - no prediction possible
-                    predictedType = null;
-                    isCorrect = null;
-                    status = 'na';
                 }
 
                 return {
@@ -1597,9 +1332,8 @@
                     predicted_type: predictedType,
                     actual_result: actualType,
                     actual_number: actualNum,
-                    is_correct: isCorrect,
                     status: status,
-                    created_at: item.created_at
+                    is_correct: isCorrect
                 };
             });
 
@@ -1609,64 +1343,32 @@
         }
 
         function calculateStats() {
-            const validHistory = state.localHistory.filter(h => h.status !== 'na');
-            state.stats.total = validHistory.length;
-            state.stats.wins = validHistory.filter(h => h.status === 'win').length;
-            state.stats.losses = validHistory.filter(h => h.status === 'loss').length;
-
-            // Calculate streak
-            let streak = 0;
-            for (let h of state.localHistory) {
-                if (h.status === 'win') streak++;
-                else if (h.status === 'loss') {
-                    streak = 0;
-                    break;
-                }
-            }
-            state.stats.streak = streak;
+            const valid = state.localHistory.filter(h => h.status !== 'na');
+            state.stats.total = valid.length;
+            state.stats.wins = valid.filter(h => h.status === 'win').length;
+            state.stats.losses = valid.filter(h => h.status === 'loss').length;
         }
 
         // ============================================
         // UI UPDATES
         // ============================================
-        function updateActivePrediction(prediction, targetIssue) {
-            const bigBox = document.getElementById('bigBox');
-            const smallBox = document.getElementById('smallBox');
+        function updateActivePrediction(pred, nextIssue) {
+            const valueEl = document.getElementById('predictionValue');
+            valueEl.textContent = pred.prediction.toUpperCase();
+            valueEl.className = 'prediction-value ' + pred.prediction;
 
-            // Reset classes
-            bigBox.className = 'prediction-box';
-            smallBox.className = 'prediction-box';
-
-            if (prediction.prediction === 'big') {
-                bigBox.classList.add('big');
-                document.getElementById('bigValue').textContent = 'BIG';
-                document.getElementById('bigConf').textContent = `Confidence: ${prediction.confidence}%`;
-                document.getElementById('smallValue').textContent = '--';
-                document.getElementById('smallConf').textContent = 'Confidence: --%';
-            } else {
-                smallBox.classList.add('small');
-                document.getElementById('smallValue').textContent = 'SMALL';
-                document.getElementById('smallConf').textContent = `Confidence: ${prediction.confidence}%`;
-                document.getElementById('bigValue').textContent = '--';
-                document.getElementById('bigConf').textContent = 'Confidence: --%';
-            }
-
-            document.getElementById('targetPeriod').textContent = targetIssue || '--';
-            document.getElementById('algoName').textContent = `${state.algorithmVersion} | ${prediction.reasoning.toUpperCase()}`;
+            document.getElementById('targetPeriod').textContent = nextIssue;
+            document.getElementById('confidenceVal').textContent = pred.confidence;
         }
 
         function updateLatestResults(data) {
-            const container = document.getElementById('latestResults');
-
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="error-state">NO DATA</div>';
-                return;
-            }
+            const container = document.getElementById('resultsContainer');
 
             container.innerHTML = data.slice(0, 5).map((r, index) => {
                 const type = r.result_type || 'small';
+                const isLatest = index === 0;
                 return `
-                    <div class="result-minimal ${type}" style="${index === 0 ? 'transform: scale(1.1); z-index: 10;' : ''}">
+                    <div class="result-item ${type} ${isLatest ? 'latest' : ''}">
                         ${r.actual_number ?? '--'}
                     </div>
                 `;
@@ -1674,83 +1376,56 @@
         }
 
         function updateHotNumbers() {
-            const grid = document.getElementById('hotGrid');
+            const container = document.getElementById('hotContainer');
+            const { hot, cold } = state.hotNumbers;
 
-            if (state.hotNumbers.length === 0) {
-                grid.innerHTML = '<div style="color: var(--text-tertiary); font-size: 11px;">No data available</div>';
-                return;
-            }
-
-            grid.innerHTML = state.hotNumbers.map(n => `
-                <div class="hot-number tier-${n.tier}" title="Frequency: ${n.frequency}">
-                    ${n.number}
+            container.innerHTML = `
+                <div class="hot-item">
+                    <div class="hot-number hot">${hot[0] ?? '--'}</div>
+                    <div class="hot-label">Hot Primary</div>
                 </div>
-            `).join('');
-        }
-
-        function updateGapPredictions() {
-            const grid = document.getElementById('gapGrid');
-
-            if (state.gaps.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-tertiary);">No predictions</div>';
-                return;
-            }
-
-            grid.innerHTML = state.gaps.map((g, index) => `
-                <div class="gap-item ${g.prediction}">
-                    <div class="gap-period">#${g.issue.toString().slice(-6)}</div>
-                    <div class="gap-prediction ${g.prediction}">${g.prediction.toUpperCase()}</div>
-                    <div class="gap-confidence">${g.confidence}% confidence</div>
+                <div class="hot-item">
+                    <div class="hot-number hot">${hot[1] ?? '--'}</div>
+                    <div class="hot-label">Hot Secondary</div>
                 </div>
-            `).join('');
-
-            // Calculate gap accuracy based on pending predictions
-            const pendingCount = state.gaps.filter(g => g.isPending).length;
-            document.getElementById('gapAccuracy').textContent = `${pendingCount} Pending | ${state.gaps.length - pendingCount} Resolved`;
+                <div class="hot-item">
+                    <div class="hot-number cold">${cold[0] ?? '--'}</div>
+                    <div class="hot-label">Cold</div>
+                </div>
+            `;
         }
 
         function updateHistoryDisplay() {
             const tbody = document.getElementById('historyBody');
-            const count = document.getElementById('historyCount');
+            const meta = document.getElementById('historyMeta');
 
-            let displayData = state.localHistory;
+            meta.textContent = `${state.localHistory.length} RECORDS`;
 
-            // Apply filter
-            if (state.historyFilter === 'wins') {
-                displayData = displayData.filter(h => h.status === 'win');
-            } else if (state.historyFilter === 'losses') {
-                displayData = displayData.filter(h => h.status === 'loss');
-            }
-
-            count.textContent = `${displayData.length} RECORDS`;
-
-            if (displayData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="error-state">NO RECORDS FOUND</td></tr>';
+            if (state.localHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="error-state">No Data</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = displayData.slice(0, CONFIG.HISTORY_LIMIT).map((r, index) => {
-                let outcomeBadge;
+            tbody.innerHTML = state.localHistory.slice(0, 30).map((r, index) => {
+                let outcome;
                 if (r.status === 'win') {
-                    outcomeBadge = '<span class="outcome-badge win">● WIN</span>';
+                    outcome = '<span class="outcome-mark win">WIN</span>';
                 } else if (r.status === 'loss') {
-                    outcomeBadge = '<span class="outcome-badge loss">● LOSS</span>';
-                } else if (r.status === 'pending') {
-                    outcomeBadge = '<span class="outcome-badge pending">◐ PENDING</span>';
+                    outcome = '<span class="outcome-mark loss">LOSS</span>';
                 } else {
-                    outcomeBadge = '<span class="outcome-badge na">-</span>';
+                    outcome = '<span class="outcome-mark na">—</span>';
                 }
 
                 const predClass = r.predicted_type || 'pending';
-                const predText = r.predicted_type ? r.predicted_type.toUpperCase() : '-';
+                const predText = r.predicted_type ? r.predicted_type.toUpperCase() : '—';
 
                 return `
-                    <tr class="${index === 0 && state.historyFilter === 'all' ? 'new-prediction' : ''}">
-                        <td class="issue-cell">${r.issue_number || '--'}</td>
-                        <td class="prediction-cell ${predClass}">${predText}</td>
-                        <td class="actual-cell ${r.actual_result || 'small'}">${(r.actual_result || 'small').toUpperCase()}</td>
-                        <td class="number-cell">${r.actual_number ?? '--'}</td>
-                        <td class="outcome-cell">${outcomeBadge}</td>
+                    <tr class="${index === 0 ? 'new-result' : ''}">
+                        <td class="cell-issue">${r.issue_number || '--'}</td>
+                        <td class="cell-prediction ${predClass}">${predText}</td>
+                        <td class="cell-actual ${r.actual_result || 'small'}">${(r.actual_result || 'small').toUpperCase()}</td>
+                        <td class="cell-number">${r.actual_number ?? '--'}</td>
+                        <td class="cell-outcome">${outcome}</td>
                     </tr>
                 `;
             }).join('');
@@ -1759,7 +1434,6 @@
         function updateStats() {
             document.getElementById('winCount').textContent = state.stats.wins;
             document.getElementById('lossCount').textContent = state.stats.losses;
-            document.getElementById('totalCount').textContent = state.stats.total;
 
             const accuracy = state.stats.total > 0 
                 ? Math.round((state.stats.wins / state.stats.total) * 100) 
@@ -1767,20 +1441,8 @@
             document.getElementById('accuracyVal').textContent = accuracy + '%';
         }
 
-        function filterHistory(type) {
-            state.historyFilter = type;
-
-            // Update button states
-            document.querySelectorAll('.history-filter').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            updateHistoryDisplay();
-        }
-
         // ============================================
-        // UI HELPERS
+        // HELPERS
         // ============================================
         function updateConnectionStatus(connected, errorMsg = '') {
             const dot = document.getElementById('connStatus');
@@ -1790,45 +1452,39 @@
 
             if (connected) {
                 dot.className = 'status-dot connected';
-                text.textContent = 'QUANTUM LINK ESTABLISHED';
-                text.style.color = 'var(--win)';
+                text.textContent = 'Neural Link Established';
             } else {
                 dot.className = 'status-dot error';
-                text.textContent = errorMsg ? `ERROR: ${errorMsg.toUpperCase().slice(0, 20)}` : 'LINK DISCONNECTED';
-                text.style.color = 'var(--loss)';
+                text.textContent = errorMsg ? 'Error: ' + errorMsg.slice(0, 15) : 'Disconnected';
             }
         }
 
         function showToast(message, type = 'success') {
             const toast = document.getElementById('cipherToast');
             toast.textContent = message;
-            toast.className = `cipher-toast show ${type}`;
+            toast.className = 'cipher-toast show';
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function updateTimer() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { 
-                hour12: false, 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
+            document.getElementById('predTimer').textContent = now.toLocaleTimeString('en-US', { 
+                hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' 
             });
-            document.getElementById('predTimer').textContent = timeStr;
         }
 
         // ============================================
         // INITIALIZATION
         // ============================================
         function init() {
-            if (!checkAuth()) return;
+            if (!initAuth()) return;
 
             fetchData();
             setInterval(fetchData, CONFIG.REFRESH_INTERVAL);
             setInterval(updateTimer, 1000);
             updateTimer();
 
-            showToast('ΞИIGMA SYSTEM ONLINE', 'success');
+            showToast('System Online', 'success');
         }
 
         if (document.readyState === 'loading') {
@@ -1838,7 +1494,7 @@
         }
 
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) fetchData();
+            if (!document.hidden && state.session) fetchData();
         });
     </script>
 </body>
