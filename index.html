@@ -3,656 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΞИIGMA - Neural Cipher System | Authentication</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --void: #030303;
-            --depth: #080808;
-            --surface: #0f0f0f;
-            --elevated: #161616;
-            --border-subtle: #1c1c1c;
-            --border: #252525;
-            --border-light: #333;
-            --text-primary: #e8e8e8;
-            --text-secondary: #707070;
-            --text-tertiary: #505050;
-            --cipher-gold: #c9a227;
-            --cipher-silver: #a0a0a0;
-            --enigma-cyan: #2dd4bf;
-            --enigma-amber: #f59e0b;
-            --enigma-crimson: #dc2626;
-            --enigma-violet: #8b5cf6;
-        }
-
-        html, body {
-            height: 100%;
-            background: var(--void);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-
-        /* Cryptographic Background */
-        .cipher-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            opacity: 0.4;
-            background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px),
-                repeating-linear-gradient(90deg, transparent, transparent 35px, rgba(45, 212, 191, 0.03) 35px, rgba(45, 212, 191, 0.03) 36px);
-            animation: cipherShift 20s linear infinite;
-        }
-
-        @keyframes cipherShift {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(35px, 35px); }
-        }
-
-        .noise-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            opacity: 0.025;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            pointer-events: none;
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(180deg, var(--void) 0%, transparent 100%);
-            z-index: 100;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-symbol {
-            width: 32px;
-            height: 32px;
-            border: 1px solid var(--cipher-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .logo-symbol::before {
-            content: 'Ξ';
-            font-family: 'Cinzel', serif;
-            font-size: 16px;
-            color: var(--cipher-gold);
-            font-weight: 700;
-        }
-
-        .logo-symbol::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border: 1px solid var(--cipher-gold);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: pulseRing 3s ease-in-out infinite;
-        }
-
-        @keyframes pulseRing {
-            0%, 100% { transform: scale(1); opacity: 0.3; }
-            50% { transform: scale(1.1); opacity: 0.1; }
-        }
-
-        .logo-text {
-            font-family: 'Cinzel', serif;
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 8px;
-            color: var(--text-primary);
-            text-transform: uppercase;
-        }
-
-        .logo-sub {
-            font-family: 'Space Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 4px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
-
-        /* Main Container */
-        .main {
-            min-height: 100vh;
-            padding-top: 60px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Authentication Section */
-        .auth-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            max-width: 420px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .cipher-wheel {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .wheel-outer {
-            position: absolute;
-            inset: 0;
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            animation: rotate 20s linear infinite;
-        }
-
-        .wheel-outer::before {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border: 1px solid var(--border-light);
-            border-radius: 50%;
-        }
-
-        .wheel-inner {
-            position: absolute;
-            inset: 20px;
-            background: var(--surface);
-            border: 1px solid var(--cipher-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .wheel-icon {
-            font-size: 32px;
-            opacity: 0.8;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .auth-title {
-            font-family: 'Cinzel', serif;
-            font-size: 14px;
-            letter-spacing: 6px;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-
-        .auth-subtitle {
-            font-family: 'Inter', sans-serif;
-            font-size: 11px;
-            color: var(--text-tertiary);
-            letter-spacing: 2px;
-            margin-bottom: 2rem;
-        }
-
-        /* Key Input - Cipher Style */
-        .key-cipher {
-            width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.25rem;
-            position: relative;
-            margin-bottom: 1rem;
-        }
-
-        .key-cipher::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--cipher-gold), transparent);
-            opacity: 0.5;
-        }
-
-        .key-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 3px;
-            color: var(--cipher-gold);
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .key-label::before {
-            content: '◆';
-            font-size: 6px;
-        }
-
-        .key-input-wrap {
-            position: relative;
-        }
-
-        .key-input {
-            width: 100%;
-            background: var(--depth);
-            border: 1px solid var(--border-light);
-            color: var(--text-primary);
-            padding: 1rem;
-            border-radius: 6px;
-            font-family: 'Space Mono', monospace;
-            font-size: 16px;
-            text-align: center;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-        }
-
-        .key-input:focus {
-            outline: none;
-            border-color: var(--cipher-gold);
-            box-shadow: 0 0 20px rgba(201, 162, 39, 0.1);
-        }
-
-        .key-input::placeholder {
-            color: var(--text-tertiary);
-            letter-spacing: 8px;
-        }
-
-        .cipher-btn {
-            width: 100%;
-            background: transparent;
-            border: 1px solid var(--cipher-gold);
-            color: var(--cipher-gold);
-            padding: 1rem;
-            border-radius: 6px;
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            margin-top: 0.75rem;
-        }
-
-        .cipher-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .cipher-btn:hover::before {
-            left: 100%;
-        }
-
-        .cipher-btn:hover {
-            background: rgba(201, 162, 39, 0.05);
-            box-shadow: 0 0 30px rgba(201, 162, 39, 0.15);
-        }
-
-        .cipher-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .key-status {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 6px;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-align: center;
-            display: none;
-            border-left: 2px solid;
-        }
-
-        .key-status.show { display: block; }
-        .key-status.valid { 
-            background: rgba(45, 212, 191, 0.05); 
-            border-color: var(--enigma-cyan);
-            color: var(--enigma-cyan);
-        }
-        .key-status.invalid { 
-            background: rgba(220, 38, 38, 0.05); 
-            border-color: var(--enigma-crimson);
-            color: var(--enigma-crimson);
-        }
-
-        .session-info {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: var(--depth);
-            border-radius: 6px;
-            border-left: 2px solid var(--enigma-cyan);
-            display: none;
-        }
-
-        .session-info.show { display: block; }
-
-        .session-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.4rem 0;
-            font-size: 11px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .session-row:last-child { border-bottom: none; }
-
-        .session-label {
-            font-family: 'Space Mono', monospace;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-        }
-
-        .session-val {
-            font-family: 'Space Mono', monospace;
-            color: var(--enigma-cyan);
-        }
-
-        /* Access Portal */
-        .portal-section {
-            margin-top: 1.5rem;
-            text-align: center;
-        }
-
-        .portal-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 1.25rem 2.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            cursor: not-allowed;
-            transition: all 0.4s;
-            position: relative;
-            text-decoration: none;
-        }
-
-        .portal-btn.unlocked {
-            border-color: var(--enigma-cyan);
-            color: var(--enigma-cyan);
-            cursor: pointer;
-            background: rgba(45, 212, 191, 0.03);
-        }
-
-        .portal-btn.unlocked::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 8px;
-            padding: 1px;
-            background: linear-gradient(135deg, var(--enigma-cyan), transparent, var(--enigma-cyan));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0.5;
-        }
-
-        .portal-btn.unlocked:hover {
-            background: rgba(45, 212, 191, 0.08);
-            box-shadow: 0 0 40px rgba(45, 212, 191, 0.15);
-            transform: translateY(-1px);
-        }
-
-        .portal-indicator {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-tertiary);
-        }
-
-        .portal-btn.unlocked .portal-indicator {
-            background: var(--enigma-cyan);
-            box-shadow: 0 0 10px var(--enigma-cyan);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        /* Redirect Message */
-        .redirect-msg {
-            margin-top: 1rem;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--enigma-cyan);
-            letter-spacing: 2px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .redirect-msg.show {
-            opacity: 1;
-        }
-
-        /* Footer Info */
-        .cipher-footer {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .cipher-divider {
-            width: 60px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
-            margin: 0 auto 1.5rem;
-        }
-
-        .cipher-traits {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .trait {
-            text-align: center;
-        }
-
-        .trait-icon {
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.75rem;
-            font-size: 16px;
-            opacity: 0.7;
-        }
-
-        .trait-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        /* Toast */
-        .cipher-toast {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-left: 2px solid;
-            padding: 0.875rem 1.5rem;
-            border-radius: 6px;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 2px;
-            opacity: 0;
-            transition: all 0.4s;
-            z-index: 1000;
-            max-width: 90%;
-            text-align: center;
-        }
-
-        .cipher-toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .cipher-toast.success { border-left-color: var(--enigma-cyan); color: var(--enigma-cyan); }
-        .cipher-toast.error { border-left-color: var(--enigma-crimson); color: var(--enigma-crimson); }
-
-        /* Loading */
-        .cipher-loader {
-            width: 14px;
-            height: 14px;
-            border: 1px solid rgba(0,0,0,0.3);
-            border-top-color: var(--cipher-gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-<base target="_blank">
+    <title>Hiroto Signals — Authentication</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@400;500&family=Space+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="cipher-bg"></div>
-    <div class="noise-overlay"></div>
+    <!-- Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-orb"></div>
 
-    <header class="header">
-        <div class="logo-container">
-            <div class="logo-symbol"></div>
-            <div>
-                <div class="logo-text">ΞИIGMA</div>
-                <div class="logo-sub">NEURAL CIPHER SYSTEM</div>
+    <!-- Login Container -->
+    <main class="login-container">
+        
+        <!-- Brand Section -->
+        <div class="brand-section">
+            <div class="logo-wrap">
+                <img src="Content/logo.jpeg" alt="Hiroto Signals" class="logo">
+            </div>
+            <div class="brand-text">
+                <h1 class="brand-name">卄丨尺ㄖㄒㄖ ⚝ -SIGNALS</h1>
+                <span class="brand-jp">ヒロト信号</span>
             </div>
         </div>
-    </header>
 
-    <main class="main">
-        <!-- Authentication Section -->
-        <section class="auth-section" id="authSection">
-            <div class="cipher-wheel">
-                <div class="wheel-outer"></div>
-                <div class="wheel-inner">
-                    <span class="wheel-icon">🔐</span>
-                </div>
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="card-accent"></div>
+            
+            <div class="form-header">
+                <span class="header-icon">◈</span>
+                <h2>Secure Access</h2>
+                <p>Enter your authentication key</p>
             </div>
 
-            <h1 class="auth-title">Cipher Authentication</h1>
-            <p class="auth-subtitle">ENTER ACCESS SEQUENCE TO PROCEED</p>
-
-            <div class="key-cipher">
-                <div class="key-label">Access Key</div>
-                <div class="key-input-wrap">
-                    <input type="text" class="key-input" id="keyInput" placeholder="XXXX-XXXX-XXXX" maxlength="14" autocomplete="off">
+            <div class="form-body">
+                <div class="input-group">
+                    <label for="keyInput">Access Key</label>
+                    <input 
+                        type="text" 
+                        id="keyInput" 
+                        class="key-input" 
+                        placeholder="XXXX-XXXX-XXXX" 
+                        maxlength="14"
+                        autocomplete="off"
+                    >
                 </div>
-                <button class="cipher-btn" id="authBtn" onclick="authenticate()">
-                    Initialize Cipher
+
+                <button class="submit-btn" id="authBtn" onclick="authenticate()">
+                    <span class="btn-text">Verify Access</span>
+                    <span class="btn-loader hidden"></span>
                 </button>
 
-                <div class="key-status" id="keyStatus"></div>
+                <div class="status-msg" id="statusMsg"></div>
 
                 <div class="session-info" id="sessionInfo">
-                    <div class="session-row">
-                        <span class="session-label">STATUS</span>
-                        <span class="session-val" id="sessStatus">--</span>
+                    <div class="info-row">
+                        <span>Status</span>
+                        <span class="active" id="sessStatus">--</span>
                     </div>
-                    <div class="session-row">
-                        <span class="session-label">EXPIRATION</span>
-                        <span class="session-val" id="sessExpiry">--</span>
+                    <div class="info-row">
+                        <span>Expires</span>
+                        <span id="sessExpiry">--</span>
                     </div>
-                    <div class="session-row">
-                        <span class="session-label">REMAINING</span>
-                        <span class="session-val" id="sessRemain">--</span>
+                    <div class="info-row">
+                        <span>Remaining</span>
+                        <span id="sessRemain">--</span>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="portal-section">
-                <div class="redirect-msg" id="redirectMsg">ESTABLISHING NEURAL LINK...</div>
-            </div>
-
-            <!-- Footer -->
-            <footer class="cipher-footer" id="cipherFooter">
-                <div class="cipher-divider"></div>
-                <div class="cipher-traits">
-                    <div class="trait">
-                        <div class="trait-icon">◈</div>
-                        <div class="trait-label">Neural Engine</div>
-                    </div>
-                    <div class="trait">
-                        <div class="trait-icon">◉</div>
-                        <div class="trait-label">Temporal Sync</div>
-                    </div>
-                    <div class="trait">
-                        <div class="trait-icon">◆</div>
-                        <div class="trait-label">Cryptographic</div>
-                    </div>
-                    <div class="trait">
-                        <div class="trait-icon">◎</div>
-                        <div class="trait-label">Secure Channel</div>
-                    </div>
-                </div>
-            </footer>
-        </section>
+        <!-- Footer -->
+        <footer class="login-footer">
+            <p>Protected System • Authorized Personnel Only</p>
+        </footer>
     </main>
 
-    <div class="cipher-toast" id="cipherToast"></div>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
-    <!-- Firebase Initialization -->
+    <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -671,110 +101,6 @@
         window.getDocs = getDocs;
     </script>
 
-    <script>
-        // State
-        let session = null;
-        let monitor = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            checkSession();
-
-            document.getElementById('keyInput').addEventListener('input', e => {
-                let v = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-                let f = '';
-                for (let i = 0; i < v.length && i < 12; i++) {
-                    if (i > 0 && i % 4 === 0) f += '-';
-                    f += v[i];
-                }
-                e.target.value = f;
-            });
-        });
-
-        function checkSession() {
-            const saved = localStorage.getItem('enigma_cipher_session');
-            if (saved) {
-                try {
-                    const k = JSON.parse(saved);
-                    if (new Date(k.expires) > new Date()) {
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        localStorage.removeItem('enigma_cipher_session');
-                    }
-                } catch(e) {
-                    localStorage.removeItem('enigma_cipher_session');
-                }
-            }
-        }
-
-        async function authenticate() {
-            const input = document.getElementById('keyInput').value.trim().toUpperCase();
-            const btn = document.getElementById('authBtn');
-
-            if (input.length < 14) {
-                showStatus('INVALID SEQUENCE', 'error');
-                return;
-            }
-
-            btn.innerHTML = '<span class="cipher-loader"></span>VERIFYING';
-            btn.disabled = true;
-
-            try {
-                const snapshot = await getDocs(collection(window.db, "keys"));
-                const keys = snapshot.docs.map(doc => doc.data());
-
-                const found = keys.find(k => k.key === input);
-
-                if (!found) {
-                    showStatus('SEQUENCE NOT RECOGNIZED', 'error');
-                    btn.innerHTML = 'Initialize Cipher';
-                    btn.disabled = false;
-                    return;
-                }
-
-                if (new Date() > new Date(found.expires)) {
-                    showStatus('SEQUENCE EXPIRED', 'error');
-                    btn.innerHTML = 'Initialize Cipher';
-                    btn.disabled = false;
-                    return;
-                }
-
-                const days = Math.ceil((new Date(found.expires) - new Date()) / 86400000);
-
-                localStorage.setItem('enigma_cipher_session', JSON.stringify(found));
-                session = found;
-
-                document.getElementById('sessStatus').textContent = 'ACTIVE';
-                document.getElementById('sessExpiry').textContent = new Date(found.expires).toLocaleDateString();
-                document.getElementById('sessRemain').textContent = days + ' DAYS';
-                document.getElementById('sessionInfo').classList.add('show');
-                showStatus('AUTHENTICATION SUCCESSFUL', 'success');
-
-                // Show redirect message and redirect
-                document.getElementById('redirectMsg').classList.add('show');
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-
-            } catch (error) {
-                console.error("Firebase error:", error);
-                showStatus('CONNECTION ERROR', 'error');
-                btn.innerHTML = 'Initialize Cipher';
-                btn.disabled = false;
-            }
-        }
-
-        function showStatus(m, t) {
-            const s = document.getElementById('keyStatus');
-            s.textContent = m;
-            s.className = 'key-status show ' + (t === 'success' ? 'valid' : 'invalid');
-        }
-
-        function showToast(m, t) {
-            const el = document.getElementById('cipherToast');
-            el.textContent = m;
-            el.className = 'cipher-toast show ' + t;
-            setTimeout(() => el.classList.remove('show'), 24000);
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
