@@ -3,860 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΞИIGMA — Neural Cipher System</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --void: #030303;
-            --depth: #080808;
-            --surface: #0c0c0c;
-            --elevated: #111111;
-            --panel: #151515;
-            --border-subtle: #1a1a1a;
-            --border: #252525;
-            --border-light: #333333;
-            --text-primary: #e0e0e0;
-            --text-secondary: #666666;
-            --text-tertiary: #444444;
-            --cipher-gold: #c9a227;
-            --cipher-silver: #8a8a8a;
-            --enigma-cyan: #2dd4bf;
-            --enigma-amber: #d4a017;
-            --enigma-crimson: #991b1b;
-            --win: #22c55e;
-            --loss: #dc2626;
-            --neutral: #666666;
-        }
-
-        html, body {
-            height: 100%;
-            background: var(--void);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            line-height: 1.5;
-            overflow-x: hidden;
-            letter-spacing: 0.3px;
-        }
-
-        /* Cryptographic Background */
-        .cipher-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: 
-                radial-gradient(ellipse at 30% 20%, rgba(201, 162, 39, 0.03) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(45, 212, 191, 0.02) 0%, transparent 50%);
-        }
-
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            opacity: 0.15;
-            background-image: 
-                linear-gradient(rgba(201, 162, 39, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(201, 162, 39, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-        }
-
-        .noise-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            opacity: 0.02;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            pointer-events: none;
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 3rem;
-            background: linear-gradient(180deg, rgba(3,3,3,0.98) 0%, transparent 100%);
-            z-index: 100;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .logo-symbol {
-            width: 36px;
-            height: 36px;
-            border: 1.5px solid var(--cipher-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .logo-symbol::before {
-            content: 'Ξ';
-            font-family: 'Cinzel', serif;
-            font-size: 18px;
-            color: var(--cipher-gold);
-            font-weight: 700;
-        }
-
-        .logo-symbol::after {
-            content: '';
-            position: absolute;
-            inset: -6px;
-            border: 1px solid var(--cipher-gold);
-            border-radius: 50%;
-            opacity: 0.2;
-            animation: pulseRing 4s ease-in-out infinite;
-        }
-
-        @keyframes pulseRing {
-            0%, 100% { transform: scale(1); opacity: 0.2; }
-            50% { transform: scale(1.15); opacity: 0.05; }
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo-title {
-            font-family: 'Cinzel', serif;
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 8px;
-            color: var(--text-primary);
-            text-transform: uppercase;
-        }
-
-        .logo-sub {
-            font-family: 'Space Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 4px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
-
-        .session-badge {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--enigma-cyan);
-            letter-spacing: 2px;
-            padding: 8px 16px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--surface);
-        }
-
-        /* Main Container */
-        .main {
-            min-height: 100vh;
-            padding-top: 100px;
-            padding-bottom: 3rem;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding-left: 3rem;
-            padding-right: 3rem;
-        }
-
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .dashboard-title {
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 6px;
-            color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-        }
-
-        .dashboard-subtitle {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            color: var(--text-tertiary);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .connection-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 1.5rem;
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
-            color: var(--text-tertiary);
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-tertiary);
-            transition: all 0.3s;
-        }
-
-        .status-dot.connected {
-            background: var(--enigma-cyan);
-            box-shadow: 0 0 8px var(--enigma-cyan);
-        }
-
-        .status-dot.error {
-            background: var(--enigma-crimson);
-        }
-
-        /* Cipher Cards */
-        .cipher-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .cipher-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
-        }
-
-        .card-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-title {
-            font-family: 'Cinzel', serif;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 3px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-icon {
-            font-size: 12px;
-            color: var(--cipher-gold);
-        }
-
-        .card-meta {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            color: var(--text-tertiary);
-            letter-spacing: 2px;
-        }
-
-        .card-body {
-            padding: 2rem;
-        }
-
-        /* Prediction Display */
-        .prediction-container {
-            text-align: center;
-            padding: 2rem 0;
-        }
-
-        .prediction-main {
-            display: inline-block;
-            position: relative;
-        }
-
-        .prediction-value {
-            font-family: 'Cinzel', serif;
-            font-size: 64px;
-            font-weight: 700;
-            letter-spacing: 12px;
-            text-transform: uppercase;
-            line-height: 1;
-            margin-bottom: 1.5rem;
-        }
-
-        .prediction-value.big {
-            color: var(--text-primary);
-            text-shadow: 0 0 40px rgba(34, 197, 94, 0.3);
-        }
-
-        .prediction-value.small {
-            color: var(--text-primary);
-            text-shadow: 0 0 40px rgba(220, 38, 38, 0.3);
-        }
-
-        .prediction-value::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 2px;
-        }
-
-        .prediction-value.big::after {
-            background: var(--win);
-            box-shadow: 0 0 10px var(--win);
-        }
-
-        .prediction-value.small::after {
-            background: var(--loss);
-            box-shadow: 0 0 10px var(--loss);
-        }
-
-        .prediction-period {
-            font-family: 'Space Mono', monospace;
-            font-size: 11px;
-            color: var(--text-secondary);
-            letter-spacing: 3px;
-            margin-bottom: 0.5rem;
-        }
-
-        .prediction-period span {
-            color: var(--enigma-cyan);
-            font-weight: 700;
-        }
-
-        .prediction-confidence {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--text-tertiary);
-            letter-spacing: 2px;
-        }
-
-        .prediction-confidence span {
-            color: var(--cipher-gold);
-        }
-
-        /* Hot Numbers */
-        .hot-section {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-subtle);
-            text-align: center;
-        }
-
-        .hot-title {
-            font-family: 'Cinzel', serif;
-            font-size: 9px;
-            letter-spacing: 3px;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .hot-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .hot-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .hot-number {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Space Mono', monospace;
-            font-size: 18px;
-            font-weight: 700;
-            border: 1px solid var(--border);
-            background: var(--elevated);
-        }
-
-        .hot-number.hot {
-            border-color: var(--enigma-crimson);
-            color: var(--enigma-crimson);
-            box-shadow: 0 0 15px rgba(153, 27, 27, 0.2);
-        }
-
-        .hot-number.cold {
-            border-color: var(--enigma-cyan);
-            color: var(--enigma-cyan);
-            box-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
-        }
-
-        .hot-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 2px;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-        }
-
-        /* Latest Results */
-        .results-container {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .result-item {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Space Mono', monospace;
-            font-size: 20px;
-            font-weight: 700;
-            background: var(--elevated);
-            border: 1px solid var(--border);
-            transition: all 0.3s;
-        }
-
-        .result-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-light);
-        }
-
-        .result-item.big {
-            color: var(--win);
-        }
-
-        .result-item.small {
-            color: var(--loss);
-        }
-
-        .result-item.latest {
-            border-color: var(--cipher-gold);
-            box-shadow: 0 0 20px rgba(201, 162, 39, 0.1);
-        }
-
-        /* History Table */
-        .history-container {
-            overflow-x: auto;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-
-        .history-table th {
-            font-family: 'Cinzel', serif;
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            background: var(--elevated);
-        }
-
-        .history-table td {
-            padding: 1rem;
-            font-family: 'Space Mono', monospace;
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--text-primary);
-        }
-
-        .history-table tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .history-table tr.new-result td {
-            animation: highlightFade 3s ease-out;
-        }
-
-        @keyframes highlightFade {
-            0% { background: rgba(201, 162, 39, 0.1); }
-            100% { background: transparent; }
-        }
-
-        .cell-issue {
-            color: var(--text-secondary);
-            font-size: 11px;
-        }
-
-        .cell-prediction {
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .cell-prediction.big {
-            color: var(--win);
-        }
-
-        .cell-prediction.small {
-            color: var(--loss);
-        }
-
-        .cell-prediction.pending {
-            color: var(--text-tertiary);
-            font-style: italic;
-        }
-
-        .cell-actual {
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .cell-actual.big {
-            color: var(--win);
-        }
-
-        .cell-actual.small {
-            color: var(--loss);
-        }
-
-        .cell-number {
-            color: var(--cipher-gold);
-            font-weight: 700;
-        }
-
-        .cell-outcome {
-            text-align: center;
-        }
-
-        .outcome-mark {
-            display: inline-block;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 2px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            min-width: 50px;
-        }
-
-        .outcome-mark.win {
-            color: var(--win);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            background: rgba(34, 197, 94, 0.05);
-        }
-
-        .outcome-mark.loss {
-            color: var(--loss);
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            background: rgba(220, 38, 38, 0.05);
-        }
-
-        .outcome-mark.na {
-            color: var(--text-tertiary);
-            border: 1px solid var(--border);
-        }
-
-        /* Stats */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
-            margin-top: 2rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .stat-item {
-            background: var(--surface);
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-family: 'Cinzel', serif;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value.win {
-            color: var(--win);
-        }
-
-        .stat-value.loss {
-            color: var(--loss);
-        }
-
-        .stat-value.accuracy {
-            color: var(--cipher-gold);
-        }
-
-        .stat-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            color: var(--text-tertiary);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* Loading & States */
-        .loading-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-tertiary);
-        }
-
-        .cipher-loader {
-            width: 30px;
-            height: 30px;
-            border: 1px solid var(--border);
-            border-top-color: var(--cipher-gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error-state {
-            text-align: center;
-            padding: 2rem;
-            color: var(--enigma-crimson);
-            font-family: 'Space Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 2px;
-        }
-
-        /* Toast */
-        .cipher-toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-left: 2px solid var(--cipher-gold);
-            padding: 1rem 2rem;
-            border-radius: 4px;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 2px;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            max-width: 90%;
-            text-align: center;
-            color: var(--text-primary);
-        }
-
-        .cipher-toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Access Denied Overlay */
-        .access-denied {
-            position: fixed;
-            inset: 0;
-            background: var(--void);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .access-denied .symbol {
-            width: 80px;
-            height: 80px;
-            border: 2px solid var(--enigma-crimson);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Cinzel', serif;
-            font-size: 40px;
-            color: var(--enigma-crimson);
-            animation: pulseDeny 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseDeny {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.95); }
-        }
-
-        .access-denied .text {
-            font-family: 'Cinzel', serif;
-            font-size: 14px;
-            letter-spacing: 6px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        .access-denied .sub {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: var(--text-tertiary);
-            letter-spacing: 2px;
-        }
-
-        .access-denied .return-btn {
-            margin-top: 1rem;
-            padding: 12px 32px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 3px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-        }
-
-        .access-denied .return-btn:hover {
-            border-color: var(--cipher-gold);
-            color: var(--cipher-gold);
-        }
-
-        /* Hidden */
-        .hidden {
-            display: none !important;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main {
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
-
-            .header {
-                padding: 0 1.5rem;
-            }
-
-            .logo-title {
-                font-size: 16px;
-                letter-spacing: 4px;
-            }
-
-            .prediction-value {
-                font-size: 48px;
-                letter-spacing: 8px;
-            }
-
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-<base target="_blank">
+    <title>卄丨尺ㄖㄒㄖ ⚝ -SIGNALS // Dashboard</title>
+    <link rel="stylesheet" href="d.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@400;500;700&family=Space+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="cipher-bg"></div>
-    <div class="grid-overlay"></div>
+    <!-- Background Layers -->
+    <div class="bg-depth"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
     <div class="noise-overlay"></div>
 
     <!-- Access Denied Screen -->
     <div class="access-denied" id="accessDenied">
-        <div class="symbol">✕</div>
-        <div class="text">Access Denied</div>
-        <div class="sub">Authentication Required // Neural Link Offline</div>
-        <button class="return-btn" onclick="window.location.href='index.html'">Return to Authentication</button>
+        <div class="denial-symbol">✕</div>
+        <div class="denial-text">認証失敗</div>
+        <div class="denial-sub">Access Denied // 認証が必要です</div>
+        <button class="return-btn" onclick="window.location.href='index.html'">Return to Login // ログインに戻る</button>
     </div>
 
-    <!-- Main Dashboard (Hidden until auth) -->
+    <!-- Main Dashboard -->
     <div id="dashboardContent" class="hidden">
+        <!-- Header -->
         <header class="header">
-            <div class="logo-container">
-                <div class="logo-symbol"></div>
-                <div class="logo-text">
-                    <div class="logo-title">ΞИIGMA</div>
-                    <div class="logo-sub">NEURAL CIPHER SYSTEM</div>
+            <div class="brand-section">
+                <div class="logo-wrap">
+                    <div class="logo-ring"></div>
+                    <div class="logo-core">⚝</div>
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-name">卄丨尺ㄖㄒㄖ ⚝ -SIGNALS</h1>
+                    <span class="brand-jp">ヒロト信号システム</span>
                 </div>
             </div>
-            <div class="session-badge" id="validityBadge">-- DAYS</div>
+            
+            <div class="header-meta">
+                <div class="connection-status">
+                    <span class="status-dot" id="connStatus"></span>
+                    <span class="status-text" id="connText">Initializing...</span>
+                </div>
+                <div class="session-badge" id="validityBadge">-- DAYS</div>
+            </div>
         </header>
 
         <main class="main">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">Neural Command Center</h1>
-                <p class="dashboard-subtitle">Cryptographic Prediction Engine // Real-Time Analysis</p>
-                <div class="connection-status">
-                    <span class="status-dot" id="connStatus"></span>
-                    <span id="connText">Initializing...</span>
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-label">
+                    <span class="jp-text">神経暗号システム</span>
+                    <span class="divider">//</span>
+                    <span>Neural Cipher System</span>
                 </div>
-            </div>
+                <h2 class="hero-title">Signal Intelligence Dashboard</h2>
+                <p class="hero-subtitle">Real-time predictive analytics & pattern recognition</p>
+            </section>
 
-            <!-- Active Prediction -->
-            <div class="cipher-card">
+            <!-- Primary Prediction Card -->
+            <div class="cipher-card primary">
+                <div class="card-accent"></div>
                 <div class="card-header">
-                    <div class="card-title">
+                    <div class="header-left">
                         <span class="card-icon">◈</span>
-                        Active Cipher Prediction
+                        <div class="header-text">
+                            <h3>Active Prediction</h3>
+                            <span class="jp-sub">予測シグナル</span>
+                        </div>
                     </div>
-                    <div class="card-meta" id="predTimer">--:--:--</div>
+                    <div class="timer-display" id="predTimer">--:--:--</div>
                 </div>
-                <div class="card-body">
-                    <div class="prediction-container">
-                        <div class="prediction-main">
-                            <div class="prediction-period">TARGET PERIOD <span id="targetPeriod">--</span></div>
+                
+                <div class="card-body prediction-body">
+                    <div class="prediction-display">
+                        <div class="prediction-meta">
+                            <span class="meta-label">Target Period</span>
+                            <span class="meta-label jp">対象期間</span>
+                        </div>
+                        <div class="period-value" id="targetPeriod">--</div>
+                        
+                        <div class="prediction-value-container">
                             <div class="prediction-value" id="predictionValue">--</div>
-                            <div class="prediction-confidence">CONFIDENCE <span id="confidenceVal">--</span>%</div>
+                            <div class="prediction-glow"></div>
+                        </div>
+                        
+                        <div class="confidence-bar">
+                            <div class="confidence-label">
+                                <span>Confidence</span>
+                                <span class="jp">信頼度</span>
+                            </div>
+                            <div class="confidence-track">
+                                <div class="confidence-fill" id="confidenceFill"></div>
+                            </div>
+                            <div class="confidence-value" id="confidenceVal">--%</div>
                         </div>
                     </div>
 
+                    <!-- Hot Numbers -->
                     <div class="hot-section">
-                        <div class="hot-title">Quantum Signatures</div>
+                        <div class="section-header">
+                            <span class="section-icon">◉</span>
+                            <div class="section-title">
+                                <h4>Quantum Signatures</h4>
+                                <span class="jp">量子シグネチャ</span>
+                            </div>
+                        </div>
                         <div class="hot-container" id="hotContainer">
-                            <!-- Hot numbers injected here -->
+                            <!-- Injected via JS -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Latest Results -->
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon win">▲</div>
+                    <div class="stat-content">
+                        <div class="stat-value win" id="winCount">0</div>
+                        <div class="stat-label">
+                            <span>Successful</span>
+                            <span class="jp">成功</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon loss">▼</div>
+                    <div class="stat-content">
+                        <div class="stat-value loss" id="lossCount">0</div>
+                        <div class="stat-label">
+                            <span>Unsuccessful</span>
+                            <span class="jp">失敗</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card accent">
+                    <div class="stat-icon">◆</div>
+                    <div class="stat-content">
+                        <div class="stat-value accuracy" id="accuracyVal">0%</div>
+                        <div class="stat-label">
+                            <span>Precision</span>
+                            <span class="jp">精度</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Results Stream -->
             <div class="cipher-card">
                 <div class="card-header">
-                    <div class="card-title">
+                    <div class="header-left">
                         <span class="card-icon">◉</span>
-                        Live Results Stream
+                        <div class="header-text">
+                            <h3>Live Results Stream</h3>
+                            <span class="jp-sub">ライブ結果</span>
+                        </div>
                     </div>
-                    <div class="card-meta">REAL-TIME</div>
+                    <div class="live-badge">
+                        <span class="pulse"></span>
+                        <span>REAL-TIME</span>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="results-container" id="resultsContainer">
                         <div class="loading-state">
                             <div class="cipher-loader"></div>
+                            <p>Connecting to signal stream...</p>
                         </div>
                     </div>
                 </div>
@@ -865,637 +178,69 @@
             <!-- Historical Data -->
             <div class="cipher-card">
                 <div class="card-header">
-                    <div class="card-title">
+                    <div class="header-left">
                         <span class="card-icon">◆</span>
-                        Historical Cipher Data
+                        <div class="header-text">
+                            <h3>Historical Cipher Data</h3>
+                            <span class="jp-sub">履歴データ</span>
+                        </div>
                     </div>
-                    <div class="card-meta" id="historyMeta">0 RECORDS</div>
+                    <div class="record-count" id="historyMeta">0 RECORDS</div>
                 </div>
                 <div class="card-body">
                     <div class="history-container">
                         <table class="history-table" id="historyTable">
                             <thead>
                                 <tr>
-                                    <th>Period</th>
-                                    <th>ΞИIGMA Pred</th>
-                                    <th>Actual</th>
-                                    <th>Number</th>
-                                    <th style="text-align: center;">Outcome</th>
+                                    <th>
+                                        <span>Period</span>
+                                        <span class="jp-th">期間</span>
+                                    </th>
+                                    <th>
+                                        <span>Prediction</span>
+                                        <span class="jp-th">予測</span>
+                                    </th>
+                                    <th>
+                                        <span>Actual</span>
+                                        <span class="jp-th">実際</span>
+                                    </th>
+                                    <th>
+                                        <span>Number</span>
+                                        <span class="jp-th">数字</span>
+                                    </th>
+                                    <th style="text-align: center;">
+                                        <span>Outcome</span>
+                                        <span class="jp-th">結果</span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="historyBody">
                                 <tr>
                                     <td colspan="5" class="loading-state">
                                         <div class="cipher-loader"></div>
-                                        <div style="margin-top: 1rem;">Decrypting...</div>
+                                        <p>Decrypting historical data...</p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="stats-container">
-                        <div class="stat-item">
-                            <div class="stat-value win" id="winCount">0</div>
-                            <div class="stat-label">Successful</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value loss" id="lossCount">0</div>
-                            <div class="stat-label">Unsuccessful</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value accuracy" id="accuracyVal">0%</div>
-                            <div class="stat-label">Precision</div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <div class="footer-content">
+                <span class="footer-brand">卄丨尺ㄖㄒㄖ ⚝ -SIGNALS</span>
+                <span class="footer-divider">|</span>
+                <span>Protected System // 保護されたシステム</span>
+            </div>
+        </footer>
     </div>
 
+    <!-- Toast Notification -->
     <div class="cipher-toast" id="cipherToast"></div>
 
-    <script>
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const CONFIG = {
-            API_LATEST: 'https://tirangaprediction.ai/api_fixed.php?action=latest_results&source=1M',
-            API_HISTORY: 'https://tirangaprediction.ai/api_fixed.php?action=history&source=1M',
-            PROXY_LATEST: 'https://api.allorigins.win/raw?url=https://tirangaprediction.ai/api_fixed.php?action=latest_results&source=1M',
-            PROXY_HISTORY: 'https://api.allorigins.win/raw?url=https://tirangaprediction.ai/api_fixed.php?action=history&source=1M',
-            USE_PROXY: false,
-            REFRESH_INTERVAL: 5000,
-            MAX_RETRIES: 3,
-            RETRY_DELAY: 2000
-        };
-
-        // ============================================
-        // STATE
-        // ============================================
-        const state = {
-            lastIssue: null,
-            lastResults: [],
-            apiHistory: [],
-            localHistory: [],
-            pendingPredictions: new Map(),
-            hotNumbers: [],
-            isConnected: false,
-            retryCount: 0,
-            session: null,
-            stats: { wins: 0, losses: 0, total: 0 },
-            learningData: {
-                patternAccuracy: { alternating: 0, streak: 0, reversion: 0 },
-                totalPredictions: 0,
-                lastStrategy: 'alternating'
-            }
-        };
-
-        // ============================================
-        // AUTHENTICATION
-        // ============================================
-        function initAuth() {
-            const saved = localStorage.getItem('enigma_cipher_session');
-
-            if (!saved) {
-                showAccessDenied();
-                return false;
-            }
-
-            try {
-                state.session = JSON.parse(saved);
-                const expiry = new Date(state.session.expires);
-
-                if (expiry < new Date()) {
-                    localStorage.removeItem('enigma_cipher_session');
-                    showAccessDenied();
-                    return false;
-                }
-
-                // Show dashboard
-                document.getElementById('accessDenied').classList.add('hidden');
-                document.getElementById('dashboardContent').classList.remove('hidden');
-
-                const days = Math.ceil((expiry - new Date()) / 86400000);
-                document.getElementById('validityBadge').textContent = `${days} DAYS`;
-
-                return true;
-            } catch(e) {
-                localStorage.removeItem('enigma_cipher_session');
-                showAccessDenied();
-                return false;
-            }
-        }
-
-        function showAccessDenied() {
-            document.getElementById('accessDenied').classList.remove('hidden');
-            document.getElementById('dashboardContent').classList.add('hidden');
-        }
-
-        // ============================================
-        // ADVANCED LEARNING PREDICTION ENGINE
-        // ============================================
-        class CipherEngine {
-            constructor() {
-                this.strategies = ['alternating', 'streak_break', 'reversion', 'momentum'];
-                this.strategyWeights = { alternating: 0.25, streak_break: 0.25, reversion: 0.25, momentum: 0.25 };
-                this.performance = {};
-            }
-
-            analyzeSequence(history) {
-                if (history.length < 2) return { type: 'neutral', confidence: 50 };
-
-                const results = history.map(h => h.result_type || h.actual_result);
-                const recent = results.slice(0, 10);
-
-                // Pattern detection
-                let alternations = 0;
-                let streaks = [];
-                let currentStreak = 1;
-
-                for (let i = 1; i < recent.length; i++) {
-                    if (recent[i] !== recent[i-1]) {
-                        alternations++;
-                        if (currentStreak > 1) streaks.push(currentStreak);
-                        currentStreak = 1;
-                    } else {
-                        currentStreak++;
-                    }
-                }
-                if (currentStreak > 1) streaks.push(currentStreak);
-
-                const altRate = alternations / (recent.length - 1);
-                const avgStreak = streaks.length > 0 ? streaks.reduce((a,b) => a+b, 0) / streaks.length : 1;
-
-                // Determine dominant pattern
-                let pattern = 'neutral';
-                let strength = 50;
-
-                if (altRate > 0.7) {
-                    pattern = 'alternating';
-                    strength = 70 + (altRate - 0.7) * 50;
-                } else if (avgStreak > 2.5) {
-                    pattern = 'streaking';
-                    strength = 60 + (avgStreak - 2) * 15;
-                } else if (altRate < 0.3) {
-                    pattern = 'momentum';
-                    strength = 65;
-                } else {
-                    pattern = 'mixed';
-                    strength = 55;
-                }
-
-                return { 
-                    pattern, 
-                    strength: Math.min(85, Math.round(strength)),
-                    altRate,
-                    avgStreak,
-                    lastStreak: currentStreak
-                };
-            }
-
-            selectStrategy(analysis, lastResult) {
-                const lastType = lastResult.result_type;
-
-                // Dynamic strategy selection based on performance
-                if (analysis.pattern === 'alternating' && analysis.strength > 65) {
-                    return { 
-                        name: 'alternating', 
-                        prediction: lastType === 'big' ? 'small' : 'big',
-                        confidence: analysis.strength,
-                        reason: 'High alternation detected'
-                    };
-                }
-
-                if (analysis.pattern === 'streaking' && analysis.lastStreak >= 3) {
-                    return {
-                        name: 'streak_break',
-                        prediction: lastType === 'big' ? 'small' : 'big',
-                        confidence: 75,
-                        reason: 'Streak break imminent'
-                    };
-                }
-
-                if (analysis.pattern === 'momentum') {
-                    return {
-                        name: 'momentum',
-                        prediction: lastType,
-                        confidence: 60,
-                        reason: 'Momentum continuation'
-                    };
-                }
-
-                // Default: weighted random based on historical bias
-                const bigCount = state.localHistory.filter(h => h.actual_result === 'big').length;
-                const total = state.localHistory.length || 1;
-                const bigRatio = bigCount / total;
-
-                if (bigRatio > 0.6) {
-                    return {
-                        name: 'reversion',
-                        prediction: 'small',
-                        confidence: Math.round(60 + (bigRatio - 0.5) * 40),
-                        reason: 'Reversion to mean'
-                    };
-                } else if (bigRatio < 0.4) {
-                    return {
-                        name: 'reversion',
-                        prediction: 'big',
-                        confidence: Math.round(60 + (0.5 - bigRatio) * 40),
-                        reason: 'Reversion to mean'
-                    };
-                }
-
-                // Fallback to alternation
-                return {
-                    name: 'alternating',
-                    prediction: lastType === 'big' ? 'small' : 'big',
-                    confidence: 55,
-                    reason: 'Default alternation'
-                };
-            }
-
-            generatePrediction(lastResult, history) {
-                const analysis = this.analyzeSequence(history);
-                const strategy = this.selectStrategy(analysis, lastResult);
-
-                // Adjust confidence based on recent performance
-                const recentAccuracy = this.calculateRecentAccuracy();
-                strategy.confidence = Math.round(strategy.confidence * (0.8 + recentAccuracy * 0.2));
-
-                return {
-                    prediction: strategy.prediction,
-                    confidence: Math.min(90, strategy.confidence),
-                    strategy: strategy.name,
-                    reason: strategy.reason,
-                    analysis
-                };
-            }
-
-            calculateRecentAccuracy() {
-                const recent = state.localHistory.slice(0, 10).filter(h => h.status !== 'na');
-                if (recent.length === 0) return 0.5;
-                const wins = recent.filter(h => h.status === 'win').length;
-                return wins / recent.length;
-            }
-
-            calculateHotNumbers(history) {
-                const freq = {};
-                const recency = {};
-
-                history.forEach((h, idx) => {
-                    const num = h.actual_number;
-                    if (num === undefined || num === null) return;
-
-                    freq[num] = (freq[num] || 0) + 1;
-                    // Weight recent numbers higher
-                    recency[num] = (recency[num] || 0) + (history.length - idx);
-                });
-
-                // Combine frequency and recency
-                const scores = Object.keys(freq).map(num => ({
-                    number: parseInt(num),
-                    score: freq[num] * 0.6 + (recency[num] / history.length) * 0.4
-                }));
-
-                scores.sort((a, b) => b.score - a.score);
-
-                // Return top 2 hot and 1 cold
-                return {
-                    hot: scores.slice(0, 2).map(s => s.number),
-                    cold: scores.length > 2 ? [scores[scores.length - 1].number] : [0]
-                };
-            }
-
-            learnFromResult(prediction, actual, strategy) {
-                const correct = prediction === actual;
-
-                if (!this.performance[strategy]) {
-                    this.performance[strategy] = { wins: 0, losses: 0 };
-                }
-
-                if (correct) {
-                    this.performance[strategy].wins++;
-                } else {
-                    this.performance[strategy].losses++;
-                }
-
-                // Adjust weights (simplified)
-                const total = this.performance[strategy].wins + this.performance[strategy].losses;
-                if (total > 5) {
-                    const accuracy = this.performance[strategy].wins / total;
-                    this.strategyWeights[strategy] = Math.max(0.1, accuracy);
-                }
-            }
-        }
-
-        const engine = new CipherEngine();
-
-        // ============================================
-        // API FETCHING
-        // ============================================
-        async function fetchData() {
-            const urls = CONFIG.USE_PROXY ? 
-                [CONFIG.PROXY_LATEST, CONFIG.PROXY_HISTORY] : 
-                [CONFIG.API_LATEST, CONFIG.API_HISTORY];
-
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-                const [latestRes, historyRes] = await Promise.all([
-                    fetch(urls[0], { 
-                        signal: controller.signal,
-                        headers: { 'Accept': 'application/json' }
-                    }),
-                    fetch(urls[1], { 
-                        signal: controller.signal,
-                        headers: { 'Accept': 'application/json' }
-                    })
-                ]);
-
-                clearTimeout(timeoutId);
-
-                if (!latestRes.ok || !historyRes.ok) {
-                    throw new Error(`HTTP ${latestRes.status}`);
-                }
-
-                const latest = await latestRes.json();
-                const apiHistory = await historyRes.json();
-
-                if (!Array.isArray(latest) || latest.length === 0) {
-                    throw new Error('Invalid data');
-                }
-
-                updateConnectionStatus(true);
-
-                const currentIssue = latest[0]?.issue_number;
-
-                if (currentIssue !== state.lastIssue) {
-                    state.lastIssue = currentIssue;
-                    state.lastResults = latest;
-                    state.apiHistory = apiHistory || [];
-
-                    processData(latest, apiHistory);
-                    showToast('Cipher Sync Complete', 'success');
-                }
-
-                state.retryCount = 0;
-
-            } catch (error) {
-                handleFetchError(error);
-            }
-        }
-
-        function handleFetchError(error) {
-            state.retryCount++;
-
-            if (error.message.includes('CORS') && state.retryCount === 1 && !CONFIG.USE_PROXY) {
-                CONFIG.USE_PROXY = true;
-                setTimeout(fetchData, 1000);
-                return;
-            }
-
-            updateConnectionStatus(false, error.message);
-
-            if (state.retryCount >= CONFIG.MAX_RETRIES) {
-                showToast('Connection Unstable', 'error');
-                state.retryCount = 0;
-            } else {
-                setTimeout(fetchData, CONFIG.RETRY_DELAY);
-            }
-        }
-
-        // ============================================
-        // DATA PROCESSING
-        // ============================================
-        function processData(latest, history) {
-            const lastResult = latest[0];
-
-            // Generate prediction with learning engine
-            const prediction = engine.generatePrediction(lastResult, history);
-
-            // Calculate hot numbers
-            const numbers = engine.calculateHotNumbers(history);
-            state.hotNumbers = numbers;
-
-            // Store pending for next period
-            const nextIssue = (parseInt(lastResult.issue_number) + 1).toString();
-            state.pendingPredictions.set(nextIssue, prediction.prediction);
-
-            // Update local history
-            updateLocalHistory();
-
-            // Update UI
-            updateActivePrediction(prediction, nextIssue);
-            updateLatestResults(latest);
-            updateHotNumbers();
-            updateHistoryDisplay();
-            updateStats();
-        }
-
-        function updateLocalHistory() {
-            // Sort ascending (oldest first) for processing
-            const sorted = [...state.apiHistory].sort((a, b) => 
-                parseInt(a.issue_number) - parseInt(b.issue_number)
-            );
-
-            state.localHistory = sorted.map((item, index) => {
-                const issueNum = item.issue_number;
-                const actualType = item.result_type || item.actual_result;
-                const actualNum = item.actual_number;
-
-                let predictedType = null;
-                let status = 'na';
-                let isCorrect = null;
-
-                // Check if we predicted this
-                if (state.pendingPredictions.has(issueNum)) {
-                    predictedType = state.pendingPredictions.get(issueNum);
-                    isCorrect = predictedType === actualType;
-                    status = isCorrect ? 'win' : 'loss';
-                    state.pendingPredictions.delete(issueNum);
-
-                    // Learn from result
-                    engine.learnFromResult(predictedType, actualType, 'pending');
-                } else if (index > 0) {
-                    // Retroactive prediction
-                    const prev = sorted[index - 1];
-                    const prevType = prev.result_type || prev.actual_result;
-                    predictedType = prevType === 'big' ? 'small' : 'big';
-                    isCorrect = predictedType === actualType;
-                    status = isCorrect ? 'win' : 'loss';
-                }
-
-                return {
-                    issue_number: issueNum,
-                    predicted_type: predictedType,
-                    actual_result: actualType,
-                    actual_number: actualNum,
-                    status: status,
-                    is_correct: isCorrect
-                };
-            });
-
-            // Reverse for display (newest first)
-            state.localHistory.reverse();
-            calculateStats();
-        }
-
-        function calculateStats() {
-            const valid = state.localHistory.filter(h => h.status !== 'na');
-            state.stats.total = valid.length;
-            state.stats.wins = valid.filter(h => h.status === 'win').length;
-            state.stats.losses = valid.filter(h => h.status === 'loss').length;
-        }
-
-        // ============================================
-        // UI UPDATES
-        // ============================================
-        function updateActivePrediction(pred, nextIssue) {
-            const valueEl = document.getElementById('predictionValue');
-            valueEl.textContent = pred.prediction.toUpperCase();
-            valueEl.className = 'prediction-value ' + pred.prediction;
-
-            document.getElementById('targetPeriod').textContent = nextIssue;
-            document.getElementById('confidenceVal').textContent = pred.confidence;
-        }
-
-        function updateLatestResults(data) {
-            const container = document.getElementById('resultsContainer');
-
-            container.innerHTML = data.slice(0, 5).map((r, index) => {
-                const type = r.result_type || 'small';
-                const isLatest = index === 0;
-                return `
-                    <div class="result-item ${type} ${isLatest ? 'latest' : ''}">
-                        ${r.actual_number ?? '--'}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updateHotNumbers() {
-            const container = document.getElementById('hotContainer');
-            const { hot, cold } = state.hotNumbers;
-
-            container.innerHTML = `
-                <div class="hot-item">
-                    <div class="hot-number hot">${hot[0] ?? '--'}</div>
-                    <div class="hot-label">Hot Primary</div>
-                </div>
-                <div class="hot-item">
-                    <div class="hot-number hot">${hot[1] ?? '--'}</div>
-                    <div class="hot-label">Hot Secondary</div>
-                </div>
-                <div class="hot-item">
-                    <div class="hot-number cold">${cold[0] ?? '--'}</div>
-                    <div class="hot-label">Cold</div>
-                </div>
-            `;
-        }
-
-        function updateHistoryDisplay() {
-            const tbody = document.getElementById('historyBody');
-            const meta = document.getElementById('historyMeta');
-
-            meta.textContent = `${state.localHistory.length} RECORDS`;
-
-            if (state.localHistory.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="error-state">No Data</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = state.localHistory.slice(0, 30).map((r, index) => {
-                let outcome;
-                if (r.status === 'win') {
-                    outcome = '<span class="outcome-mark win">WIN</span>';
-                } else if (r.status === 'loss') {
-                    outcome = '<span class="outcome-mark loss">LOSS</span>';
-                } else {
-                    outcome = '<span class="outcome-mark na">—</span>';
-                }
-
-                const predClass = r.predicted_type || 'pending';
-                const predText = r.predicted_type ? r.predicted_type.toUpperCase() : '—';
-
-                return `
-                    <tr class="${index === 0 ? 'new-result' : ''}">
-                        <td class="cell-issue">${r.issue_number || '--'}</td>
-                        <td class="cell-prediction ${predClass}">${predText}</td>
-                        <td class="cell-actual ${r.actual_result || 'small'}">${(r.actual_result || 'small').toUpperCase()}</td>
-                        <td class="cell-number">${r.actual_number ?? '--'}</td>
-                        <td class="cell-outcome">${outcome}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function updateStats() {
-            document.getElementById('winCount').textContent = state.stats.wins;
-            document.getElementById('lossCount').textContent = state.stats.losses;
-
-            const accuracy = state.stats.total > 0 
-                ? Math.round((state.stats.wins / state.stats.total) * 100) 
-                : 0;
-            document.getElementById('accuracyVal').textContent = accuracy + '%';
-        }
-
-        // ============================================
-        // HELPERS
-        // ============================================
-        function updateConnectionStatus(connected, errorMsg = '') {
-            const dot = document.getElementById('connStatus');
-            const text = document.getElementById('connText');
-
-            state.isConnected = connected;
-
-            if (connected) {
-                dot.className = 'status-dot connected';
-                text.textContent = 'Neural Link Established';
-            } else {
-                dot.className = 'status-dot error';
-                text.textContent = errorMsg ? 'Error: ' + errorMsg.slice(0, 15) : 'Disconnected';
-            }
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('cipherToast');
-            toast.textContent = message;
-            toast.className = 'cipher-toast show';
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        function updateTimer() {
-            const now = new Date();
-            document.getElementById('predTimer').textContent = now.toLocaleTimeString('en-US', { 
-                hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' 
-            });
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        function init() {
-            if (!initAuth()) return;
-
-            fetchData();
-            setInterval(fetchData, CONFIG.REFRESH_INTERVAL);
-            setInterval(updateTimer, 1000);
-            updateTimer();
-
-            showToast('System Online', 'success');
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && state.session) fetchData();
-        });
-    </script>
+    <script src="d.js"></script>
 </body>
 </html>
