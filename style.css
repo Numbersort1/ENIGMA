@@ -882,3 +882,8 @@ body::before {
         transition-duration: 0.01ms !important;
     }
 }
+.logo {
+    /* Add this */
+    background: var(--bg);
+    min-height: 80px; /* Shows placeholder while loading */
+}
