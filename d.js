@@ -1,6 +1,7 @@
 // ============================================
-// CONFIGURATION
+// CIPHER CORE - NEURAL PREDICTION MATRIX
 // ============================================
+
 const CONFIG = {
     API_LATEST: 'https://tirangaprediction.ai/api_fixed.php?action=latest_results&source=1M',
     API_HISTORY: 'https://tirangaprediction.ai/api_fixed.php?action=history&source=1M',
@@ -12,9 +13,6 @@ const CONFIG = {
     RETRY_DELAY: 2000
 };
 
-// ============================================
-// STATE
-// ============================================
 const state = {
     lastIssue: null,
     lastResults: [],
@@ -29,86 +27,55 @@ const state = {
 };
 
 // ============================================
-// AUTHENTICATION - FIXED FOR HIROTO SIGNALS
+// MATRIX RAIN EFFECT
 // ============================================
-function initAuth() {
-    console.log('Checking authentication...');
-    
-    // FIXED: Use the exact key from login.js
-    const saved = localStorage.getItem('hiroto_signals_session');
-    
-    if (!saved) {
-        console.error('No hiroto_signals_session found in localStorage');
-        console.log('Available keys:', Object.keys(localStorage));
-        showAccessDenied();
-        return false;
-    }
+class MatrixRain {
+    constructor() {
+        this.canvas = document.getElementById('matrixRain');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
 
-    try {
-        const session = JSON.parse(saved);
-        const expiry = new Date(session.expires);
+        this.characters = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+        this.fontSize = 14;
+        this.columns = this.canvas.width / this.fontSize;
+        this.drops = [];
 
-        if (expiry < new Date()) {
-            console.error('Session expired at:', expiry);
-            localStorage.removeItem('hiroto_signals_session');
-            showAccessDenied();
-            return false;
+        for (let i = 0; i < this.columns; i++) {
+            this.drops[i] = Math.random() * -100;
         }
 
-        state.session = session;
-        
-        // Show dashboard
-        document.getElementById('accessDenied').classList.add('hidden');
-        document.getElementById('dashboardContent').classList.remove('hidden');
+        this.animate();
+    }
 
-        const days = Math.ceil((expiry - new Date()) / 86400000);
-        const badge = document.getElementById('validityBadge');
-        if (badge) badge.textContent = `${days} DAYS`;
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+    }
 
-        console.log('Authentication successful. Session expires:', expiry);
-        return true;
-        
-    } catch(e) {
-        console.error('Auth parsing error:', e);
-        localStorage.removeItem('hiroto_signals_session');
-        showAccessDenied();
-        return false;
+    animate() {
+        this.ctx.fillStyle = 'rgba(27, 38, 44, 0.05)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.ctx.fillStyle = '#3282B8';
+        this.ctx.font = this.fontSize + 'px monospace';
+
+        for (let i = 0; i < this.drops.length; i++) {
+            const text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+            this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
+
+            if (this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.975) {
+                this.drops[i] = 0;
+            }
+            this.drops[i]++;
+        }
+
+        requestAnimationFrame(() => this.animate());
     }
 }
 
-function showAccessDenied() {
-    const deniedEl = document.getElementById('accessDenied');
-    const dashboardEl = document.getElementById('dashboardContent');
-    
-    if (deniedEl) deniedEl.classList.remove('hidden');
-    if (dashboardEl) dashboardEl.classList.add('hidden');
-}
-
-// Debug helpers
-window.setTestSession = function() {
-    const expiry = new Date();
-    expiry.setDate(expiry.getDate() + 7);
-    
-    const session = {
-        key: 'TEST-XXXX-XXXX-XXXX',
-        status: 'active',
-        created: new Date().toISOString(),
-        expires: expiry.toISOString()
-    };
-    
-    localStorage.setItem('hiroto_signals_session', JSON.stringify(session));
-    console.log('Test session set. Reloading...');
-    location.reload();
-};
-
-window.clearSession = function() {
-    localStorage.removeItem('hiroto_signals_session');
-    console.log('Session cleared. Reloading...');
-    location.reload();
-};
-
 // ============================================
-// PREDICTION ENGINE
+// CIPHER ENGINE
 // ============================================
 class CipherEngine {
     constructor() {
@@ -288,6 +255,82 @@ class CipherEngine {
 const engine = new CipherEngine();
 
 // ============================================
+// AUTHENTICATION
+// ============================================
+function initAuth() {
+    console.log('[CIPHER CORE] Initializing authentication...');
+
+    const saved = localStorage.getItem('hiroto_signals_session');
+
+    if (!saved) {
+        console.error('[CIPHER CORE] No session found');
+        showAccessDenied();
+        return false;
+    }
+
+    try {
+        const session = JSON.parse(saved);
+        const expiry = new Date(session.expires);
+
+        if (expiry < new Date()) {
+            console.error('[CIPHER CORE] Session expired');
+            localStorage.removeItem('hiroto_signals_session');
+            showAccessDenied();
+            return false;
+        }
+
+        state.session = session;
+
+        document.getElementById('accessDenied').classList.add('hidden');
+        document.getElementById('dashboardContent').classList.remove('hidden');
+
+        const days = Math.ceil((expiry - new Date()) / 86400000);
+        const badge = document.getElementById('sessionChip');
+        if (badge) badge.querySelector('.chip-text').textContent = `${days} DAYS`;
+
+        console.log('[CIPHER CORE] Authentication successful');
+        return true;
+
+    } catch(e) {
+        console.error('[CIPHER CORE] Auth error:', e);
+        localStorage.removeItem('hiroto_signals_session');
+        showAccessDenied();
+        return false;
+    }
+}
+
+function showAccessDenied() {
+    const deniedEl = document.getElementById('accessDenied');
+    const dashboardEl = document.getElementById('dashboardContent');
+
+    if (deniedEl) deniedEl.classList.remove('hidden');
+    if (dashboardEl) dashboardEl.classList.add('hidden');
+}
+
+// Debug helpers
+window.setTestSession = function() {
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 7);
+
+    const session = {
+        key: 'CIPHER-XXXX-XXXX-XXXX',
+        status: 'active',
+        created: new Date().toISOString(),
+        expires: expiry.toISOString()
+    };
+
+    localStorage.setItem('hiroto_signals_session', JSON.stringify(session));
+    console.log('[CIPHER CORE] Test session set. Reloading...');
+    location.reload();
+};
+
+window.clearSession = function() {
+    localStorage.removeItem('hiroto_signals_session');
+    console.log('[CIPHER CORE] Session cleared. Reloading...');
+    location.reload();
+};
+
+// ============================================
 // API FETCHING
 // ============================================
 async function fetchData() {
@@ -333,7 +376,8 @@ async function fetchData() {
             state.apiHistory = apiHistory || [];
 
             processData(latest, apiHistory);
-            showToast('シグナル同期完了 // Signal Sync Complete', 'success');
+            triggerGlitch();
+            showToast('シグナル同期完了 // SIGNAL_SYNC_COMPLETE', 'success');
         }
 
         state.retryCount = 0;
@@ -355,7 +399,7 @@ function handleFetchError(error) {
     updateConnectionStatus(false, error.message);
 
     if (state.retryCount >= CONFIG.MAX_RETRIES) {
-        showToast('接続不安定 // Connection Unstable', 'error');
+        showToast('接続不安定 // CONNECTION_UNSTABLE', 'error');
         state.retryCount = 0;
     } else {
         setTimeout(fetchData, CONFIG.RETRY_DELAY);
@@ -380,6 +424,11 @@ function processData(latest, history) {
     updateHotNumbers();
     updateHistoryDisplay();
     updateStats();
+
+    // Update hero stats
+    document.getElementById('miniAccuracy').textContent = 
+        state.stats.total > 0 ? Math.round((state.stats.wins / state.stats.total) * 100) + '%' : '0%';
+    document.getElementById('miniSignals').textContent = state.stats.total;
 }
 
 function updateLocalHistory() {
@@ -437,29 +486,35 @@ function calculateStats() {
 function updateActivePrediction(pred, nextIssue) {
     const valueEl = document.getElementById('predictionValue');
     if (!valueEl) return;
-    
+
     valueEl.textContent = pred.prediction.toUpperCase();
-    valueEl.className = 'prediction-value ' + pred.prediction;
+    valueEl.className = 'core-value ' + pred.prediction;
 
     const targetPeriod = document.getElementById('targetPeriod');
     if (targetPeriod) targetPeriod.textContent = nextIssue;
-    
+
     const confidenceVal = document.getElementById('confidenceVal');
     if (confidenceVal) confidenceVal.textContent = pred.confidence + '%';
-    
+
     const fillEl = document.getElementById('confidenceFill');
     if (fillEl) fillEl.style.width = pred.confidence + '%';
+
+    const periodBar = document.getElementById('periodBar');
+    if (periodBar) {
+        periodBar.style.width = '0%';
+        setTimeout(() => periodBar.style.width = '100%', 100);
+    }
 }
 
 function updateLatestResults(data) {
-    const container = document.getElementById('resultsContainer');
+    const container = document.getElementById('streamContent');
     if (!container) return;
-    
+
     container.innerHTML = data.slice(0, 5).map((r, index) => {
         const type = r.result_type || 'small';
         const isLatest = index === 0;
         return `
-            <div class="result-item ${type} ${isLatest ? 'latest' : ''}">
+            <div class="stream-item ${type} ${isLatest ? 'latest' : ''}">
                 ${r.actual_number ?? '--'}
             </div>
         `;
@@ -467,19 +522,21 @@ function updateLatestResults(data) {
 }
 
 function updateHotNumbers() {
-    const container = document.getElementById('hotContainer');
+    const container = document.getElementById('signaturesGrid');
     if (!container) return;
-    
+
     const { hot, cold } = state.hotNumbers;
 
-    const labels = ['Hot Primary // ホット', 'Hot Secondary // セカンダリ', 'Cold // コールド'];
+    const labels = ['HOT_PRIMARY', 'HOT_SECONDARY', 'COLD_SIGNAL'];
+    const subs = ['ホットプライマリ', 'ホットセカンダリ', 'コールドシグナル'];
     const types = ['hot', 'hot', 'cold'];
     const values = [hot[0], hot[1], cold[0]];
 
     container.innerHTML = values.map((val, idx) => `
-        <div class="hot-item">
-            <div class="hot-number ${types[idx]}">${val ?? '--'}</div>
-            <div class="hot-label">${labels[idx]}</div>
+        <div class="signature-card">
+            <div class="sig-label">${labels[idx]}</div>
+            <div class="sig-value ${types[idx]}">${val ?? '--'}</div>
+            <div class="sig-sub">${subs[idx]}</div>
         </div>
     `).join('');
 }
@@ -487,28 +544,37 @@ function updateHotNumbers() {
 function updateHistoryDisplay() {
     const tbody = document.getElementById('historyBody');
     const meta = document.getElementById('historyMeta');
-    
+
     if (!tbody || !meta) return;
 
     meta.textContent = `${state.localHistory.length} RECORDS`;
 
     if (state.localHistory.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="loading-state">No Data Available // データなし</td></tr>';
+        tbody.innerHTML = `
+            <tr class="loading-row">
+                <td colspan="5">
+                    <div class="table-loader">
+                        <div class="loader-ring"></div>
+                        <span>DECRYPTING_DATA...</span>
+                    </div>
+                </td>
+            </tr>
+        `;
         return;
     }
 
     tbody.innerHTML = state.localHistory.slice(0, 30).map((r, index) => {
         let outcome;
         if (r.status === 'win') {
-            outcome = '<span class="outcome-mark win">WIN</span>';
+            outcome = '<span class="outcome-badge win">WIN</span>';
         } else if (r.status === 'loss') {
-            outcome = '<span class="outcome-mark loss">LOSS</span>';
+            outcome = '<span class="outcome-badge loss">LOSS</span>';
         } else {
-            outcome = '<span class="outcome-mark na">—</span>';
+            outcome = '<span class="outcome-badge na">PENDING</span>';
         }
 
         const predClass = r.predicted_type || 'pending';
-        const predText = r.predicted_type ? r.predicted_type.toUpperCase() : '—';
+        const predText = r.predicted_type ? r.predicted_type.toUpperCase() : '---';
 
         return `
             <tr class="${index === 0 ? 'new-result' : ''}">
@@ -526,7 +592,8 @@ function updateStats() {
     const winCount = document.getElementById('winCount');
     const lossCount = document.getElementById('lossCount');
     const accuracyVal = document.getElementById('accuracyVal');
-    
+    const miniAccuracy = document.getElementById('miniAccuracy');
+
     if (winCount) winCount.textContent = state.stats.wins;
     if (lossCount) lossCount.textContent = state.stats.losses;
 
@@ -534,53 +601,72 @@ function updateStats() {
         ? Math.round((state.stats.wins / state.stats.total) * 100) 
         : 0;
     if (accuracyVal) accuracyVal.textContent = accuracy + '%';
+    if (miniAccuracy) miniAccuracy.textContent = accuracy + '%';
 }
 
 // ============================================
 // HELPERS
 // ============================================
 function updateConnectionStatus(connected, errorMsg = '') {
-    const dot = document.getElementById('connStatus');
-    const text = document.getElementById('connText');
+    const dot = document.querySelector('.node-dot');
+    const text = document.querySelector('.node-label');
 
     if (!dot || !text) return;
-    
+
     state.isConnected = connected;
 
     if (connected) {
-        dot.className = 'status-dot connected';
-        text.textContent = 'Connected // 接続済';
+        dot.classList.add('connected');
+        dot.classList.remove('error');
+        text.textContent = 'LINK_ACTIVE';
+        text.style.color = 'var(--success)';
     } else {
-        dot.className = 'status-dot error';
-        text.textContent = errorMsg ? 'Error // エラー' : 'Disconnected // 切断';
+        dot.classList.remove('connected');
+        dot.classList.add('error');
+        text.textContent = 'LINK_DOWN';
+        text.style.color = 'var(--danger)';
     }
 }
 
 function showToast(message, type = 'success') {
     const toast = document.getElementById('cipherToast');
     if (!toast) return;
-    
-    toast.textContent = message;
-    toast.className = 'cipher-toast show';
+
+    toast.querySelector('.toast-text').textContent = message;
+    toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 function updateTimer() {
-    const timer = document.getElementById('predTimer');
-    if (!timer) return;
-    
+    const timer = document.getElementById('cipherTimer');
+    const predTimer = document.getElementById('predTimer');
+
     const now = new Date();
-    timer.textContent = now.toLocaleTimeString('en-US', { 
+    const timeStr = now.toLocaleTimeString('en-US', { 
         hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' 
     });
+
+    if (timer) timer.textContent = timeStr;
+    if (predTimer) predTimer.textContent = timeStr;
+}
+
+function triggerGlitch() {
+    const overlay = document.getElementById('glitchOverlay');
+    if (overlay) {
+        overlay.classList.add('active');
+        setTimeout(() => overlay.classList.remove('active'), 300);
+    }
 }
 
 // ============================================
 // INITIALIZATION
 // ============================================
 function init() {
-    console.log('=== HIROTO SIGNALS DASHBOARD ===');
-    
+    console.log('[CIPHER CORE] Initializing Neural Prediction Matrix...');
+
+    // Start matrix rain
+    new MatrixRain();
+
     if (!initAuth()) return;
 
     fetchData();
@@ -588,7 +674,7 @@ function init() {
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    showToast('システムオンライン // System Online', 'success');
+    showToast('システムオンライン // SYSTEM_ONLINE', 'success');
 }
 
 if (document.readyState === 'loading') {
