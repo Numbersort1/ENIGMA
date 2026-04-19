@@ -1,5 +1,6 @@
 // ============================================
 // CIPHER CORE - NEURAL PREDICTION MATRIX
+// Period Number System: YYYYMMDD1000XXXXX
 // ============================================
 
 const CONFIG = {
@@ -12,7 +13,44 @@ const CONFIG = {
     MAX_RETRIES: 3,
     RETRY_DELAY: 2000,
     API_RESULT_LIMIT: 8,
-    HISTORY_DISPLAY_LIMIT: 50
+    HISTORY_DISPLAY_LIMIT: 12,
+    LOCAL_HISTORY_LIMIT: 4
+};
+
+// ============================================
+// PERIOD NUMBER CALCULATOR
+// Period format: YYYYMMDD1000XXXXX (17 digits)
+// Counter resets to 9671 at 00:00 daily, increments every minute
+// ============================================
+const PeriodCalculator = {
+    DAILY_RESET_VALUE: 9671,
+
+    calculateCounter(date = new Date()) {
+        const midnight = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+        const minutesSinceMidnight = Math.floor((date - midnight) / (1000 * 60));
+        return this.DAILY_RESET_VALUE + minutesSinceMidnight;
+    },
+
+    getCurrentPeriodNumber(date = new Date()) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const counter = this.calculateCounter(date);
+        return `${year}${month}${day}1000${String(counter).padStart(5, '0')}`;
+    },
+
+    getCounter(periodNumber) {
+        return parseInt(periodNumber.slice(-5));
+    },
+
+    isToday(periodNumber) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayPrefix = `${year}${month}${day}`;
+        return periodNumber.startsWith(todayPrefix);
+    }
 };
 
 const state = {
@@ -28,7 +66,8 @@ const state = {
     session: null,
     stats: { wins: 0, losses: 0, total: 0 },
     isFirstPrediction: true,
-    currentTargetPeriod: null
+    currentTargetPeriod: null,
+    currentPeriodNumber: null
 };
 
 // ============================================
@@ -260,7 +299,7 @@ class CipherEngine {
 const engine = new CipherEngine();
 
 // ============================================
-// AUTHENTICATION
+// AUTHENTICATION (FIXED - From Code 1 with Firebase timestamp support)
 // ============================================
 function initAuth() {
     console.log('[CIPHER CORE] Initializing authentication...');
@@ -275,9 +314,48 @@ function initAuth() {
 
     try {
         const session = JSON.parse(saved);
-        const expiry = new Date(session.expires);
 
-        if (expiry < new Date()) {
+        // Handle different date formats (Firebase timestamp or ISO string)
+        let expiryDate;
+        if (session.expires) {
+            // Try to parse the expiry date
+            expiryDate = new Date(session.expires);
+
+            // Check if it's a valid date
+            if (isNaN(expiryDate.getTime())) {
+                // Try converting seconds timestamp if it's a Firebase timestamp
+                if (typeof session.expires === 'object' && session.expires.seconds) {
+                    expiryDate = new Date(session.expires.seconds * 1000);
+                } else if (typeof session.expires === 'number') {
+                    expiryDate = new Date(session.expires * 1000);
+                }
+            }
+        }
+
+        // If no valid expiry found, check for other common fields
+        if (!expiryDate || isNaN(expiryDate.getTime())) {
+            if (session.expiry) {
+                expiryDate = new Date(session.expiry);
+            } else if (session.expiration) {
+                expiryDate = new Date(session.expiration);
+            } else if (session.validUntil) {
+                expiryDate = new Date(session.validUntil);
+            }
+        }
+
+        // If still no valid date, default to 7 days from creation or now
+        if (!expiryDate || isNaN(expiryDate.getTime())) {
+            if (session.created) {
+                expiryDate = new Date(new Date(session.created).getTime() + (7 * 24 * 60 * 60 * 1000));
+            } else {
+                // Default: allow access for 7 days from now
+                expiryDate = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
+                console.log('[CIPHER CORE] No expiry found, defaulting to 7 days');
+            }
+        }
+
+        // Check if expired
+        if (expiryDate < new Date()) {
             console.error('[CIPHER CORE] Session expired');
             localStorage.removeItem('hiroto_signals_session');
             showAccessDenied();
@@ -286,14 +364,20 @@ function initAuth() {
 
         state.session = session;
 
+        // Store the parsed expiry back for reference
+        state.session.parsedExpiry = expiryDate.toISOString();
+
         document.getElementById('accessDenied').classList.add('hidden');
         document.getElementById('dashboardContent').classList.remove('hidden');
 
-        const days = Math.ceil((expiry - new Date()) / 86400000);
+        const days = Math.ceil((expiryDate - new Date()) / 86400000);
         const badge = document.getElementById('sessionChip');
-        if (badge) badge.querySelector('.chip-text').textContent = `${days} DAYS`;
+        if (badge) {
+            const chipText = badge.querySelector('.chip-text');
+            if (chipText) chipText.textContent = `${days} DAYS`;
+        }
 
-        console.log('[CIPHER CORE] Authentication successful');
+        console.log('[CIPHER CORE] Authentication successful, expires:', expiryDate.toISOString());
         return true;
 
     } catch(e) {
@@ -379,10 +463,8 @@ async function fetchData() {
             state.lastIssue = currentIssue;
             state.lastResults = latest;
 
-            // Store API results (limited to 8) and merge with local history
             const apiResults = apiHistory || [];
             mergeHistory(apiResults, latest);
-
             processData(latest);
             triggerGlitch();
             showToast('シグナル同期完了 // SIGNAL_SYNC_COMPLETE', 'success');
@@ -396,30 +478,31 @@ async function fetchData() {
 }
 
 function mergeHistory(apiHistory, latestResults) {
-    // API provides 8 latest results, we store the rest locally
-    // Sort by issue number descending (newest first)
     const allApiData = [...latestResults, ...apiHistory];
-
-    // Remove duplicates based on issue_number
     const uniqueMap = new Map();
+
     allApiData.forEach(item => {
         if (item.issue_number) {
             uniqueMap.set(item.issue_number, item);
         }
     });
 
-    // Convert to array and sort by issue number descending
     const sorted = Array.from(uniqueMap.values()).sort((a, b) => 
         parseInt(b.issue_number) - parseInt(a.issue_number)
     );
 
-    // Keep only API limit (8) in apiHistory, rest goes to extended history
     state.apiHistory = sorted.slice(0, CONFIG.API_RESULT_LIMIT);
-
-    // Extended history for calculations (up to 50)
     const extendedHistory = sorted.slice(0, CONFIG.HISTORY_DISPLAY_LIMIT);
 
-    // Store extended history in localStorage for persistence
+    const savedLocal = JSON.parse(localStorage.getItem('cipher_local_predictions') || '[]');
+
+    extendedHistory.forEach(item => {
+        const saved = savedLocal.find(p => p.issue_number === item.issue_number);
+        if (saved && saved.predicted_type) {
+            item.predicted_type = saved.predicted_type;
+        }
+    });
+
     localStorage.setItem('cipher_extended_history', JSON.stringify(extendedHistory));
 }
 
@@ -443,63 +526,81 @@ function handleFetchError(error) {
 }
 
 // ============================================
-// DATA PROCESSING
+// DATA PROCESSING (FIXED - Target = Current Period)
 // ============================================
 function processData(latest) {
     const lastResult = latest[0];
 
-    // Get extended history for calculations
+    // Get current period number - THIS IS THE TARGET PERIOD
+    state.currentPeriodNumber = PeriodCalculator.getCurrentPeriodNumber();
+    state.currentTargetPeriod = state.currentPeriodNumber; // FIXED: Use current, not next
+
     const extendedHistory = JSON.parse(localStorage.getItem('cipher_extended_history') || '[]');
     const calculationHistory = extendedHistory.length > 0 ? extendedHistory : state.apiHistory;
 
-    // Calculate target period (latest + 1)
-    const latestPeriodNum = parseInt(lastResult.issue_number);
-    const targetPeriod = (latestPeriodNum + 1).toString();
-    state.currentTargetPeriod = targetPeriod;
-
-    // Generate prediction
     const prediction = engine.generatePrediction(lastResult, calculationHistory);
 
-    // Calculate hot and cold numbers
     const numbers = engine.calculateHotColdNumbers(calculationHistory);
     state.hotNumber = numbers.hot;
     state.coldNumber = numbers.cold;
 
-    // Store prediction for target period
-    state.pendingPredictions.set(targetPeriod, {
+    // Store prediction for current period (target)
+    state.pendingPredictions.set(state.currentTargetPeriod, {
         prediction: prediction.prediction,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        period_number: state.currentTargetPeriod
     });
 
-    // Update local history with predictions matched to actual results
+    saveLocalPrediction(state.currentTargetPeriod, prediction.prediction);
     updateLocalHistory();
-
-    // Update UI
-    updateActivePrediction(prediction, targetPeriod);
+    updateActivePrediction(prediction, state.currentTargetPeriod);
     updateHotColdNumbers();
     updateLatestResults(latest);
     updateHistoryDisplay();
     updateStats();
 
-    // Update hero stats
     document.getElementById('miniAccuracy').textContent = 
         state.stats.total > 0 ? Math.round((state.stats.wins / state.stats.total) * 100) + '%' : '0%';
     document.getElementById('miniSignals').textContent = state.stats.total;
     document.getElementById('miniWins').textContent = state.stats.wins;
     document.getElementById('miniLosses').textContent = state.stats.losses;
 
-    // Mark first prediction as complete
     if (state.isFirstPrediction) {
         state.isFirstPrediction = false;
     }
 }
 
-function updateLocalHistory() {
-    // Get extended history from localStorage
-    const extendedHistory = JSON.parse(localStorage.getItem('cipher_extended_history') || '[]');
+function saveLocalPrediction(periodNumber, prediction) {
+    const saved = JSON.parse(localStorage.getItem('cipher_local_predictions') || '[]');
 
-    // Build local history with predictions matched to actual results
-    // Sort by issue number descending (newest first: 0332, 0331, 0330...)
+    // Check if prediction for this period already exists
+    const existingIndex = saved.findIndex(p => p.issue_number === periodNumber);
+    if (existingIndex >= 0) {
+        // Update existing
+        saved[existingIndex].predicted_type = prediction;
+        saved[existingIndex].timestamp = new Date().toISOString();
+    } else {
+        // Add new
+        saved.push({
+            issue_number: periodNumber,
+            predicted_type: prediction,
+            timestamp: new Date().toISOString(),
+            status: 'pending'
+        });
+    }
+
+    // Keep only last 4 local predictions
+    while (saved.length > CONFIG.LOCAL_HISTORY_LIMIT) {
+        saved.shift();
+    }
+
+    localStorage.setItem('cipher_local_predictions', JSON.stringify(saved));
+}
+
+function updateLocalHistory() {
+    const extendedHistory = JSON.parse(localStorage.getItem('cipher_extended_history') || '[]');
+    const savedLocal = JSON.parse(localStorage.getItem('cipher_local_predictions') || '[]');
+
     const sortedHistory = [...extendedHistory].sort((a, b) => 
         parseInt(b.issue_number) - parseInt(a.issue_number)
     );
@@ -509,20 +610,21 @@ function updateLocalHistory() {
         const actualType = item.result_type || item.actual_result;
         const actualNum = item.actual_number;
 
-        let predictedType = null;
+        let predictedType = item.predicted_type || null;
         let status = 'na';
         let isCorrect = null;
 
-        // Check if we have a pending prediction for this period
         if (state.pendingPredictions.has(issueNum)) {
             const pending = state.pendingPredictions.get(issueNum);
             predictedType = pending.prediction;
             isCorrect = predictedType === actualType;
             status = isCorrect ? 'win' : 'loss';
-
-            // Remove from pending after matching
             state.pendingPredictions.delete(issueNum);
             engine.learnFromResult(predictedType, actualType, 'pending');
+            updateSavedPredictionStatus(issueNum, status);
+        } else if (predictedType) {
+            isCorrect = predictedType === actualType;
+            status = isCorrect ? 'win' : 'loss';
         }
 
         return {
@@ -536,6 +638,15 @@ function updateLocalHistory() {
     });
 
     calculateStats();
+}
+
+function updateSavedPredictionStatus(issueNumber, status) {
+    const saved = JSON.parse(localStorage.getItem('cipher_local_predictions') || '[]');
+    const item = saved.find(p => p.issue_number === issueNumber);
+    if (item) {
+        item.status = status;
+        localStorage.setItem('cipher_local_predictions', JSON.stringify(saved));
+    }
 }
 
 function calculateStats() {
@@ -716,16 +827,29 @@ function triggerGlitch() {
 // ============================================
 function init() {
     console.log('[CIPHER CORE] Initializing Neural Prediction Matrix...');
+    console.log('[CIPHER CORE] Period Number System: YYYYMMDD1000XXXXX');
 
-    // Start matrix rain
     new MatrixRain();
 
     if (!initAuth()) return;
 
-    // Load extended history from localStorage if exists
     const savedHistory = localStorage.getItem('cipher_extended_history');
     if (savedHistory) {
         state.apiHistory = JSON.parse(savedHistory);
+    }
+
+    const savedLocal = localStorage.getItem('cipher_local_predictions');
+    if (savedLocal) {
+        const predictions = JSON.parse(savedLocal);
+        predictions.forEach(p => {
+            if (p.status === 'pending') {
+                state.pendingPredictions.set(p.issue_number, {
+                    prediction: p.predicted_type,
+                    timestamp: p.timestamp,
+                    period_number: p.issue_number
+                });
+            }
+        });
     }
 
     fetchData();
