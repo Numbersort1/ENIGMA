@@ -6,6 +6,7 @@
     <title>卄丨尺ㄖㄒㄖ ⚝ Neural Matrix</title>
     <link rel="stylesheet" href="d.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<base target="_blank">
 </head>
 <body>
     <!-- Animated Background -->
@@ -102,6 +103,7 @@
                     <div class="pred-card">
                         <div class="pred-card-bg">
                             <div class="pred-glow"></div>
+                            <div class="pred-particles" id="predParticles"></div>
                         </div>
                         <div class="pred-card-content">
                             <div class="pred-header">
@@ -109,10 +111,13 @@
                                     <span class="badge-pulse"></span>
                                     <span>ACTIVE SIGNAL</span>
                                 </div>
-                                <div class="pred-period">
-                                    <span class="period-label">PERIOD</span>
-                                    <span class="period-value" id="targetPeriod">--</span>
-                                </div>
+                            </div>
+
+                            <!-- Big Period Number -->
+                            <div class="pred-period-display">
+                                <span class="period-label-big">TARGET PERIOD</span>
+                                <span class="period-value-big" id="targetPeriod">--</span>
+                                <div class="period-scanline"></div>
                             </div>
 
                             <div class="pred-main">
@@ -121,6 +126,7 @@
                                         <div class="pred-ring outer"></div>
                                         <div class="pred-ring middle"></div>
                                         <div class="pred-ring inner"></div>
+                                        <div class="pred-ring pulse-ring"></div>
                                     </div>
                                     <div class="pred-value" id="predictionValue">--</div>
                                     <div class="pred-confidence" id="confidenceDisplay">--%</div>
@@ -128,21 +134,23 @@
 
                                 <div class="pred-meta">
                                     <div class="meta-item">
-                                        <span class="meta-label">Strategy</span>
+                                        <span class="meta-label">Primary Strategy</span>
                                         <span class="meta-value" id="strategyName">--</span>
                                     </div>
                                     <div class="meta-item">
-                                        <span class="meta-label">Regime</span>
-                                        <span class="meta-value" id="regimeName">--</span>
+                                        <span class="meta-label">Active Models</span>
+                                        <span class="meta-value" id="activeModels">--</span>
                                     </div>
                                     <div class="meta-item">
-                                        <span class="meta-label">Volatility</span>
-                                        <span class="meta-value" id="volatilityVal">--</span>
+                                        <span class="meta-label">Consensus</span>
+                                        <span class="meta-value" id="consensusVal">--</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Probability Distribution Bar -->
+                         
+
+                            <!-- Probability Distribution -->
                             <div class="prob-distribution">
                                 <div class="prob-labels">
                                     <span>SMALL</span>
@@ -209,33 +217,26 @@
                             <h3>Number Intelligence</h3>
                             <span class="panel-badge">LIVE</span>
                         </div>
-                        <div class="numbers-grid">
-                            <div class="num-card hot">
+                        <div class="numbers-dual">
+                            <div class="num-card primary">
                                 <div class="num-glow"></div>
-                                <span class="num-label">HOT</span>
-                                <span class="num-value" id="hotNumber">--</span>
-                                <span class="num-freq" id="hotFreq">0%</span>
+                                <span class="num-label">HIGH PROBABILITY</span>
+                                <span class="num-value" id="highProbNumber">--</span>
+                                <span class="num-freq" id="highProbFreq">0%</span>
+                                <div class="num-bar">
+                                    <div class="num-bar-fill" id="highProbBar"></div>
+                                </div>
                             </div>
-                            <div class="num-card cold">
+                            <div class="num-card secondary">
                                 <div class="num-glow"></div>
-                                <span class="num-label">COLD</span>
-                                <span class="num-value" id="coldNumber">--</span>
-                                <span class="num-freq" id="coldFreq">0%</span>
-                            </div>
-                            <div class="num-card warm">
-                                <div class="num-glow"></div>
-                                <span class="num-label">WARM</span>
-                                <span class="num-value" id="warmNumber">--</span>
-                                <span class="num-freq" id="warmFreq">0%</span>
-                            </div>
-                            <div class="num-card expected">
-                                <div class="num-glow"></div>
-                                <span class="num-label">EXPECTED</span>
-                                <span class="num-value" id="expectedNumber">--</span>
-                                <span class="num-freq" id="expectedFreq">0%</span>
+                                <span class="num-label">SECONDARY</span>
+                                <span class="num-value" id="secProbNumber">--</span>
+                                <span class="num-freq" id="secProbFreq">0%</span>
+                                <div class="num-bar">
+                                    <div class="num-bar-fill" id="secProbBar"></div>
+                                </div>
                             </div>
                         </div>
-                        <!-- Number Distribution Mini-Chart -->
                         <div class="dist-chart" id="numberDistChart"></div>
                     </div>
 
@@ -320,7 +321,7 @@
                     </div>
                     <div class="panel-card">
                         <div class="panel-header">
-                            <h3>Regime Distribution</h3>
+                            <h3>Market State</h3>
                         </div>
                         <div class="regime-chart" id="regimeChart"></div>
                     </div>
