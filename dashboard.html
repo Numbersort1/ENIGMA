@@ -3,285 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>卄丨尺ㄖㄒㄖ ⚝ CIPHER CORE // Neural Prediction Matrix</title>
+    <title>卄丨尺ㄖㄒㄖ ⚝ Neural Matrix</title>
     <link rel="stylesheet" href="d.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<base target="_blank">
-<base target="_blank">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Matrix Rain Background -->
-    <canvas id="matrixRain" class="matrix-bg"></canvas>
+    <!-- Animated Background -->
+    <canvas id="neuralCanvas" class="neural-bg"></canvas>
+    <div class="aurora-overlay"></div>
+    <div class="grid-overlay"></div>
 
-    <!-- Scanlines Overlay -->
-    <div class="scanlines"></div>
-
-    <!-- Vignette -->
-    <div class="vignette"></div>
-
-    <!-- Glitch Overlay -->
-    <div class="glitch-overlay" id="glitchOverlay"></div>
-
-    <!-- Access Denied Screen -->
-    <div class="access-denied" id="accessDenied">
-        <div class="cipher-lock">
-            <div class="lock-ring outer"></div>
-            <div class="lock-ring middle"></div>
-            <div class="lock-ring inner"></div>
-            <div class="lock-core">✕</div>
+    <!-- Access Denied -->
+    <div class="access-denied hidden" id="accessDenied">
+        <div class="lock-viz">
+            <svg viewBox="0 0 100 100" class="lock-svg">
+                <circle cx="50" cy="50" r="45" class="lock-ring" />
+                <circle cx="50" cy="50" r="35" class="lock-ring inner" />
+                <rect x="35" y="45" width="30" height="25" rx="3" class="lock-body" />
+                <path d="M40 45 V35 A10 10 0 0 1 60 35 V45" class="lock-shackle" />
+            </svg>
         </div>
         <div class="denial-code">[ERROR: 0x5F3]</div>
-        <div class="denial-text">CIPHER KEY INVALID</div>
-        <div class="denial-sub">認証失敗 // Authentication Required</div>
-        <div class="denial-sub">Neural handshake failed. Insufficient clearance.</div>
+        <div class="denial-text">ACCESS DENIED</div>
+        <div class="denial-sub">認証失敗 // Neural handshake failed</div>
         <button class="return-btn" onclick="window.location.href='index.html'">
-            <span class="btn-glitch">RETURN_TO_GATEWAY</span>
+            <span>RETURN TO GATEWAY</span>
         </button>
     </div>
 
-    <!-- Main Dashboard -->
-    <div id="dashboardContent" class="hidden">
-        <!-- Navigation Bar -->
-        <nav class="nav-bar">
-            <div class="nav-brand">
-                <div class="cipher-logo">
-                    <div class="logo-hex"></div>
-                    <div class="logo-symbol">⚝</div>
-                </div>
+    <!-- Main App -->
+    <div id="dashboardContent" class="app hidden">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">⚝</div>
                 <div class="brand-text">
-                    <h1 class="brand-main">CIPHER<span class="text-glow">CORE</span></h1>
-                    <span class="brand-sub">卄丨尺ㄖㄒㄖ 神経予測システム</span>
+                    <span class="brand-main">HIROTO</span>
+                    <span class="brand-sub">NEURAL MATRIX</span>
                 </div>
             </div>
 
-            <div class="nav-status">
-                <div class="status-cluster">
-                    <div class="status-node" id="connNode">
-                        <span class="node-dot"></span>
-                        <span class="node-label">LINK</span>
-                    </div>
-                    <div class="status-divider">|</div>
-                    <div class="cipher-timer" id="cipherTimer">00:00:00</div>
-                    <div class="status-divider">|</div>
-                    <div class="session-chip" id="sessionChip">
-                        <span class="chip-icon">◈</span>
-                        <span class="chip-text">-- DAYS</span>
-                    </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-panel="predict">
+                    <span class="nav-icon">◈</span>
+                    <span class="nav-label">Prediction</span>
+                    <span class="nav-jp">予測</span>
+                </a>
+                <a href="#" class="nav-item" data-panel="analytics">
+                    <span class="nav-icon">◉</span>
+                    <span class="nav-label">Analytics</span>
+                    <span class="nav-jp">分析</span>
+                </a>
+                <a href="#" class="nav-item" data-panel="history">
+                    <span class="nav-icon">◆</span>
+                    <span class="nav-label">History</span>
+                    <span class="nav-jp">履歴</span>
+                </a>
+                <a href="#" class="nav-item" data-panel="models">
+                    <span class="nav-icon">◊</span>
+                    <span class="nav-label">Models</span>
+                    <span class="nav-jp">モデル</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="connection-status">
+                    <span class="status-dot" id="connDot"></span>
+                    <span class="status-text" id="connText">OFFLINE</span>
+                </div>
+                <div class="session-badge" id="sessionBadge">
+                    <span class="badge-icon">◈</span>
+                    <span class="badge-text">-- DAYS</span>
                 </div>
             </div>
-        </nav>
+        </aside>
 
-        <main class="main-grid">
-            <!-- Hero Section with Stats -->
-            <section class="hero-panel">
-                <div class="hero-glow"></div>
-                <div class="hero-content">
-                    <div class="hero-badge">
-                        <span class="badge-pulse"></span>
-                        <span>NEURAL MATRIX ACTIVE</span>
-                    </div>
-                    <h2 class="hero-title">
-                        <span class="glitch-text" data-text="PREDICTION">PREDICTION</span>
-                        <span class="title-divider">//</span>
-                        <span class="title-jp">予測</span>
-                    </h2>
-                    <p class="hero-desc">Quantum pattern analysis & signal intelligence</p>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-left">
+                    <h1 class="page-title" id="pageTitle">Prediction Matrix</h1>
+                    <span class="page-subtitle" id="pageSubtitle">Real-time signal intelligence</span>
                 </div>
-                <div class="hero-stats">
-                    <div class="mini-stat">
-                        <span class="mini-label">ACCURACY</span>
-                        <span class="mini-value" id="miniAccuracy">0%</span>
-                    </div>
-                    <div class="mini-stat">
-                        <span class="mini-label">SIGNALS</span>
-                        <span class="mini-value" id="miniSignals">0</span>
-                    </div>
-                    <div class="mini-stat">
-                        <span class="mini-label">WINS</span>
-                        <span class="mini-value" id="miniWins">0</span>
-                    </div>
-                    <div class="mini-stat">
-                        <span class="mini-label">LOSSES</span>
-                        <span class="mini-value" id="miniLosses">0</span>
+                <div class="top-right">
+                    <div class="clock-module">
+                        <span class="clock-time" id="cipherTimer">00:00:00</span>
+                        <span class="clock-date" id="cipherDate">--</span>
                     </div>
                 </div>
-            </section>
+            </header>
 
-            <!-- Main Prediction Display with Hot/Cold -->
-            <section class="prediction-matrix">
-                <div class="matrix-border top"></div>
-                <div class="matrix-border right"></div>
-                <div class="matrix-border bottom"></div>
-                <div class="matrix-border left"></div>
-
-                <div class="matrix-header">
-                    <div class="header-id">
-                        <span class="id-icon">◈</span>
-                        <span class="id-text">ACTIVE_PREDICTION_MODULE</span>
-                    </div>
-                    <div class="header-timer" id="predTimer">--:--:--</div>
-                </div>
-
-                <div class="matrix-body">
-                    <!-- Period Display -->
-                    <div class="period-cluster">
-                        <div class="period-label">
-                            <span>TARGET_PERIOD</span>
-                            <span class="jp">対象期間</span>
+            <!-- PREDICTION PANEL -->
+            <div class="panel active" id="panel-predict">
+                <!-- Hero Prediction Card -->
+                <section class="hero-prediction">
+                    <div class="pred-card">
+                        <div class="pred-card-bg">
+                            <div class="pred-glow"></div>
                         </div>
-                        <div class="period-value" id="targetPeriod">--</div>
-                        <div class="period-bar">
-                            <div class="bar-fill" id="periodBar"></div>
-                        </div>
-                    </div>
-
-                    <!-- Hot/Cold Numbers - Vertical -->
-                    <div class="numbers-cluster">
-                        <div class="number-box hot-box">
-                            <div class="number-label">
-                                <span>HOT</span>
-                                <span class="jp">ホット</span>
+                        <div class="pred-card-content">
+                            <div class="pred-header">
+                                <div class="pred-badge">
+                                    <span class="badge-pulse"></span>
+                                    <span>ACTIVE SIGNAL</span>
+                                </div>
+                                <div class="pred-period">
+                                    <span class="period-label">PERIOD</span>
+                                    <span class="period-value" id="targetPeriod">--</span>
+                                </div>
                             </div>
-                            <div class="number-value" id="hotNumber">--</div>
-                        </div>
-                        <div class="number-box cold-box">
-                            <div class="number-label">
-                                <span>COLD</span>
-                                <span class="jp">コールド</span>
-                            </div>
-                            <div class="number-value" id="coldNumber">--</div>
-                        </div>
-                    </div>
 
-                    <!-- Main Prediction Value -->
-                    <div class="prediction-core">
-                        <div class="core-ring outer"></div>
-                        <div class="core-ring middle"></div>
-                        <div class="core-ring inner"></div>
-                        <div class="core-value" id="predictionValue">--</div>
-                        <div class="core-glow"></div>
-                    </div>
-
-                    <!-- Confidence Meter -->
-                    <div class="confidence-cluster">
-                        <div class="confidence-header">
-                            <span>CONFIDENCE_LEVEL</span>
-                            <span class="confidence-value" id="confidenceVal">--%</span>
-                        </div>
-                        <div class="confidence-meter">
-                            <div class="meter-bg">
-                                <div class="meter-fill" id="confidenceFill"></div>
-                                <div class="meter-grid"></div>
-                            </div>
-                            <div class="meter-markers">
-                                <span>0</span>
-                                <span>25</span>
-                                <span>50</span>
-                                <span>75</span>
-                                <span>100</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Live Stream -->
-            <section class="stream-panel">
-                <div class="panel-corner tl"></div>
-                <div class="panel-corner tr"></div>
-                <div class="panel-corner bl"></div>
-                <div class="panel-corner br"></div>
-
-                <div class="stream-header">
-                    <div class="stream-title">
-                        <span class="pulse-icon"></span>
-                        <span>LIVE_STREAM</span>
-                        <span class="jp">ライブフィード</span>
-                    </div>
-                    <div class="stream-status">REAL-TIME</div>
-                </div>
-
-                <div class="stream-content" id="streamContent">
-                    <div class="stream-loading">
-                        <div class="loading-spinner"></div>
-                        <span>ESTABLISHING_NEURAL_LINK...</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- History Matrix -->
-            <section class="history-panel">
-                <div class="history-header">
-                    <div class="header-title">
-                        <span class="title-icon">◆</span>
-                        <span>DECRYPTION_LOG</span>
-                        <span class="jp">履歴ログ</span>
-                    </div>
-                    <div class="history-meta" id="historyMeta">0 RECORDS</div>
-                </div>
-
-                <div class="history-table-container">
-                    <table class="cipher-table" id="cipherTable">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <span>PERIOD</span>
-                                    <span class="jp-th">期間</span>
-                                </th>
-                                <th>
-                                    <span>PREDICTION</span>
-                                    <span class="jp-th">予測</span>
-                                </th>
-                                <th>
-                                    <span>ACTUAL</span>
-                                    <span class="jp-th">実際</span>
-                                </th>
-                                <th>
-                                    <span>NUMBER</span>
-                                    <span class="jp-th">番号</span>
-                                </th>
-                                <th>
-                                    <span>STATUS</span>
-                                    <span class="jp-th">状態</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyBody">
-                            <tr class="loading-row">
-                                <td colspan="5">
-                                    <div class="table-loader">
-                                        <div class="loader-ring"></div>
-                                        <span>DECRYPTING_DATA...</span>
+                            <div class="pred-main">
+                                <div class="prediction-display">
+                                    <div class="pred-rings">
+                                        <div class="pred-ring outer"></div>
+                                        <div class="pred-ring middle"></div>
+                                        <div class="pred-ring inner"></div>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+                                    <div class="pred-value" id="predictionValue">--</div>
+                                    <div class="pred-confidence" id="confidenceDisplay">--%</div>
+                                </div>
 
-        <!-- Footer -->
-        <footer class="cipher-footer">
-            <div class="footer-line"></div>
-            <div class="footer-content">
-                <span class="footer-brand">CIPHER<span class="text-glow">CORE</span></span>
-                <span class="footer-divider">//</span>
-                <span class="footer-text">卄丨尺ㄖㄒㄖ Neural Systems</span>
-                <span class="footer-divider">//</span>
-                <span class="footer-secure">ENCRYPTED_CHANNEL</span>
+                                <div class="pred-meta">
+                                    <div class="meta-item">
+                                        <span class="meta-label">Strategy</span>
+                                        <span class="meta-value" id="strategyName">--</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Regime</span>
+                                        <span class="meta-value" id="regimeName">--</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Volatility</span>
+                                        <span class="meta-value" id="volatilityVal">--</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Probability Distribution Bar -->
+                            <div class="prob-distribution">
+                                <div class="prob-labels">
+                                    <span>SMALL</span>
+                                    <span id="probSmall">50%</span>
+                                </div>
+                                <div class="prob-bar">
+                                    <div class="prob-fill small" id="probFillSmall"></div>
+                                    <div class="prob-fill big" id="probFillBig"></div>
+                                    <div class="prob-marker" id="probMarker"></div>
+                                </div>
+                                <div class="prob-labels">
+                                    <span id="probBig">50%</span>
+                                    <span>BIG</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stats Grid -->
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon accuracy">◈</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Accuracy</span>
+                            <span class="stat-value" id="miniAccuracy">0%</span>
+                        </div>
+                        <div class="stat-chart" id="accuracyChart"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon signals">◉</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Signals</span>
+                            <span class="stat-value" id="miniSignals">0</span>
+                        </div>
+                        <div class="stat-trend up" id="signalTrend">+0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon wins">▲</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Wins</span>
+                            <span class="stat-value" id="miniWins">0</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" id="winBar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon losses">▼</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Losses</span>
+                            <span class="stat-value" id="miniLosses">0</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill loss" id="lossBar"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Numbers & Live Stream -->
+                <section class="dual-panel">
+                    <div class="panel-card numbers-panel">
+                        <div class="panel-header">
+                            <h3>Number Intelligence</h3>
+                            <span class="panel-badge">LIVE</span>
+                        </div>
+                        <div class="numbers-grid">
+                            <div class="num-card hot">
+                                <div class="num-glow"></div>
+                                <span class="num-label">HOT</span>
+                                <span class="num-value" id="hotNumber">--</span>
+                                <span class="num-freq" id="hotFreq">0%</span>
+                            </div>
+                            <div class="num-card cold">
+                                <div class="num-glow"></div>
+                                <span class="num-label">COLD</span>
+                                <span class="num-value" id="coldNumber">--</span>
+                                <span class="num-freq" id="coldFreq">0%</span>
+                            </div>
+                            <div class="num-card warm">
+                                <div class="num-glow"></div>
+                                <span class="num-label">WARM</span>
+                                <span class="num-value" id="warmNumber">--</span>
+                                <span class="num-freq" id="warmFreq">0%</span>
+                            </div>
+                            <div class="num-card expected">
+                                <div class="num-glow"></div>
+                                <span class="num-label">EXPECTED</span>
+                                <span class="num-value" id="expectedNumber">--</span>
+                                <span class="num-freq" id="expectedFreq">0%</span>
+                            </div>
+                        </div>
+                        <!-- Number Distribution Mini-Chart -->
+                        <div class="dist-chart" id="numberDistChart"></div>
+                    </div>
+
+                    <div class="panel-card stream-panel">
+                        <div class="panel-header">
+                            <h3>Live Stream</h3>
+                            <span class="panel-badge pulse">REAL-TIME</span>
+                        </div>
+                        <div class="stream-grid" id="streamContent">
+                            <div class="stream-loading">
+                                <div class="stream-spinner"></div>
+                                <span>Establishing neural link...</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Uncertainty & Monte Carlo -->
+                <section class="uncertainty-panel">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Uncertainty Analysis</h3>
+                            <span class="panel-badge">MC-1000</span>
+                        </div>
+                        <div class="uncertainty-grid">
+                            <div class="uncertainty-viz">
+                                <div class="mc-chart" id="monteCarloChart"></div>
+                                <div class="mc-legend">
+                                    <span><span class="dot big"></span>Big wins: <b id="mcBigWins">--</b></span>
+                                    <span><span class="dot small"></span>Small wins: <b id="mcSmallWins">--</b></span>
+                                </div>
+                            </div>
+                            <div class="uncertainty-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">Entropy</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" id="entropyBar"></div>
+                                    </div>
+                                    <span class="metric-value" id="entropyVal">--</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Chi-Square Randomness</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" id="chiBar"></div>
+                                    </div>
+                                    <span class="metric-value" id="chiVal">--</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Autocorrelation</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" id="autoBar"></div>
+                                    </div>
+                                    <span class="metric-value" id="autoVal">--</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Pattern Strength</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" id="patternBar"></div>
+                                    </div>
+                                    <span class="metric-value" id="patternVal">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
-        </footer>
+
+            <!-- ANALYTICS PANEL -->
+            <div class="panel" id="panel-analytics">
+                <section class="analytics-grid">
+                    <div class="panel-card wide">
+                        <div class="panel-header">
+                            <h3>Win/Loss Trend</h3>
+                        </div>
+                        <div class="trend-chart" id="trendChart"></div>
+                    </div>
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Strategy Performance</h3>
+                        </div>
+                        <div class="strategy-list" id="strategyList"></div>
+                    </div>
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Regime Distribution</h3>
+                        </div>
+                        <div class="regime-chart" id="regimeChart"></div>
+                    </div>
+                    <div class="panel-card wide">
+                        <div class="panel-header">
+                            <h3>Number Heatmap</h3>
+                        </div>
+                        <div class="heatmap-grid" id="numberHeatmap"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- HISTORY PANEL -->
+            <div class="panel" id="panel-history">
+                <section class="history-section">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Decryption Log</h3>
+                            <span class="history-meta" id="historyMeta">0 records</span>
+                        </div>
+                        <div class="history-table-wrap">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Period</th>
+                                        <th>Prediction</th>
+                                        <th>Actual</th>
+                                        <th>Number</th>
+                                        <th>Conf</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyBody">
+                                    <tr class="loading-row">
+                                        <td colspan="6">
+                                            <div class="table-loader">
+                                                <div class="loader-ring"></div>
+                                                <span>Decrypting data...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- MODELS PANEL -->
+            <div class="panel" id="panel-models">
+                <section class="models-grid">
+                    <div class="panel-card wide">
+                        <div class="panel-header">
+                            <h3>Ensemble Model Weights</h3>
+                        </div>
+                        <div class="weights-chart" id="weightsChart"></div>
+                    </div>
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Feature Importance</h3>
+                        </div>
+                        <div class="feature-list" id="featureList"></div>
+                    </div>
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Model Diagnostics</h3>
+                        </div>
+                        <div class="diagnostics" id="diagnostics"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="cipher-toast" id="cipherToast">
-        <div class="toast-line"></div>
+        <span class="toast-icon">◈</span>
         <span class="toast-text"></span>
     </div>
 
     <script src="d.js"></script>
 </body>
 </html>
-
-
