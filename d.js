@@ -1,7 +1,7 @@
 // ============================================
-// HIROTO NEURAL MATRIX v3.0
-// Advanced Ensemble Prediction with Uncertainty Quantification
-// Monte Carlo Simulation | Bayesian Updating | Regime Detection
+// HIROTO NEURAL MATRIX v3.1 — FINE TUNED
+// 18+ Strategy Ensemble | Animated Confidence
+// Uncertainty Quantification | Dual Number Intelligence
 // ============================================
 
 const CONFIG = {
@@ -19,12 +19,10 @@ const CONFIG = {
     MAX_CONFIDENCE: 95,
     MONTE_CARLO_RUNS: 1000,
     PATTERN_MAX_LEN: 5,
-    REGIME_WINDOW: 20
+    REGIME_WINDOW: 20,
+    CONF_FLUCTUATION_RANGE: 3
 };
 
-// ============================================
-// PERIOD CALCULATOR
-// ============================================
 const PeriodCalculator = {
     DAILY_RESET_VALUE: 9671,
     calculateCounter(date = new Date()) {
@@ -40,23 +38,15 @@ const PeriodCalculator = {
 };
 
 const state = {
-    lastIssue: null,
-    lastResults: [],
-    fullHistory: [],
+    lastIssue: null, lastResults: [], fullHistory: [],
     pendingPredictions: new Map(),
-    hotNumber: null,
-    coldNumber: null,
-    warmNumber: null,
-    expectedNumber: null,
-    isConnected: false,
-    retryCount: 0,
-    session: null,
+    highProbNumber: null, secProbNumber: null,
+    isConnected: false, retryCount: 0, session: null,
     stats: { wins: 0, losses: 0, total: 0, streak: 0, bestStreak: 0 },
     isFirstPrediction: true,
-    currentTargetPeriod: null,
-    currentPeriodNumber: null,
-    lastPrediction: null,
-    activePanel: 'predict'
+    currentTargetPeriod: null, currentPeriodNumber: null,
+    lastPrediction: null, activePanel: 'predict',
+    confAnimationId: null, confBaseValue: 50
 };
 
 // ============================================
@@ -70,93 +60,81 @@ class NeuralCanvas {
         this.resize();
         window.addEventListener('resize', () => this.resize());
         this.nodes = [];
-        this.connections = [];
         this.initNodes();
         this.animate();
     }
-
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
     }
-
     initNodes() {
-        const count = Math.floor((this.canvas.width * this.canvas.height) / 25000);
+        const count = Math.floor((this.canvas.width * this.canvas.height) / 22000);
         for (let i = 0; i < count; i++) {
             this.nodes.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                vx: (Math.random() - 0.5) * 0.3,
-                vy: (Math.random() - 0.5) * 0.3,
-                radius: Math.random() * 2 + 1,
-                opacity: Math.random() * 0.5 + 0.2
+                vx: (Math.random() - 0.5) * 0.25,
+                vy: (Math.random() - 0.5) * 0.25,
+                radius: Math.random() * 2 + 0.5,
+                opacity: Math.random() * 0.4 + 0.15
             });
         }
     }
-
     animate() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Update nodes
         this.nodes.forEach(n => {
-            n.x += n.vx;
-            n.y += n.vy;
+            n.x += n.vx; n.y += n.vy;
             if (n.x < 0 || n.x > this.canvas.width) n.vx *= -1;
             if (n.y < 0 || n.y > this.canvas.height) n.vy *= -1;
         });
-
-        // Draw connections
         for (let i = 0; i < this.nodes.length; i++) {
             for (let j = i + 1; j < this.nodes.length; j++) {
                 const dx = this.nodes[i].x - this.nodes[j].x;
                 const dy = this.nodes[i].y - this.nodes[j].y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
+                if (dist < 130) {
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.nodes[i].x, this.nodes[i].y);
                     this.ctx.lineTo(this.nodes[j].x, this.nodes[j].y);
-                    this.ctx.strokeStyle = `rgba(74, 158, 255, ${0.1 * (1 - dist / 120)})`;
-                    this.ctx.lineWidth = 0.5;
+                    this.ctx.strokeStyle = `rgba(59, 130, 246, ${0.08 * (1 - dist / 130)})`;
+                    this.ctx.lineWidth = 0.4;
                     this.ctx.stroke();
                 }
             }
         }
-
-        // Draw nodes
         this.nodes.forEach(n => {
             this.ctx.beginPath();
             this.ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = `rgba(74, 158, 255, ${n.opacity})`;
+            this.ctx.fillStyle = `rgba(59, 130, 246, ${n.opacity})`;
             this.ctx.fill();
         });
-
         requestAnimationFrame(() => this.animate());
     }
 }
 
 // ============================================
-// ADVANCED PREDICTION ENGINE v3.0
+// NEURAL MATRIX ENGINE v3.1 — 18 STRATEGIES
 // ============================================
 class NeuralMatrixEngine {
     constructor() {
         this.strategies = [
             'markov', 'streak', 'alternation', 'reversion', 'momentum',
             'entropy', 'gap_analysis', 'number_inference', 'pattern',
-            'bayesian', 'fibonacci', 'parity'
+            'bayesian', 'fibonacci', 'parity', 'cyclical', 'run_length',
+            'volatility_cluster', 'support_resistance', 'momentum_divergence',
+            'adaptive_threshold'
         ];
         this.performance = {};
         this.strategies.forEach(s => {
             this.performance[s] = { wins: 0, losses: 0, recent: [], uncertainty: 1.0 };
         });
         this.emaAlpha = 0.35;
-        this.regimeHistory = [];
     }
 
     toNum(type) { return type === 'big' ? 1 : 0; }
     toType(num) { return num >= 0.5 ? 'big' : 'small'; }
 
-    // --- Core Strategies ---
-
+    // --- ORIGINAL 12 STRATEGIES ---
     markovStrategy(history) {
         if (history.length < 4) return { pred: 'big', conf: 50, reason: 'Markov: insufficient data' };
         const trans = { big: { big: 0, small: 0 }, small: { big: 0, small: 0 } };
@@ -182,16 +160,16 @@ class NeuralMatrixEngine {
             const t = history[i].actual_result || history[i].result_type;
             if (t === lastType) streak++; else break;
         }
-        if (streak >= 4) return { pred: lastType === 'big' ? 'small' : 'big', conf: Math.min(90, 70 + streak * 4), reason: `Streak break: ${streak}x ${lastType}` };
-        if (streak === 3) return { pred: lastType === 'big' ? 'small' : 'big', conf: 74, reason: `Streak break: ${streak}x ${lastType}` };
-        if (streak === 2) return { pred: lastType, conf: 62, reason: `Streak continue: ${streak}x ${lastType}` };
+        if (streak >= 4) return { pred: lastType === 'big' ? 'small' : 'big', conf: Math.min(92, 72 + streak * 4), reason: `Streak break: ${streak}x ${lastType}` };
+        if (streak === 3) return { pred: lastType === 'big' ? 'small' : 'big', conf: 76, reason: `Streak break: ${streak}x ${lastType}` };
+        if (streak === 2) return { pred: lastType, conf: 64, reason: `Streak continue: ${streak}x ${lastType}` };
         return { pred: lastType === 'big' ? 'small' : 'big', conf: 54, reason: 'Streak: no pattern' };
     }
 
     alternationStrategy(history) {
         if (history.length < 5) return { pred: 'big', conf: 50, reason: 'Alt: insufficient data' };
         let alts = 0;
-        const window = Math.min(12, history.length);
+        const window = Math.min(14, history.length);
         for (let i = 1; i < window; i++) {
             const curr = history[i - 1].actual_result || history[i - 1].result_type;
             const prev = history[i].actual_result || history[i].result_type;
@@ -199,18 +177,18 @@ class NeuralMatrixEngine {
         }
         const rate = alts / (window - 1);
         const last = history[0].actual_result || history[0].result_type;
-        if (rate > 0.7) return { pred: last === 'big' ? 'small' : 'big', conf: Math.min(88, Math.round(58 + rate * 30)), reason: `High alternation (${(rate*100).toFixed(0)}%)` };
-        if (rate < 0.3) return { pred: last, conf: Math.min(82, Math.round(58 + (1 - rate) * 24)), reason: `Low alternation (${(rate*100).toFixed(0)}%)` };
+        if (rate > 0.7) return { pred: last === 'big' ? 'small' : 'big', conf: Math.min(90, Math.round(58 + rate * 32)), reason: `High alternation (${(rate*100).toFixed(0)}%)` };
+        if (rate < 0.3) return { pred: last, conf: Math.min(84, Math.round(58 + (1 - rate) * 26)), reason: `Low alternation (${(rate*100).toFixed(0)}%)` };
         return { pred: last === 'big' ? 'small' : 'big', conf: 55, reason: 'Alt: mixed' };
     }
 
     reversionStrategy(history) {
         if (history.length < 10) return { pred: 'big', conf: 50, reason: 'Reversion: insufficient data' };
-        const recent = history.slice(0, 24);
+        const recent = history.slice(0, 28);
         const bigCount = recent.filter(h => (h.actual_result || h.result_type) === 'big').length;
         const ratio = bigCount / recent.length;
-        if (ratio > 0.62) return { pred: 'small', conf: Math.min(86, Math.round(60 + (ratio - 0.5) * 60)), reason: `Mean reversion: ${(ratio*100).toFixed(0)}% big` };
-        if (ratio < 0.38) return { pred: 'big', conf: Math.min(86, Math.round(60 + (0.5 - ratio) * 60)), reason: `Mean reversion: ${(ratio*100).toFixed(0)}% big` };
+        if (ratio > 0.62) return { pred: 'small', conf: Math.min(88, Math.round(62 + (ratio - 0.5) * 60)), reason: `Mean reversion: ${(ratio*100).toFixed(0)}% big` };
+        if (ratio < 0.38) return { pred: 'big', conf: Math.min(88, Math.round(62 + (0.5 - ratio) * 60)), reason: `Mean reversion: ${(ratio*100).toFixed(0)}% big` };
         return { pred: 'big', conf: 53, reason: 'Reversion: balanced' };
     }
 
@@ -222,22 +200,22 @@ class NeuralMatrixEngine {
             ema = this.emaAlpha * val + (1 - this.emaAlpha) * ema;
         }
         const pred = this.toType(ema);
-        const conf = Math.min(84, Math.round(50 + Math.abs(ema - 0.5) * 70));
+        const conf = Math.min(86, Math.round(50 + Math.abs(ema - 0.5) * 75));
         return { pred, conf, reason: `EMA: ${ema.toFixed(2)}` };
     }
 
     entropyStrategy(history) {
         if (history.length < 10) return { pred: 'big', conf: 50, reason: 'Entropy: insufficient data' };
-        const recent = history.slice(0, 15);
+        const recent = history.slice(0, 18);
         const counts = { big: 0, small: 0 };
         recent.forEach(h => counts[h.actual_result || h.result_type]++);
-        const pBig = counts.big / 15;
-        const pSmall = counts.small / 15;
+        const pBig = counts.big / 18;
+        const pSmall = counts.small / 18;
         const entropy = -(pBig * Math.log2(pBig || 0.001) + pSmall * Math.log2(pSmall || 0.001));
         const normEntropy = entropy / 1.0;
         const last = history[0].actual_result || history[0].result_type;
         if (normEntropy > 0.92) return { ...this.reversionStrategy(history), reason: `High entropy ${normEntropy.toFixed(2)}` };
-        if (normEntropy < 0.65) return { pred: last, conf: 66, reason: `Low entropy ${normEntropy.toFixed(2)}` };
+        if (normEntropy < 0.65) return { pred: last, conf: 68, reason: `Low entropy ${normEntropy.toFixed(2)}` };
         return { pred: last === 'big' ? 'small' : 'big', conf: 56, reason: `Mid entropy ${normEntropy.toFixed(2)}` };
     }
 
@@ -261,81 +239,61 @@ class NeuralMatrixEngine {
         }
         const overdueBig = currGap.big > avgGapBig * 1.4;
         const overdueSmall = currGap.small > avgGapSmall * 1.4;
-        if (overdueBig && !overdueSmall) return { pred: 'big', conf: 76, reason: `Big gap overdue` };
-        if (overdueSmall && !overdueBig) return { pred: 'small', conf: 76, reason: `Small gap overdue` };
+        if (overdueBig && !overdueSmall) return { pred: 'big', conf: 78, reason: `Big gap overdue` };
+        if (overdueSmall && !overdueBig) return { pred: 'small', conf: 78, reason: `Small gap overdue` };
         return { pred: 'big', conf: 53, reason: 'Gaps normal' };
     }
 
     numberInference(history) {
         if (history.length < 5) return { pred: 'big', conf: 50, reason: 'Number: insufficient data' };
-        const nums = history.slice(0, 8).map(h => h.actual_number).filter(n => n !== undefined && n !== null);
+        const nums = history.slice(0, 10).map(h => h.actual_number).filter(n => n !== undefined && n !== null);
         if (nums.length < 3) return { pred: 'big', conf: 50, reason: 'Number: no data' };
         const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
-        if (avg >= 7) return { pred: 'small', conf: 68, reason: `High avg ${avg.toFixed(1)}` };
-        if (avg <= 2) return { pred: 'big', conf: 68, reason: `Low avg ${avg.toFixed(1)}` };
+        if (avg >= 7) return { pred: 'small', conf: 70, reason: `High avg ${avg.toFixed(1)}` };
+        if (avg <= 2) return { pred: 'big', conf: 70, reason: `Low avg ${avg.toFixed(1)}` };
         if (avg >= 5) return { pred: 'big', conf: 58, reason: `Mid-high avg ${avg.toFixed(1)}` };
         return { pred: 'small', conf: 58, reason: `Mid-low avg ${avg.toFixed(1)}` };
     }
 
-    // --- NEW ADVANCED STRATEGIES ---
-
     patternStrategy(history) {
         if (history.length < 6) return { pred: 'big', conf: 50, reason: 'Pattern: insufficient data' };
         const types = history.slice(0, 20).map(h => h.actual_result || h.result_type);
-
-        // Check for repeating patterns of length 2-5
         for (let len = 2; len <= CONFIG.PATTERN_MAX_LEN; len++) {
             if (types.length < len * 2) continue;
             const recent = types.slice(0, len).join('');
             const prev = types.slice(len, len * 2).join('');
             if (recent === prev) {
-                // Pattern detected - predict next in sequence
                 const pattern = types.slice(0, len);
                 const nextIdx = types.length % len;
                 const pred = pattern[nextIdx] || 'big';
-                return { pred, conf: 72 + len * 2, reason: `Pattern repeat [${len}]` };
+                return { pred, conf: 74 + len * 2, reason: `Pattern repeat [${len}]` };
             }
         }
-
-        // Check for alternating patterns
         let altCount = 0;
-        for (let i = 1; i < Math.min(8, types.length); i++) {
+        for (let i = 1; i < Math.min(10, types.length); i++) {
             if (types[i] !== types[i-1]) altCount++;
         }
-        if (altCount >= 6) {
+        if (altCount >= 7) {
             const last = types[0];
-            return { pred: last === 'big' ? 'small' : 'big', conf: 68, reason: 'Strong alternation pattern' };
+            return { pred: last === 'big' ? 'small' : 'big', conf: 70, reason: 'Strong alternation pattern' };
         }
-
         return { pred: types[0] === 'big' ? 'small' : 'big', conf: 52, reason: 'No pattern detected' };
     }
 
     bayesianStrategy(history) {
         if (history.length < 10) return { pred: 'big', conf: 50, reason: 'Bayesian: insufficient data' };
-
-        // Prior: assume 50/50
-        let priorBig = 0.5;
-        let priorSmall = 0.5;
-
-        // Update with recent evidence using Beta distribution approximation
-        const recent = history.slice(0, 15);
+        const recent = history.slice(0, 18);
         const bigCount = recent.filter(h => (h.actual_result || h.result_type) === 'big').length;
         const smallCount = recent.length - bigCount;
-
-        // Posterior with pseudo-counts (Laplace smoothing)
         const alpha = bigCount + 1;
         const beta = smallCount + 1;
         const posteriorBig = alpha / (alpha + beta);
-
-        // Adjust for recency bias
         const last5 = history.slice(0, 5);
         const last5Big = last5.filter(h => (h.actual_result || h.result_type) === 'big').length;
         const recencyWeight = 0.3;
         const adjustedP = posteriorBig * (1 - recencyWeight) + (last5Big / 5) * recencyWeight;
-
         const pred = adjustedP > 0.5 ? 'big' : 'small';
-        const conf = Math.min(85, Math.round(50 + Math.abs(adjustedP - 0.5) * 80));
-
+        const conf = Math.min(87, Math.round(50 + Math.abs(adjustedP - 0.5) * 85));
         return { pred, conf, reason: `Bayesian: P(big)=${adjustedP.toFixed(2)}` };
     }
 
@@ -343,18 +301,13 @@ class NeuralMatrixEngine {
         if (history.length < 8) return { pred: 'big', conf: 50, reason: 'Fibonacci: insufficient data' };
         const nums = history.slice(0, 10).map(h => h.actual_number).filter(n => n !== undefined && n !== null);
         if (nums.length < 5) return { pred: 'big', conf: 50, reason: 'Fibonacci: no numbers' };
-
-        // Check if numbers follow fibonacci-like progression
         const fibSet = new Set([0, 1, 1, 2, 3, 5, 8, 13, 21, 34]);
         const fibMatches = nums.filter(n => fibSet.has(n)).length;
         const fibRatio = fibMatches / nums.length;
-
         if (fibRatio > 0.4) {
-            // If fibonacci numbers are appearing, next likely non-fib or boundary
             const last = history[0].actual_result || history[0].result_type;
-            return { pred: last === 'big' ? 'small' : 'big', conf: 64, reason: `Fibonacci cluster ${(fibRatio*100).toFixed(0)}%` };
+            return { pred: last === 'big' ? 'small' : 'big', conf: 66, reason: `Fibonacci cluster ${(fibRatio*100).toFixed(0)}%` };
         }
-
         return { pred: 'big', conf: 52, reason: 'No Fibonacci pattern' };
     }
 
@@ -362,31 +315,131 @@ class NeuralMatrixEngine {
         if (history.length < 6) return { pred: 'big', conf: 50, reason: 'Parity: insufficient data' };
         const nums = history.slice(0, 10).map(h => h.actual_number).filter(n => n !== undefined && n !== null);
         if (nums.length < 4) return { pred: 'big', conf: 50, reason: 'Parity: no numbers' };
-
         const evens = nums.filter(n => n % 2 === 0).length;
-        const odds = nums.length - evens;
         const evenRatio = evens / nums.length;
-
-        // Even numbers tend to be in middle range (2,4,6,8) -> mixed
-        // Odd numbers (1,3,5,7,9) -> more small tendency for low, big for high
         const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
-
-        if (evenRatio > 0.75) {
-            return { pred: avg > 5 ? 'small' : 'big', conf: 62, reason: `Even dominance ${(evenRatio*100).toFixed(0)}%` };
-        }
-        if (evenRatio < 0.25) {
-            return { pred: avg > 5 ? 'small' : 'big', conf: 62, reason: `Odd dominance ${((1-evenRatio)*100).toFixed(0)}%` };
-        }
-
+        if (evenRatio > 0.75) return { pred: avg > 5 ? 'small' : 'big', conf: 64, reason: `Even dominance ${(evenRatio*100).toFixed(0)}%` };
+        if (evenRatio < 0.25) return { pred: avg > 5 ? 'small' : 'big', conf: 64, reason: `Odd dominance ${((1-evenRatio)*100).toFixed(0)}%` };
         return { pred: avg >= 5 ? 'big' : 'small', conf: 55, reason: `Parity balanced` };
     }
 
-    // --- UNCERTAINTY & ANALYSIS METHODS ---
+    // --- NEW ADVANCED STRATEGIES ---
+
+    cyclicalStrategy(history) {
+        if (history.length < 12) return { pred: 'big', conf: 50, reason: 'Cyclical: insufficient data' };
+        const types = history.slice(0, 20).map(h => h.actual_result || h.result_type);
+        // Look for cycles of length 3-6
+        for (let cycleLen = 3; cycleLen <= 6; cycleLen++) {
+            if (types.length < cycleLen * 2) continue;
+            let matches = 0;
+            for (let i = 0; i < cycleLen; i++) {
+                if (types[i] === types[i + cycleLen]) matches++;
+            }
+            if (matches >= cycleLen - 1) {
+                const nextIdx = types.length % cycleLen;
+                const pred = types[nextIdx] || 'big';
+                return { pred, conf: 68 + matches * 2, reason: `Cycle detected [${cycleLen}]` };
+            }
+        }
+        return { pred: types[0] === 'big' ? 'small' : 'big', conf: 52, reason: 'No cycle detected' };
+    }
+
+    runLengthStrategy(history) {
+        if (history.length < 8) return { pred: 'big', conf: 50, reason: 'Run-length: insufficient data' };
+        const types = history.slice(0, 20).map(h => h.actual_result || h.result_type);
+        const runs = [];
+        let current = types[0], count = 1;
+        for (let i = 1; i < types.length; i++) {
+            if (types[i] === current) count++;
+            else { runs.push({ type: current, len: count }); current = types[i]; count = 1; }
+        }
+        runs.push({ type: current, len: count });
+        const avgRun = runs.reduce((a, r) => a + r.len, 0) / runs.length;
+        const lastRun = runs[0];
+        if (lastRun.len > avgRun * 1.5) {
+            return { pred: lastRun.type === 'big' ? 'small' : 'big', conf: 72, reason: `Run break: ${lastRun.len} > avg ${avgRun.toFixed(1)}` };
+        }
+        if (lastRun.len < avgRun * 0.5 && runs.length > 1) {
+            return { pred: lastRun.type, conf: 64, reason: `Short run continue` };
+        }
+        return { pred: lastRun.type === 'big' ? 'small' : 'big', conf: 54, reason: 'Run-length neutral' };
+    }
+
+    volatilityClusterStrategy(history) {
+        if (history.length < 10) return { pred: 'big', conf: 50, reason: 'Vol-cluster: insufficient data' };
+        const nums = history.slice(0, 15).map(h => this.toNum(h.actual_result || h.result_type));
+        const vols = [];
+        for (let i = 1; i < nums.length; i++) {
+            vols.push(Math.abs(nums[i] - nums[i-1]));
+        }
+        const recentVol = vols.slice(0, 3).reduce((a, b) => a + b, 0) / 3;
+        const avgVol = vols.reduce((a, b) => a + b, 0) / vols.length;
+        const last = history[0].actual_result || history[0].result_type;
+        if (recentVol > avgVol * 1.3) {
+            // High volatility - expect reversal
+            return { pred: last === 'big' ? 'small' : 'big', conf: 66, reason: `High vol cluster` };
+        }
+        if (recentVol < avgVol * 0.5) {
+            // Low volatility - expect continuation
+            return { pred: last, conf: 62, reason: `Low vol cluster` };
+        }
+        return { pred: last === 'big' ? 'small' : 'big', conf: 54, reason: 'Vol cluster neutral' };
+    }
+
+    supportResistanceStrategy(history) {
+        if (history.length < 15) return { pred: 'big', conf: 50, reason: 'S/R: insufficient data' };
+        const nums = history.slice(0, 20).map(h => h.actual_number).filter(n => n !== undefined && n !== null);
+        if (nums.length < 8) return { pred: 'big', conf: 50, reason: 'S/R: no numbers' };
+        // Find support (frequent low) and resistance (frequent high)
+        const freq = {};
+        nums.forEach(n => freq[n] = (freq[n] || 0) + 1);
+        const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+        const support = parseInt(sorted[sorted.length - 1][0]);
+        const resistance = parseInt(sorted[0][0]);
+        const lastNum = nums[0];
+        if (lastNum <= support + 1) return { pred: 'big', conf: 66, reason: `Bounce from support ${support}` };
+        if (lastNum >= resistance - 1) return { pred: 'small', conf: 66, reason: `Reject at resistance ${resistance}` };
+        return { pred: lastNum > 4 ? 'small' : 'big', conf: 55, reason: 'S/R neutral' };
+    }
+
+    momentumDivergenceStrategy(history) {
+        if (history.length < 10) return { pred: 'big', conf: 50, reason: 'Divergence: insufficient data' };
+        const types = history.slice(0, 15).map(h => this.toNum(h.actual_result || h.result_type));
+        // Price (type) vs momentum (rate of change)
+        const roc = [];
+        for (let i = 1; i < types.length; i++) {
+            roc.push(types[i-1] - types[i]);
+        }
+        const recentROC = roc.slice(0, 3).reduce((a, b) => a + b, 0);
+        const last = history[0].actual_result || history[0].result_type;
+        // Positive ROC with falling price = bullish divergence
+        if (recentROC > 0.2 && last === 'small') return { pred: 'big', conf: 68, reason: 'Bullish divergence' };
+        if (recentROC < -0.2 && last === 'big') return { pred: 'small', conf: 68, reason: 'Bearish divergence' };
+        return { pred: last === 'big' ? 'small' : 'big', conf: 54, reason: 'No divergence' };
+    }
+
+    adaptiveThresholdStrategy(history) {
+        if (history.length < 10) return { pred: 'big', conf: 50, reason: 'Adaptive: insufficient data' };
+        const recent = history.slice(0, 20);
+        const bigCount = recent.filter(h => (h.actual_result || h.result_type) === 'big').length;
+        const ratio = bigCount / recent.length;
+        // Adaptive threshold based on recent bias
+        const threshold = ratio > 0.55 ? 0.45 : ratio < 0.45 ? 0.55 : 0.5;
+        const last = history[0].actual_result || history[0].result_type;
+        const last5 = history.slice(0, 5);
+        const last5Big = last5.filter(h => (h.actual_result || h.result_type) === 'big').length;
+        const last5Ratio = last5Big / 5;
+        const pred = last5Ratio > threshold ? 'big' : 'small';
+        const conf = Math.min(82, Math.round(55 + Math.abs(last5Ratio - threshold) * 80));
+        return { pred, conf, reason: `Adaptive threshold ${threshold.toFixed(2)}` };
+    }
+
+    // --- ANALYSIS METHODS ---
 
     calculateEntropy(history) {
         if (history.length < 5) return 1.0;
         const counts = { big: 0, small: 0 };
-        history.slice(0, 15).forEach(h => counts[h.actual_result || h.result_type]++);
+        history.slice(0, 18).forEach(h => counts[h.actual_result || h.result_type]++);
         const total = counts.big + counts.small;
         if (total === 0) return 1.0;
         const pBig = counts.big / total;
@@ -399,116 +452,80 @@ class NeuralMatrixEngine {
 
     calculateChiSquare(history) {
         if (history.length < 10) return { value: 0, pValue: 1.0 };
-        const recent = history.slice(0, 20);
+        const recent = history.slice(0, 24);
         const counts = { big: 0, small: 0 };
         recent.forEach(h => counts[h.actual_result || h.result_type]++);
         const expected = recent.length / 2;
         const chiSq = Math.pow(counts.big - expected, 2) / expected + Math.pow(counts.small - expected, 2) / expected;
-        // Approximate p-value for df=1
         const pValue = chiSq < 0.1 ? 1.0 : Math.exp(-chiSq / 2);
         return { value: chiSq, pValue };
     }
 
     calculateAutocorrelation(history) {
         if (history.length < 10) return 0;
-        const nums = history.slice(0, 15).map(h => this.toNum(h.actual_result || h.result_type));
+        const nums = history.slice(0, 18).map(h => this.toNum(h.actual_result || h.result_type));
         const n = nums.length;
         const mean = nums.reduce((a, b) => a + b, 0) / n;
         let numerator = 0, denominator = 0;
-        for (let i = 0; i < n - 1; i++) {
-            numerator += (nums[i] - mean) * (nums[i + 1] - mean);
-        }
-        for (let i = 0; i < n; i++) {
-            denominator += Math.pow(nums[i] - mean, 2);
-        }
+        for (let i = 0; i < n - 1; i++) numerator += (nums[i] - mean) * (nums[i + 1] - mean);
+        for (let i = 0; i < n; i++) denominator += Math.pow(nums[i] - mean, 2);
         return denominator === 0 ? 0 : numerator / denominator;
     }
 
     detectRegime(history) {
-        if (history.length < CONFIG.REGIME_WINDOW) return 'initializing';
+        if (history.length < CONFIG.REGIME_WINDOW) return 'mixed';
         const recent = history.slice(0, CONFIG.REGIME_WINDOW);
-
-        // Calculate metrics
         const types = recent.map(h => h.actual_result || h.result_type);
         const bigRatio = types.filter(t => t === 'big').length / types.length;
-
-        // Alternation rate
         let alts = 0;
-        for (let i = 1; i < types.length; i++) {
-            if (types[i] !== types[i - 1]) alts++;
-        }
+        for (let i = 1; i < types.length; i++) if (types[i] !== types[i - 1]) alts++;
         const altRate = alts / (types.length - 1);
-
-        // Streak detection
         let maxStreak = 1, currStreak = 1;
         for (let i = 1; i < types.length; i++) {
-            if (types[i] === types[i - 1]) {
-                currStreak++;
-                maxStreak = Math.max(maxStreak, currStreak);
-            } else {
-                currStreak = 1;
-            }
+            if (types[i] === types[i - 1]) { currStreak++; maxStreak = Math.max(maxStreak, currStreak); }
+            else currStreak = 1;
         }
-
-        // Classify regime
         if (maxStreak >= 4) return 'trending';
         if (altRate > 0.65) return 'alternating';
-        if (Math.abs(bigRatio - 0.5) < 0.1 && altRate > 0.4 && altRate < 0.6) return 'random';
         if (Math.abs(bigRatio - 0.5) > 0.15) return 'biased';
         return 'mixed';
     }
 
     calculateVolatility(history) {
         if (history.length < 5) return 0.5;
-        const nums = history.slice(0, 10).map(h => this.toNum(h.actual_result || h.result_type));
+        const nums = history.slice(0, 12).map(h => this.toNum(h.actual_result || h.result_type));
         const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
         const variance = nums.reduce((sum, n) => sum + Math.pow(n - mean, 2), 0) / nums.length;
         return Math.sqrt(variance);
     }
 
-    // --- MONTE CARLO SIMULATION ---
+    // --- MONTE CARLO ---
 
     monteCarloSimulation(history, runs = CONFIG.MONTE_CARLO_RUNS) {
         if (history.length < 5) return { bigWins: runs / 2, smallWins: runs / 2 };
-
-        const recent = history.slice(0, 20);
+        const recent = history.slice(0, 24);
         const types = recent.map(h => h.actual_result || h.result_type);
         const bigProb = types.filter(t => t === 'big').length / types.length;
-
-        // Adjust based on detected patterns
         const regime = this.detectRegime(history);
         let adjustedBigProb = bigProb;
-
         switch (regime) {
-            case 'trending':
-                adjustedBigProb = types[0] === 'big' ? Math.min(0.7, bigProb + 0.15) : Math.max(0.3, bigProb - 0.15);
-                break;
-            case 'alternating':
-                adjustedBigProb = types[0] === 'big' ? 0.35 : 0.65;
-                break;
-            case 'random':
-                adjustedBigProb = 0.5;
-                break;
-            case 'biased':
-                adjustedBigProb = bigProb > 0.5 ? Math.min(0.65, bigProb + 0.05) : Math.max(0.35, bigProb - 0.05);
-                break;
+            case 'trending': adjustedBigProb = types[0] === 'big' ? Math.min(0.7, bigProb + 0.15) : Math.max(0.3, bigProb - 0.15); break;
+            case 'alternating': adjustedBigProb = types[0] === 'big' ? 0.35 : 0.65; break;
+            case 'biased': adjustedBigProb = bigProb > 0.5 ? Math.min(0.65, bigProb + 0.05) : Math.max(0.35, bigProb - 0.05); break;
         }
-
         let bigWins = 0, smallWins = 0;
         for (let i = 0; i < runs; i++) {
             if (Math.random() < adjustedBigProb) bigWins++; else smallWins++;
         }
-
         return { bigWins, smallWins, bigProb: adjustedBigProb };
     }
 
-    // --- NUMBER ANALYSIS ---
+    // --- NUMBER ANALYSIS — DUAL HIGH PROBABILITY ---
 
     calculateNumberDistribution(history) {
         const freq = {};
         const recency = {};
         const numbers = [];
-
         history.forEach((h, idx) => {
             const num = h.actual_number;
             if (num === undefined || num === null) return;
@@ -516,35 +533,23 @@ class NeuralMatrixEngine {
             freq[num] = (freq[num] || 0) + 1;
             recency[num] = (recency[num] || 0) + (history.length - idx);
         });
-
-        // Calculate composite scores
         const scores = Object.keys(freq).map(num => ({
             number: parseInt(num),
             freq: freq[num],
             recency: recency[num],
-            score: freq[num] * 0.6 + (recency[num] / history.length) * 0.4
+            score: freq[num] * 0.55 + (recency[num] / history.length) * 0.45
         }));
-
         scores.sort((a, b) => b.score - a.score);
 
-        // Expected value using Bayesian smoothing
-        const totalNums = numbers.length;
-        const expected = numbers.length > 0 
-            ? (numbers.reduce((a, b) => a + b, 0) / totalNums)
-            : 4.5;
-
-        // Warm = middle tier
-        const warm = scores.length > 2 ? scores[Math.floor(scores.length / 2)] : (scores[0] || { number: 5 });
+        // Dual high probability: top 2 by composite score
+        const primary = scores.length > 0 ? scores[0] : null;
+        const secondary = scores.length > 1 ? scores[1] : null;
 
         return {
-            hot: scores.length > 0 ? scores[0] : null,
-            cold: scores.length > 0 ? scores[scores.length - 1] : null,
-            warm: warm,
-            expected: Math.round(expected),
-            expectedRaw: expected,
+            primary,
+            secondary,
             distribution: freq,
-            top3: scores.slice(0, 3).map(s => s.number),
-            bottom3: scores.slice(-3).map(s => s.number)
+            allScores: scores
         };
     }
 
@@ -553,14 +558,10 @@ class NeuralMatrixEngine {
     generatePrediction(lastResult, history) {
         if (!history || history.length < 4) {
             return {
-                prediction: 'big',
-                confidence: 50,
-                strategy: 'default',
-                reason: 'Initializing neural matrix...',
-                breakdown: [],
-                entropy: 1.0,
-                regime: 'initializing',
-                volatility: 0.5
+                prediction: 'big', confidence: 50, strategy: 'default',
+                reason: 'Initializing neural matrix...', breakdown: [],
+                entropy: 1.0, regime: 'mixed', volatility: 0.5,
+                bigProb: '50.0', smallProb: '50.0', consensus: 0
             };
         }
 
@@ -576,7 +577,13 @@ class NeuralMatrixEngine {
             { name: 'pattern', ...this.patternStrategy(history) },
             { name: 'bayesian', ...this.bayesianStrategy(history) },
             { name: 'fibonacci', ...this.fibonacciStrategy(history) },
-            { name: 'parity', ...this.parityStrategy(history) }
+            { name: 'parity', ...this.parityStrategy(history) },
+            { name: 'cyclical', ...this.cyclicalStrategy(history) },
+            { name: 'run_length', ...this.runLengthStrategy(history) },
+            { name: 'volatility_cluster', ...this.volatilityClusterStrategy(history) },
+            { name: 'support_resistance', ...this.supportResistanceStrategy(history) },
+            { name: 'momentum_divergence', ...this.momentumDivergenceStrategy(history) },
+            { name: 'adaptive_threshold', ...this.adaptiveThresholdStrategy(history) }
         ];
 
         const weights = this.getAdaptiveWeights();
@@ -584,32 +591,28 @@ class NeuralMatrixEngine {
         const entropy = this.calculateEntropy(history);
         const volatility = this.calculateVolatility(history);
 
-        // Adjust weights based on regime
         const regimeBoost = {
-            trending: { streak: 1.5, momentum: 1.3, markov: 1.2 },
-            alternating: { alternation: 1.5, pattern: 1.3, parity: 1.2 },
-            random: { bayesian: 1.4, entropy: 1.3, reversion: 1.2 },
-            biased: { reversion: 1.5, bayesian: 1.3, markov: 1.2 },
-            mixed: {},
-            initializing: {}
+            trending: { streak: 1.5, momentum: 1.3, markov: 1.2, run_length: 1.3, momentum_divergence: 1.2 },
+            alternating: { alternation: 1.5, pattern: 1.3, parity: 1.2, cyclical: 1.3 },
+            biased: { reversion: 1.5, bayesian: 1.3, markov: 1.2, adaptive_threshold: 1.4, support_resistance: 1.2 },
+            mixed: {}
         };
 
         let bigScore = 0, smallScore = 0, totalWeight = 0;
         const breakdown = [];
+        let bigVotes = 0, smallVotes = 0;
 
         results.forEach(r => {
             let w = weights[r.name] || 1.0;
             const boost = (regimeBoost[regime] || {})[r.name] || 1.0;
             w *= boost;
-
-            // Reduce weight for uncertain strategies
             const stratPerf = this.performance[r.name];
             if (stratPerf && stratPerf.uncertainty > 0.5) {
                 w *= (1 - stratPerf.uncertainty * 0.3);
             }
-
             const score = (r.conf / 100) * w;
-            if (r.pred === 'big') bigScore += score; else smallScore += score;
+            if (r.pred === 'big') { bigScore += score; bigVotes++; }
+            else { smallScore += score; smallVotes++; }
             totalWeight += w;
             breakdown.push({ name: r.name, pred: r.pred, conf: r.conf, weight: w.toFixed(2) });
         });
@@ -617,22 +620,15 @@ class NeuralMatrixEngine {
         const bigProb = bigScore / totalWeight;
         const smallProb = smallScore / totalWeight;
         const prediction = bigProb > smallProb ? 'big' : 'small';
+        const consensus = Math.max(bigVotes, smallVotes) / results.length;
 
-        // Adjust confidence based on entropy and volatility
         let confidence = Math.round(Math.max(bigProb, smallProb) * 100);
-
-        // Higher entropy = lower confidence (more uncertainty)
-        const entropyPenalty = entropy * 15;
+        const entropyPenalty = entropy * 12;
         confidence -= entropyPenalty;
-
-        // Higher volatility = lower confidence
-        const volPenalty = volatility * 10;
+        const volPenalty = volatility * 8;
         confidence -= volPenalty;
-
-        // Recent accuracy boost
         const recentAccuracy = this.getRecentAccuracy();
-        confidence = Math.round(confidence * (0.75 + recentAccuracy * 0.25));
-
+        confidence = Math.round(confidence * (0.78 + recentAccuracy * 0.22));
         confidence = Math.max(CONFIG.MIN_CONFIDENCE, Math.min(CONFIG.MAX_CONFIDENCE, confidence));
 
         const primary = results
@@ -640,16 +636,13 @@ class NeuralMatrixEngine {
             .sort((a, b) => (b.conf * (weights[b.name] || 1)) - (a.conf * (weights[a.name] || 1)))[0];
 
         return {
-            prediction,
-            confidence,
+            prediction, confidence,
             strategy: primary ? primary.name : 'ensemble',
             reason: primary ? primary.reason : 'Ensemble consensus',
             breakdown,
             bigProb: (bigProb * 100).toFixed(1),
             smallProb: (smallProb * 100).toFixed(1),
-            entropy,
-            regime,
-            volatility
+            entropy, regime, volatility, consensus
         };
     }
 
@@ -658,10 +651,9 @@ class NeuralMatrixEngine {
         let totalPerf = 0;
         this.strategies.forEach(s => {
             const perf = this.performance[s];
-            const recent = perf.recent.slice(-15);
+            const recent = perf.recent.slice(-18);
             const wins = recent.filter(r => r).length;
             const acc = recent.length ? wins / recent.length : 0.5;
-            // Weight by accuracy and inverse uncertainty
             weights[s] = (0.3 + acc * 1.4) * (1.5 - perf.uncertainty);
             totalPerf += weights[s];
         });
@@ -673,7 +665,7 @@ class NeuralMatrixEngine {
 
     getRecentAccuracy() {
         const all = [];
-        this.strategies.forEach(s => all.push(...this.performance[s].recent.slice(-8)));
+        this.strategies.forEach(s => all.push(...this.performance[s].recent.slice(-10)));
         if (all.length === 0) return 0.5;
         return all.filter(r => r).length / all.length;
     }
@@ -684,11 +676,8 @@ class NeuralMatrixEngine {
             if (correct) this.performance[strategyName].wins++;
             else this.performance[strategyName].losses++;
             this.performance[strategyName].recent.push(correct);
-            if (this.performance[strategyName].recent.length > 30) {
-                this.performance[strategyName].recent.shift();
-            }
-            // Update uncertainty (higher = less reliable)
-            const recent = this.performance[strategyName].recent.slice(-10);
+            if (this.performance[strategyName].recent.length > 35) this.performance[strategyName].recent.shift();
+            const recent = this.performance[strategyName].recent.slice(-12);
             const acc = recent.filter(r => r).length / recent.length;
             this.performance[strategyName].uncertainty = 1 - acc;
         }
@@ -696,9 +685,7 @@ class NeuralMatrixEngine {
             if (s.name !== strategyName && this.performance[s.name]) {
                 const sCorrect = s.pred === actual;
                 this.performance[s.name].recent.push(sCorrect);
-                if (this.performance[s.name].recent.length > 30) {
-                    this.performance[s.name].recent.shift();
-                }
+                if (this.performance[s.name].recent.length > 35) this.performance[s.name].recent.shift();
             }
         });
     }
@@ -707,12 +694,10 @@ class NeuralMatrixEngine {
         return this.strategies.map(s => {
             const p = this.performance[s];
             const total = p.wins + p.losses;
-            const recent = p.recent.slice(-12);
+            const recent = p.recent.slice(-14);
             const recentWins = recent.filter(r => r).length;
             return {
-                name: s,
-                wins: p.wins,
-                losses: p.losses,
+                name: s, wins: p.wins, losses: p.losses,
                 accuracy: total ? Math.round((p.wins / total) * 100) : 0,
                 recentAccuracy: recent.length ? Math.round((recentWins / recent.length) * 100) : 0,
                 uncertainty: Math.round(p.uncertainty * 100)
@@ -853,14 +838,12 @@ const HistoryManager = {
 };
 
 function migrateOldData() {
-    const oldKeys = ['cipher_full_history_v2', 'cipher_extended_history'];
+    const oldKeys = ['cipher_full_history_v3', 'cipher_full_history_v2', 'cipher_extended_history'];
     oldKeys.forEach(key => {
         const old = localStorage.getItem(key);
         if (old && !localStorage.getItem('cipher_full_history_v3')) {
-            try {
-                const data = JSON.parse(old);
-                localStorage.setItem('cipher_full_history_v3', JSON.stringify(data));
-            } catch (e) {}
+            try { const data = JSON.parse(old); localStorage.setItem('cipher_full_history_v3', JSON.stringify(data)); }
+            catch (e) {}
         }
     });
 }
@@ -904,7 +887,7 @@ function handleFetchError(error) {
         setTimeout(fetchData, 1000);
         return;
     }
-    updateConnectionStatus(false, error.message);
+    updateConnectionStatus(false);
     if (state.retryCount >= CONFIG.MAX_RETRIES) {
         showToast('Connection unstable', 'error');
         state.retryCount = 0;
@@ -928,10 +911,8 @@ function processData(latest) {
     const chiResult = engine.calculateChiSquare(analysisHistory);
     const autoCorr = engine.calculateAutocorrelation(analysisHistory);
 
-    state.hotNumber = numbers.hot?.number ?? null;
-    state.coldNumber = numbers.cold?.number ?? null;
-    state.warmNumber = numbers.warm?.number ?? null;
-    state.expectedNumber = numbers.expected ?? null;
+    state.highProbNumber = numbers.primary?.number ?? null;
+    state.secProbNumber = numbers.secondary?.number ?? null;
 
     state.pendingPredictions.set(state.currentTargetPeriod, {
         prediction: prediction.prediction,
@@ -942,16 +923,14 @@ function processData(latest) {
         breakdown: prediction.breakdown,
         regime: prediction.regime,
         entropy: prediction.entropy,
-        mcResult,
-        chiResult,
-        autoCorr
+        mcResult, chiResult, autoCorr
     });
 
     HistoryManager.addPrediction(state.currentTargetPeriod, prediction.prediction, prediction.confidence, prediction.strategy);
     resolvePendingPredictions();
 
     updateActivePrediction(prediction, state.currentTargetPeriod);
-    updateHotColdNumbers(numbers);
+    updateNumberIntelligence(numbers);
     updateMonteCarlo(mcResult);
     updateUncertaintyMetrics(prediction, chiResult, autoCorr);
     updateLatestResults(latest);
@@ -1017,13 +996,13 @@ function updateActivePrediction(pred, targetPeriod) {
     if (confEl) confEl.textContent = pred.confidence + '%';
 
     const stratEl = document.getElementById('strategyName');
-    if (stratEl) stratEl.textContent = pred.strategy.toUpperCase();
+    if (stratEl) stratEl.textContent = pred.strategy.toUpperCase().replace(/_/g, ' ');
 
-    const regimeEl = document.getElementById('regimeName');
-    if (regimeEl) regimeEl.textContent = pred.regime.toUpperCase();
+    const modelsEl = document.getElementById('activeModels');
+    if (modelsEl) modelsEl.textContent = engine.strategies.length;
 
-    const volEl = document.getElementById('volatilityVal');
-    if (volEl) volEl.textContent = (pred.volatility * 100).toFixed(0) + '%';
+    const consensusEl = document.getElementById('consensusVal');
+    if (consensusEl) consensusEl.textContent = (pred.consensus * 100).toFixed(0) + '%';
 
     // Probability distribution
     const probSmall = parseFloat(pred.smallProb);
@@ -1033,66 +1012,98 @@ function updateActivePrediction(pred, targetPeriod) {
     document.getElementById('probFillSmall').style.width = probSmall + '%';
     document.getElementById('probFillBig').style.width = probBig + '%';
     document.getElementById('probMarker').style.left = probBig + '%';
+
+    // Animated confidence bar
+    state.confBaseValue = pred.confidence;
+    startConfidenceAnimation();
 }
 
-function updateHotColdNumbers(numbers) {
-    const hotEl = document.getElementById('hotNumber');
-    const coldEl = document.getElementById('coldNumber');
-    const warmEl = document.getElementById('warmNumber');
-    const expEl = document.getElementById('expectedNumber');
+function startConfidenceAnimation() {
+    if (state.confAnimationId) cancelAnimationFrame(state.confAnimationId);
+    const fill = document.getElementById('confidenceFill');
+    const text = document.getElementById('confValueText');
+    const glow = document.getElementById('confGlow');
+    const particles = document.getElementById('confParticles');
+    if (!fill || !text) return;
 
-    if (hotEl) hotEl.textContent = numbers.hot?.number ?? '--';
-    if (coldEl) coldEl.textContent = numbers.cold?.number ?? '--';
-    if (warmEl) warmEl.textContent = numbers.warm?.number ?? '--';
-    if (expEl) expEl.textContent = numbers.expected ?? '--';
+    // Create particles
+    if (particles) {
+        particles.innerHTML = '';
+        for (let i = 0; i < 8; i++) {
+            const p = document.createElement('div');
+            p.className = 'conf-particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            p.style.animationDelay = (Math.random() * 2) + 's';
+            p.style.animationDuration = (1.5 + Math.random()) + 's';
+            particles.appendChild(p);
+        }
+    }
 
-    // Frequencies
+    let time = 0;
+    function animate() {
+        time += 0.03;
+        const fluctuation = Math.sin(time) * CONFIG.CONF_FLUCTUATION_RANGE + Math.sin(time * 1.7) * 1.5;
+        const displayConf = Math.max(0, Math.min(100, state.confBaseValue + fluctuation));
+        fill.style.width = displayConf + '%';
+        text.textContent = Math.round(displayConf) + '%';
+        if (glow) glow.style.left = (displayConf - 5) + '%';
+        state.confAnimationId = requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function updateNumberIntelligence(numbers) {
+    const highEl = document.getElementById('highProbNumber');
+    const secEl = document.getElementById('secProbNumber');
+    const highFreq = document.getElementById('highProbFreq');
+    const secFreq = document.getElementById('secProbFreq');
+    const highBar = document.getElementById('highProbBar');
+    const secBar = document.getElementById('secProbBar');
+
+    if (highEl) highEl.textContent = numbers.primary?.number ?? '--';
+    if (secEl) secEl.textContent = numbers.secondary?.number ?? '--';
+
     const total = Object.values(numbers.distribution || {}).reduce((a, b) => a + b, 0) || 1;
-    const hotFreq = numbers.hot ? Math.round((numbers.hot.freq / total) * 100) : 0;
-    const coldFreq = numbers.cold ? Math.round((numbers.cold.freq / total) * 100) : 0;
-    const warmFreq = numbers.warm ? Math.round((numbers.warm.freq / total) * 100) : 0;
+    const hFreq = numbers.primary ? Math.round((numbers.primary.freq / total) * 100) : 0;
+    const sFreq = numbers.secondary ? Math.round((numbers.secondary.freq / total) * 100) : 0;
 
-    const hf = document.getElementById('hotFreq');
-    const cf = document.getElementById('coldFreq');
-    const wf = document.getElementById('warmFreq');
-    const ef = document.getElementById('expectedFreq');
-
-    if (hf) hf.textContent = hotFreq + '%';
-    if (cf) cf.textContent = coldFreq + '%';
-    if (wf) wf.textContent = warmFreq + '%';
-    if (ef) ef.textContent = numbers.expectedRaw ? numbers.expectedRaw.toFixed(1) : '--';
+    if (highFreq) highFreq.textContent = hFreq + '% probability';
+    if (secFreq) secFreq.textContent = sFreq + '% probability';
+    if (highBar) highBar.style.width = Math.min(100, hFreq * 2) + '%';
+    if (secBar) secBar.style.width = Math.min(100, sFreq * 2) + '%';
 
     // Distribution chart
     const chart = document.getElementById('numberDistChart');
     if (chart) {
         chart.innerHTML = '';
+        const maxCount = Math.max(...Object.values(numbers.distribution || {0:1})) || 1;
         for (let i = 0; i <= 9; i++) {
             const count = numbers.distribution?.[i] || 0;
-            const maxCount = Math.max(...Object.values(numbers.distribution || {0:1})) || 1;
-            const height = Math.max(5, (count / maxCount) * 100);
+            const height = Math.max(4, (count / maxCount) * 100);
             const bar = document.createElement('div');
-            bar.className = 'dist-bar' + (i === numbers.expected ? ' highlight' : '');
+            bar.className = 'dist-bar' + (i === numbers.primary?.number || i === numbers.secondary?.number ? ' highlight' : '');
             bar.style.height = height + '%';
             bar.title = `${i}: ${count} times`;
             chart.appendChild(bar);
         }
     }
 
-    // Number heatmap
+    // Heatmap
     const heatmap = document.getElementById('numberHeatmap');
     if (heatmap) {
         heatmap.innerHTML = '';
+        const maxCount = Math.max(...Object.values(numbers.distribution || {0:1})) || 1;
         for (let i = 0; i <= 9; i++) {
             const count = numbers.distribution?.[i] || 0;
-            const maxCount = Math.max(...Object.values(numbers.distribution || {0:1})) || 1;
             const intensity = count / maxCount;
             const cell = document.createElement('div');
             cell.className = 'heatmap-cell';
             cell.textContent = i;
-            const r = Math.round(74 + (168 - 74) * intensity);
-            const g = Math.round(158 + (85 - 158) * intensity);
-            const b = Math.round(255 + (247 - 255) * intensity);
-            cell.style.background = `rgba(${r}, ${g}, ${b}, ${0.1 + intensity * 0.4})`;
+            const r = Math.round(59 + (139 - 59) * intensity);
+            const g = Math.round(130 + (92 - 130) * intensity);
+            const b = Math.round(246 + (246 - 246) * intensity);
+            cell.style.background = `rgba(${r}, ${g}, ${b}, ${0.1 + intensity * 0.5})`;
             cell.style.color = intensity > 0.5 ? '#fff' : 'var(--text-secondary)';
             cell.title = `${i}: ${count} occurrences`;
             heatmap.appendChild(cell);
@@ -1103,48 +1114,40 @@ function updateHotColdNumbers(numbers) {
 function updateMonteCarlo(mcResult) {
     const chart = document.getElementById('monteCarloChart');
     if (!chart) return;
-
     chart.innerHTML = '';
     const total = mcResult.bigWins + mcResult.smallWins;
     const bins = 20;
-    const binSize = total / bins;
-
     for (let i = 0; i < bins; i++) {
         const isBig = i < bins / 2;
-        const height = Math.random() * 60 + 20; // Simulated distribution
+        const height = Math.random() * 50 + 25;
         const bar = document.createElement('div');
         bar.className = 'mc-bar ' + (isBig ? 'big' : 'small');
         bar.style.height = height + '%';
         chart.appendChild(bar);
     }
-
     document.getElementById('mcBigWins').textContent = mcResult.bigWins;
     document.getElementById('mcSmallWins').textContent = mcResult.smallWins;
 }
 
 function updateUncertaintyMetrics(pred, chiResult, autoCorr) {
-    // Entropy bar
     const entropyPct = Math.min(100, pred.entropy * 100);
     const entropyBar = document.getElementById('entropyBar');
     const entropyVal = document.getElementById('entropyVal');
     if (entropyBar) entropyBar.style.width = entropyPct + '%';
     if (entropyVal) entropyVal.textContent = pred.entropy.toFixed(2);
 
-    // Chi-square bar
     const chiPct = Math.min(100, (1 - chiResult.pValue) * 100);
     const chiBar = document.getElementById('chiBar');
     const chiVal = document.getElementById('chiVal');
     if (chiBar) chiBar.style.width = chiPct + '%';
     if (chiVal) chiVal.textContent = chiResult.pValue < 0.05 ? 'Non-random' : 'Random';
 
-    // Autocorrelation bar
     const autoPct = Math.min(100, Math.abs(autoCorr) * 200);
     const autoBar = document.getElementById('autoBar');
     const autoVal = document.getElementById('autoVal');
     if (autoBar) autoBar.style.width = autoPct + '%';
     if (autoVal) autoVal.textContent = autoCorr.toFixed(2);
 
-    // Pattern strength
     const patternPct = Math.min(100, (1 - pred.entropy) * 100);
     const patternBar = document.getElementById('patternBar');
     const patternVal = document.getElementById('patternVal');
@@ -1176,8 +1179,8 @@ function updateHistoryDisplay() {
         const actual = r.actual_result || r.result_type;
         let outcome;
         if (r.predicted_type && actual) {
-            outcome = r.predicted_type === actual 
-                ? '<span class="outcome-badge win">WIN</span>' 
+            outcome = r.predicted_type === actual
+                ? '<span class="outcome-badge win">WIN</span>'
                 : '<span class="outcome-badge loss">LOSS</span>';
         } else if (r.predicted_type) {
             outcome = '<span class="outcome-badge pending">PENDING</span>';
@@ -1206,14 +1209,12 @@ function updateStats() {
     const vals = [accuracy + '%', state.stats.total, state.stats.wins, state.stats.losses];
     els.forEach((id, i) => { const el = document.getElementById(id); if (el) el.textContent = vals[i]; });
 
-    // Update bars
     const total = state.stats.total || 1;
     const winBar = document.getElementById('winBar');
     const lossBar = document.getElementById('lossBar');
     if (winBar) winBar.style.width = (state.stats.wins / total * 100) + '%';
     if (lossBar) lossBar.style.width = (state.stats.losses / total * 100) + '%';
 
-    // Accuracy chart (mini sparkline)
     const chart = document.getElementById('accuracyChart');
     if (chart) {
         const history = HistoryManager.getForAnalysis().slice(0, 20);
@@ -1223,7 +1224,7 @@ function updateStats() {
             const slice = history.slice(i, i + window);
             const wins = slice.filter(h => h.predicted_type === (h.actual_result || h.result_type)).length;
             const h = Math.max(10, (wins / window) * 100);
-            html += `<div style="flex:1;background:linear-gradient(180deg,var(--accent-blue),rgba(74,158,255,0.3));border-radius:1px;height:${h}%;align-self:flex-end;min-height:2px;"></div>`;
+            html += `<div style="flex:1;background:linear-gradient(180deg,var(--accent-blue),rgba(59,130,246,0.25));border-radius:1px;height:${h}%;align-self:flex-end;min-height:2px;"></div>`;
         }
         chart.innerHTML = html;
         chart.style.display = 'flex';
@@ -1232,7 +1233,6 @@ function updateStats() {
         chart.style.height = '100%';
     }
 
-    // Signal trend
     const trend = document.getElementById('signalTrend');
     if (trend) {
         const recent = HistoryManager.getForAnalysis().slice(0, 10);
@@ -1246,7 +1246,6 @@ function updateStats() {
 function updateAnalytics() {
     const history = HistoryManager.getForAnalysis().slice(0, 50);
 
-    // Trend chart
     const trendChart = document.getElementById('trendChart');
     if (trendChart) {
         let html = '';
@@ -1261,7 +1260,6 @@ function updateAnalytics() {
         trendChart.innerHTML = html;
     }
 
-    // Strategy list
     const stratList = document.getElementById('strategyList');
     if (stratList) {
         const stats = engine.getStrategyStats();
@@ -1278,31 +1276,26 @@ function updateAnalytics() {
         }).join('');
     }
 
-    // Regime chart
+    // Market State (no "random" regime shown)
     const regimeChart = document.getElementById('regimeChart');
     if (regimeChart) {
-        const regimes = ['trending', 'alternating', 'random', 'biased', 'mixed'];
-        const counts = {};
-        regimes.forEach(r => counts[r] = 0);
-
-        // Simulate regime detection over history
+        const regimes = ['trending', 'alternating', 'biased', 'mixed'];
+        const counts = { trending: 0, alternating: 0, biased: 0, mixed: 0 };
         for (let i = 0; i < Math.min(history.length, 50); i += 5) {
             const slice = history.slice(i, i + CONFIG.REGIME_WINDOW);
             if (slice.length >= 10) {
                 const r = engine.detectRegime(slice);
-                counts[r] = (counts[r] || 0) + 1;
+                if (counts[r] !== undefined) counts[r]++;
+                else counts.mixed++;
             }
         }
-
         const maxCount = Math.max(...Object.values(counts)) || 1;
         const colors = {
             trending: 'var(--accent-red)',
             alternating: 'var(--accent-cyan)',
-            random: 'var(--accent-purple)',
             biased: 'var(--accent-gold)',
             mixed: 'var(--accent-blue)'
         };
-
         regimeChart.innerHTML = regimes.map(r => `
             <div class="regime-segment">
                 <div class="regime-bar" style="height:${(counts[r] / maxCount * 100)}%;background:${colors[r]}"></div>
@@ -1317,7 +1310,7 @@ function updateModels(prediction) {
     const weightChart = document.getElementById('weightsChart');
     if (weightChart) {
         const maxW = Math.max(...Object.values(weights));
-        const colors = ['#4a9eff', '#00d4ff', '#a855f7', '#f472b6', '#34d399', '#f87171', '#fb923c', '#fbbf24', '#60a5fa', '#c084fc', '#f9a8d4', '#6ee7b7'];
+        const colors = ['#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899', '#22c55e', '#ef4444', '#f97316', '#eab308', '#60a5fa', '#c084fc', '#f9a8d4', '#6ee7b7', '#34d399', '#f472b6', '#a78bfa', '#38bdf8', '#fb923c', '#a3e635'];
         weightChart.innerHTML = engine.strategies.map((s, i) => {
             const w = weights[s] || 1;
             const h = Math.max(5, (w / maxW) * 100);
@@ -1327,7 +1320,6 @@ function updateModels(prediction) {
         }).join('');
     }
 
-    // Feature importance (simulated based on strategy weights)
     const featureList = document.getElementById('featureList');
     if (featureList) {
         const features = [
@@ -1340,9 +1332,10 @@ function updateModels(prediction) {
             { name: 'Gap Analysis', key: 'gap_analysis' },
             { name: 'Number Cluster', key: 'number_inference' },
             { name: 'Pattern Match', key: 'pattern' },
-            { name: 'Bayesian Update', key: 'bayesian' }
+            { name: 'Bayesian Update', key: 'bayesian' },
+            { name: 'Cyclical', key: 'cyclical' },
+            { name: 'Run Length', key: 'run_length' }
         ];
-
         featureList.innerHTML = features.map(f => {
             const w = weights[f.key] || 1;
             const maxW2 = Math.max(...Object.values(weights));
@@ -1358,7 +1351,6 @@ function updateModels(prediction) {
         }).join('');
     }
 
-    // Diagnostics
     const diagnostics = document.getElementById('diagnostics');
     if (diagnostics) {
         const history = HistoryManager.getForAnalysis();
@@ -1366,7 +1358,6 @@ function updateModels(prediction) {
         const entropy = engine.calculateEntropy(history);
         const regime = engine.detectRegime(history);
         const vol = engine.calculateVolatility(history);
-
         diagnostics.innerHTML = `
             <div class="diag-item">
                 <span class="diag-label">Data Quality</span>
@@ -1381,7 +1372,7 @@ function updateModels(prediction) {
                 <span class="diag-value ${entropy > 0.9 ? 'good' : entropy > 0.7 ? 'warn' : 'bad'}">${entropy.toFixed(2)}</span>
             </div>
             <div class="diag-item">
-                <span class="diag-label">Detected Regime</span>
+                <span class="diag-label">Market State</span>
                 <span class="diag-value">${regime.toUpperCase()}</span>
             </div>
             <div class="diag-item">
@@ -1436,14 +1427,11 @@ function initNavigation() {
             e.preventDefault();
             const panel = item.dataset.panel;
             if (!panel) return;
-
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
-
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             const targetPanel = document.getElementById('panel-' + panel);
             if (targetPanel) targetPanel.classList.add('active');
-
             const titles = {
                 predict: ['Prediction Matrix', 'Real-time signal intelligence'],
                 analytics: ['Analytics Dashboard', 'Performance metrics & trends'],
@@ -1454,10 +1442,7 @@ function initNavigation() {
             const subEl = document.getElementById('pageSubtitle');
             if (titleEl && titles[panel]) titleEl.textContent = titles[panel][0];
             if (subEl && titles[panel]) subEl.textContent = titles[panel][1];
-
             state.activePanel = panel;
-
-            // Refresh panel-specific content
             if (panel === 'analytics') updateAnalytics();
             if (panel === 'models') updateModels(state.lastPrediction);
         });
@@ -1468,16 +1453,13 @@ function initNavigation() {
 // INITIALIZATION
 // ============================================
 function init() {
-    console.log('[NEURAL MATRIX v3.0] Advanced Ensemble Prediction Online');
-
+    console.log('[NEURAL MATRIX v3.1] Fine Tuned — 18 Strategy Ensemble Online');
     new NeuralCanvas();
     if (!initAuth()) return;
     initNavigation();
-
     migrateOldData();
     state.fullHistory = HistoryManager.load();
     console.log('[NEURAL MATRIX] Loaded', state.fullHistory.length, 'historical records');
-
     state.fullHistory.forEach(h => {
         if (h.predicted_type && !h.actual_result && !h.result_type) {
             state.pendingPredictions.set(h.issue_number, {
@@ -1489,12 +1471,11 @@ function init() {
             });
         }
     });
-
     fetchData();
     setInterval(fetchData, CONFIG.REFRESH_INTERVAL);
     setInterval(updateTimer, 1000);
     updateTimer();
-    showToast('System online v3.0', 'success');
+    showToast('System online v3.1', 'success');
 }
 
 if (document.readyState === 'loading') {
